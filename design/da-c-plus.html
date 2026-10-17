@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CV GEN — DA « C+ »</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Sans:wght@400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #d9d8d4; font-family: 'Instrument Sans', system-ui, sans-serif; }
+  .intro { max-width: 1280px; margin: 0 auto; padding: 36px 24px 0; color: #111; }
+  .intro h1 { font: 800 28px 'Archivo'; font-stretch: 125%; text-transform: uppercase; letter-spacing: -0.01em; margin: 0 0 6px; }
+  .intro p { margin: 0; color: #555; font-size: 15px; max-width: 900px; }
+  .board { max-width: 1280px; margin: 0 auto; padding: 24px; display: grid; gap: 40px; }
+  .label { font: 500 12px 'IBM Plex Mono'; text-transform: uppercase; letter-spacing: .08em; color: #333; margin-bottom: 10px; }
+
+  /* ---------- Thème ---------- */
+  .app {
+    --bg: #ffffff; --bg-2: #f6f6f5; --text: #0b0b0c; --muted: #6d6d72; --line: #e6e6e4; --line-2: #d4d4d1;
+    --accent: #ff3d17; --accent-soft: #fff0eb; --ink: #0b0b0c; --on-ink: #ffffff; --dot: #ff3d17;
+    background: var(--bg); color: var(--text); height: 640px; overflow: hidden; display: grid; grid-template-rows: 56px 1fr;
+    box-shadow: 0 30px 60px -28px rgba(0,0,0,.45); position: relative;
+  }
+  .app.dark {
+    --bg: #050505; --bg-2: #0f0f10; --text: #f4f4f2; --muted: #8b8b90; --line: #1d1d1f; --line-2: #2a2a2d;
+    --accent: #ff4a24; --accent-soft: #2a0f08; --ink: #f4f4f2; --on-ink: #050505; --dot: #ff4a24;
+  }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+  .cap { font: 500 10.5px 'IBM Plex Mono'; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+  .xl { font-family: 'Archivo'; font-stretch: 125%; font-weight: 800; text-transform: uppercase; letter-spacing: -0.01em; }
+
+  /* Barre du haut */
+  .bar { display: flex; align-items: center; gap: 22px; padding: 0 22px; border-bottom: 1px solid var(--line); }
+  .logo { white-space: nowrap; display: flex; align-items: center; gap: 10px; font: 800 15px 'Archivo'; font-stretch: 125%; text-transform: uppercase; letter-spacing: .02em; }
+  .mark { width: 22px; height: 22px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+  .mark i { background: var(--accent); border-radius: 50%; }
+  .mark i:nth-child(3n) { opacity: .25; }
+  .tabs { display: flex; height: 100%; margin-left: 18px; }
+  .tab { white-space: nowrap; display: flex; align-items: center; gap: 7px; padding: 0 14px; font: 500 11px 'Instrument Sans'; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); position: relative; }
+  .tab.on { color: var(--text); }
+  .tab.on::after { content: ''; position: absolute; left: 14px; right: 14px; bottom: -1px; height: 2px; background: var(--accent); }
+  .tab b { font: 500 10px 'IBM Plex Mono'; color: var(--accent); }
+  .search { margin-left: auto; height: 34px; width: 250px; border: 1px solid var(--line-2); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; padding: 0 6px 0 12px; font-size: 13px; color: var(--muted); }
+  .kbd { font: 500 10.5px 'IBM Plex Mono'; border: 1px solid var(--line-2); border-radius: 5px; padding: 1px 6px; }
+  .btn { height: 34px; padding: 0 14px; border-radius: 8px; font: 600 13px 'Instrument Sans'; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; border: 1px solid transparent; }
+  .btn.ink { background: var(--ink); color: var(--on-ink); }
+  .btn.line { border-color: var(--line-2); color: var(--text); background: var(--bg); }
+  .btn.acc { background: var(--accent); color: #fff; }
+  .btn .arr { font-family: 'IBM Plex Mono'; }
+
+  /* Grille principale */
+  .grid { display: grid; grid-template-columns: 7fr 5fr; grid-template-rows: 1fr 210px; min-height: 0; }
+  .cell { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 22px 26px; position: relative; min-width: 0; }
+  .hero { display: flex; flex-direction: column; }
+  .hero h2 { font-size: 78px; line-height: .9; margin: 14px 0 16px; }
+  .hero h2 em { font-style: normal; color: var(--accent); }
+  .hero p { margin: 0; max-width: 470px; font-size: 15px; line-height: 1.5; color: var(--muted); }
+  .hero p b { color: var(--text); font-weight: 600; }
+  .actions { display: flex; gap: 8px; margin-top: 18px; }
+  .meta { margin-top: auto; display: flex; gap: 34px; padding-top: 16px; }
+  .meta div { display: flex; flex-direction: column; gap: 3px; }
+  .meta strong { font: 600 14px 'Instrument Sans'; }
+
+  .score { border-right: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .dots { position: absolute; right: -40px; top: 40px; width: 360px; height: 300px; opacity: .9;
+    background-image: radial-gradient(var(--dot) 1.6px, transparent 1.9px); background-size: 9px 9px;
+    -webkit-mask: radial-gradient(closest-side, #000 30%, transparent 100%); mask: radial-gradient(closest-side, #000 30%, transparent 100%); }
+  .big { font-size: 190px; line-height: .78; letter-spacing: -0.04em; margin-top: 26px; position: relative; }
+  .big small { font-size: 26px; letter-spacing: 0; color: var(--muted); margin-left: 6px; }
+  .bars { margin-top: auto; display: grid; gap: 9px; position: relative; }
+  .b { display: grid; grid-template-columns: 90px 1fr 30px; align-items: center; gap: 12px; font-size: 13px; }
+  .b .t { height: 4px; background: var(--line); position: relative; }
+  .b .t i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--text); }
+  .b .t i.acc { background: var(--accent); }
+  .b span:last-child { font: 500 12px 'IBM Plex Mono'; text-align: right; }
+
+  .bottom { grid-column: 1 / 3; display: grid; grid-template-columns: 1.1fr 1fr 1.2fr; border-bottom: 0; padding: 0; }
+  .bottom > div { padding: 18px 22px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .bottom > div:last-child { border-right: 0; }
+  .head { display: flex; justify-content: space-between; align-items: baseline; }
+  .head h4 { margin: 0; font: 800 13px 'Archivo'; font-stretch: 125%; text-transform: uppercase; letter-spacing: .02em; }
+  .li { display: grid; grid-template-columns: 26px 1fr auto; font-size: 13.5px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+  .li i { font: 500 11px 'IBM Plex Mono'; color: var(--accent); font-style: normal; padding-top: 2px; }
+  .li b { font: 500 12px 'IBM Plex Mono'; }
+  .kw { display: flex; flex-wrap: wrap; gap: 6px; }
+  .kw span { font-size: 12.5px; padding: 3px 9px; border: 1px solid var(--line-2); border-radius: 6px; }
+  .kw .ok::before { content: '● '; color: #1aa260; font-size: 9px; }
+  .kw .miss { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .th { background: var(--bg-2); border: 1px solid var(--line); border-radius: 6px; padding: 8px 8px 0; height: 92px; overflow: hidden; }
+  .th div { background: #fff; height: 100%; padding: 7px; border-radius: 2px 2px 0 0; }
+  .th i { display: block; height: 3px; background: #ddd; margin-bottom: 3px; }
+  .th i:first-child { height: 7px; width: 70%; background: #0b0b0c; }
+  .th i:nth-child(2) { width: 40%; background: var(--accent); }
+  .th.dk div { background: #111; }
+  .th.dk i { background: #333; }
+  .th.dk i:first-child { background: #fff; }
+  .pager { display: flex; align-items: center; gap: 10px; }
+  .pager .ln { display: flex; gap: 4px; }
+  .pager .ln i { width: 18px; height: 2px; background: var(--line-2); }
+  .pager .ln i.on { background: var(--text); width: 28px; }
+
+  /* Écran 2 : éditeur */
+  .ed { display: grid; grid-template-columns: 330px 1fr 280px; min-height: 0; }
+  .ed > div { border-right: 1px solid var(--line); min-height: 0; overflow: hidden; }
+  .ed > div:last-child { border: 0; }
+  .form { padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; }
+  .steps { display: flex; gap: 0; border: 1px solid var(--line-2); border-radius: 8px; overflow: hidden; }
+  .steps span { flex: 1; text-align: center; padding: 7px 0; font: 500 10.5px 'Instrument Sans'; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); border-right: 1px solid var(--line-2); }
+  .steps span:last-child { border: 0; }
+  .steps .on { background: var(--ink); color: var(--on-ink); }
+  .f label { display: block; margin-bottom: 5px; }
+  .f div { height: 36px; border: 1px solid var(--line-2); border-radius: 8px; padding: 0 12px; display: flex; align-items: center; font-size: 13.5px; }
+  .f div.focus { border-color: var(--text); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .prev { background: var(--bg-2); display: grid; place-items: center; position: relative; }
+  .paper { width: 330px; height: 466px; background: #fff; box-shadow: 0 20px 40px -18px rgba(0,0,0,.35); padding: 26px 24px; color: #111; }
+  .paper .n { font: 800 22px 'Archivo'; font-stretch: 112%; text-transform: uppercase; letter-spacing: -0.01em; }
+  .paper .n span { color: var(--accent); }
+  .paper .h { font: 500 7px 'IBM Plex Mono'; text-transform: uppercase; letter-spacing: .1em; color: #666; margin: 3px 0 12px; }
+  .paper .s { font: 700 6.5px 'IBM Plex Mono'; text-transform: uppercase; letter-spacing: .12em; color: var(--accent); border-top: 1px solid #111; padding-top: 4px; margin: 10px 0 5px; }
+  .paper i { display: block; height: 3px; background: #e2e2e2; margin: 4px 0; }
+  .pv-bar { position: absolute; top: 14px; left: 18px; right: 18px; display: flex; justify-content: space-between; }
+  .side { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .side .big2 { font-size: 86px; line-height: .8; letter-spacing: -0.04em; }
+  .chk { display: grid; grid-template-columns: 16px 1fr; gap: 8px; font-size: 12.5px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+  .chk i { font-style: normal; font: 600 12px 'IBM Plex Mono'; }
+</style>
+</head>
+<body>
+<div class="intro">
+  <h1>Piste C+ — Swiss × Makelead × lburdier</h1>
+  <p>La grille suisse de C, adoucie par la netteté de Makelead (blanc, filets fins, petits boutons noirs, trame de points) et la typo géante en Archivo large + petites capitales espacées de lburdier.fr. Accent : rouge signal. Déclinée en clair et en sombre, tableau de bord puis éditeur.</p>
+</div>
+<div class="board" id="board"></div>
+<script>
+  const topBar = (on) => `
+    <div class="bar">
+      <div class="logo"><span class="mark">${'<i></i>'.repeat(16)}</span>CV Gen</div>
+      <nav class="tabs">${['Accueil', 'Mes CV', 'Modèles', 'Offres', 'Lettres', 'Assistant'].map((t, i) => `<span class="tab ${i === on ? 'on' : ''}"><b>0${i + 1}</b>${t}</span>`).join('')}</nav>
+      <span class="search">Rechercher… <span class="kbd">Ctrl K</span></span>
+      <span class="btn ink">Nouveau CV <span class="arr">+</span></span>
+    </div>`
+  const dash = (theme) => `
+  <section>
+    <div class="label">${theme === 'dark' ? 'C+ sombre' : 'C+ clair'} — tableau de bord</div>
+    <div class="app ${theme}">
+      ${topBar(0)}
+      <div class="grid">
+        <div class="cell hero">
+          <span class="cap">01 / 06 — Accueil · jeudi 15.10.2026</span>
+          <h2 class="xl">Prêt à<br/><em>postuler</em>, Lucas.</h2>
+          <p>Votre CV <b>Vitrine</b> atteint <b>84 / 100</b>. L’offre <b>Artiste 3D — Studio Nébuleuse</b> attend encore deux mots-clés : Houdini et Nuke.</p>
+          <div class="actions"><span class="btn acc">Adapter à l’offre <span class="arr">→</span></span><span class="btn line">Ouvrir l’éditeur</span></div>
+          <div class="meta">
+            <div><span class="cap">CV</span><strong>3 actifs</strong></div>
+            <div><span class="cap">Offres</span><strong>2 analysées</strong></div>
+            <div><span class="cap">Moyenne</span><strong>81 / 100</strong></div>
+          </div>
+        </div>
+        <div class="cell score">
+          <div class="dots"></div>
+          <span class="cap" style="position:relative">Score ATS — CV Vitrine</span>
+          <div class="big xl">84<small>/100</small></div>
+          <div class="bars">
+            <div class="b"><span>Format</span><span class="t"><i style="width:100%"></i></span><span>100</span></div>
+            <div class="b"><span>Contenu</span><span class="t"><i style="width:92%"></i></span><span>92</span></div>
+            <div class="b"><span>Mots-clés</span><span class="t"><i class="acc" style="width:64%"></i></span><span>64</span></div>
+          </div>
+        </div>
+        <div class="cell bottom">
+          <div>
+            <div class="head"><h4>Mes CV</h4><span class="cap">Tout voir →</span></div>
+            <div class="li"><i>01</i>CV — Vitrine<b>84</b></div>
+            <div class="li"><i>02</i>CV — Développeur web<b>91</b></div>
+            <div class="li"><i>03</i>CV — Motion design<b>67</b></div>
+          </div>
+          <div>
+            <div class="head"><h4>Mots-clés de l’offre</h4><span class="cap">72 %</span></div>
+            <div class="kw"><span class="ok">Blender</span><span class="ok">Substance</span><span class="miss">Houdini</span><span class="ok">Unreal</span><span class="miss">Nuke</span><span class="ok">Lookdev</span><span class="ok">Lighting</span></div>
+          </div>
+          <div>
+            <div class="head"><h4>Modèles</h4><span class="pager"><span class="cap">02 / 09</span><span class="ln"><i></i><i class="on"></i><i></i><i></i></span></span></div>
+            <div class="thumbs"><div class="th dk"><div><i></i><i></i><i></i><i></i></div></div><div class="th"><div><i></i><i></i><i></i><i></i></div></div><div class="th"><div><i></i><i></i><i></i></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>`
+  const editor = (theme) => `
+  <section>
+    <div class="label">${theme === 'dark' ? 'C+ sombre' : 'C+ clair'} — éditeur</div>
+    <div class="app ${theme}">
+      ${topBar(1)}
+      <div class="ed">
+        <div class="form">
+          <span class="cap">CV — Vitrine · enregistré</span>
+          <div class="steps"><span class="on">Identité</span><span>Profil</span><span>Exp.</span><span>Comp.</span><span>Plus</span></div>
+          <div class="f"><label class="cap">Prénom</label><div>Lucas</div></div>
+          <div class="f"><label class="cap">Nom</label><div>Burdier</div></div>
+          <div class="f"><label class="cap">Titre visé</label><div class="focus">Artiste 3D & développeur</div></div>
+          <div class="f"><label class="cap">E-mail</label><div>lucas.burdier@email.fr</div></div>
+          <div class="f"><label class="cap">Ville · mobilité</label><div>Montélier · Lyon, Valence</div></div>
+        </div>
+        <div class="prev">
+          <div class="pv-bar"><span class="btn line" style="height:30px">Modèle : Vitrine ▾</span><span class="btn ink" style="height:30px">Exporter PDF</span></div>
+          <div class="paper">
+            <div class="n">Lucas <span>Burdier</span></div>
+            <div class="h">Artiste 3D & développeur · Modeling · Lookdev</div>
+            <i style="width:92%"></i><i style="width:88%"></i><i style="width:60%"></i>
+            <div class="s">Expérience</div><i></i><i style="width:80%"></i><i style="width:90%"></i><i style="width:70%"></i>
+            <div class="s">Projets</div><i></i><i style="width:85%"></i><i style="width:60%"></i>
+            <div class="s">Compétences</div><i style="width:95%"></i><i style="width:75%"></i>
+            <div class="s">Formation</div><i style="width:80%"></i><i style="width:55%"></i>
+          </div>
+        </div>
+        <div class="side">
+          <span class="cap">Score ATS</span>
+          <div class="big2 xl" style="color:var(--accent)">84</div>
+          <div class="chk"><i style="color:#1aa260">✓</i>Une colonne, texte réel</div>
+          <div class="chk"><i style="color:#1aa260">✓</i>Coordonnées complètes</div>
+          <div class="chk"><i style="color:var(--accent)">!</i>Houdini absent de l’offre</div>
+          <div class="chk"><i style="color:var(--accent)">!</i>2 puces sans chiffre</div>
+          <span class="btn acc" style="justify-content:center">Adapter à l’offre →</span>
+        </div>
+      </div>
+    </div>
+  </section>`
+  document.getElementById('board').innerHTML = dash('light') + dash('dark') + editor('light') + editor('dark')
+</script>
+</body>
+</html>
