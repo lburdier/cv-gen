@@ -85,7 +85,7 @@ export function Topnav() {
       <button className="btn btn-ink btn-new" onClick={() => actions.newResume()} title="Nouveau CV (Ctrl N)">
         <span className="lbl">Nouveau CV</span> <span className="mono">+</span>
       </button>
-      <button className="avatar" onClick={() => go({ name: 'profile' })} title={name ? `${name} — mon profil` : 'Mon profil'}>
+      <button className="avatar" onClick={() => go({ name: 'profile' })} title={name ? `${name} · mon profil` : 'Mon profil'}>
         {profile?.basics.photo ? <img src={profile.basics.photo} alt="" /> : initials}
       </button>
     </header>

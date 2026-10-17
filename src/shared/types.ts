@@ -162,6 +162,18 @@ export interface Offer {
   analysis?: OfferAnalysis
 }
 
+/** Réglages de rédaction d'une lettre (conservés pour la régénérer). */
+export interface LetterOptions {
+  tone: string
+  length: 'courte' | 'standard' | 'detaillee'
+  angle: 'poste' | 'entreprise' | 'reconversion' | 'alternance' | 'spontanee'
+  lang: Lang
+  /** Ce qui attire la personne dans l'entreprise, avec ses mots : seule source de motivation utilisée. */
+  motivation: string
+  /** Expériences à mettre en avant (identifiants) ; vide = les plus récentes. */
+  highlights: string[]
+}
+
 export interface CoverLetter {
   id: string
   title: string
@@ -170,6 +182,12 @@ export interface CoverLetter {
   body: string
   createdAt: number
   updatedAt: number
+  /** En-tête : destinataire (plusieurs lignes), lieu, date (AAAA-MM-JJ), objet. */
+  recipient?: string
+  place?: string
+  date?: string
+  subject?: string
+  options?: LetterOptions
 }
 
 export interface AppData {
@@ -238,6 +256,14 @@ export type ImportedResume = Omit<
   Resume,
   'id' | 'title' | 'templateId' | 'accent' | 'font' | 'density' | 'createdAt' | 'updatedAt' | 'sectionOrder' | 'hidden'
 >
+
+export interface CvImport {
+  resume: ImportedResume
+  /** « ai » : structuré par l'IA ; « local » : lecture de l'app, sans IA. */
+  method: 'ai' | 'local'
+  /** Pourquoi l'IA n'a pas été utilisée, le cas échéant. */
+  note?: string
+}
 
 export interface ChatTurn {
   role: 'user' | 'assistant'
@@ -405,6 +431,11 @@ export interface CvGenApi {
   printReady(token: string): void
   openDataFolder(): Promise<void>
   openExternal(url: string): Promise<void>
+  /** Import d'un CV existant : lecture locale, structurée par l'IA si une clé est enregistrée. */
+  cv: {
+    pick(): Promise<{ name: string; bytes: Uint8Array } | null>
+    import(name: string, bytes: Uint8Array, mode?: 'auto' | 'local'): Promise<CvImport>
+  }
   updates: {
     status(): Promise<UpdateStatus>
     check(): Promise<UpdateStatus>
@@ -417,9 +448,9 @@ export interface CvGenApi {
     tailor(resume: Resume, offer: Offer): Promise<TailorResult>
     improveBullet(bullet: string, context: string, lang: Lang): Promise<BulletVariants>
     writeSummary(resume: Resume, offer?: Offer): Promise<string>
-    coverLetter(resume: Resume, offer: Offer | undefined, tone: string, lang: Lang): Promise<string>
-    importResume(): Promise<ImportedResume | null>
-    importResumeBytes(name: string, bytes: Uint8Array): Promise<ImportedResume>
+    coverLetter(resume: Resume, offer: Offer | undefined, options: LetterOptions): Promise<string>
+    /** Retouche d'une lettre : raccourcir, plus percutant, plus formel, corriger, ou consigne libre. */
+    reviseLetter(body: string, instruction: string, resume: Resume, offer?: Offer, lang?: Lang): Promise<string>
     analyzeCvImage(dataUrl: string, withContent: boolean, hint?: DesignSpec): Promise<CvImageAnalysis>
     chat(history: ChatTurn[], resume?: Resume, offer?: Offer): Promise<ChatReply>
   }

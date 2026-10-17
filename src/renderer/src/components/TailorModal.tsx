@@ -49,7 +49,7 @@ export function TailorModal({ resume, offer, onClose }: { resume: Resume; offer:
   const finish = (asCopy: boolean) => {
     if (!preview) return
     if (asCopy) {
-      const title = `CV — ${offer.title || 'offre'}${offer.company ? ' · ' + offer.company : ''}`
+      const title = `CV · ${offer.title || 'offre'}${offer.company ? ' · ' + offer.company : ''}`
       const created = s.createResume({ from: { ...preview, title, offerId: offer.id } })
       s.log('tailor', `CV adapté : ${title}`)
       s.go({ name: 'editor', id: created.id })
@@ -172,7 +172,7 @@ export function TailorModal({ resume, offer, onClose }: { resume: Resume; offer:
             if (!orig) return null
             const on = parts.exp[e.id] ?? true
             return (
-              <Block key={e.id} title={`${orig.role} — ${orig.company}`} on={on} onToggle={() => setParts({ ...parts, exp: { ...parts.exp, [e.id]: !on } })}>
+              <Block key={e.id} title={`${orig.role} · ${orig.company}`} on={on} onToggle={() => setParts({ ...parts, exp: { ...parts.exp, [e.id]: !on } })}>
                 <div className="diff">
                   <div className="before">
                     <ul>

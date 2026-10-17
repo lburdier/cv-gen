@@ -151,15 +151,15 @@ function OfferDetail({ offer }: { offer: Offer }) {
       <div className="kv">
         <div>
           <span>niveau</span>
-          <strong>{a.seniority || '—'}</strong>
+          <strong>{a.seniority || '-'}</strong>
         </div>
         <div>
           <span>contrat</span>
-          <strong>{a.contract || '—'}</strong>
+          <strong>{a.contract || '-'}</strong>
         </div>
         <div>
           <span>lieu</span>
-          <strong>{a.location || '—'}</strong>
+          <strong>{a.location || '-'}</strong>
         </div>
         <div>
           <span>analyse</span>

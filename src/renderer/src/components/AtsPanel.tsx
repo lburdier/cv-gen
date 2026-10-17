@@ -62,7 +62,7 @@ export function AtsPanel({
               <div className="bar">
                 <i style={{ width: `${v ?? 0}%`, background: v == null ? 'transparent' : scoreColor(v) }} />
               </div>
-              <b>{v == null ? '—' : v}</b>
+              <b>{v == null ? '-' : v}</b>
             </div>
           )
         })}
@@ -80,11 +80,11 @@ export function AtsPanel({
           value={resume.offerId ?? ''}
           onChange={(e) => s.updateResume(resume.id, (r) => void (r.offerId = e.target.value || undefined))}
         >
-          <option value="">Aucune — score général</option>
+          <option value="">Aucune (score général)</option>
           {s.data.offers.map((o) => (
             <option key={o.id} value={o.id}>
               {o.title || 'Offre sans titre'}
-              {o.company ? ` — ${o.company}` : ''}
+              {o.company ? ` · ${o.company}` : ''}
             </option>
           ))}
         </select>
@@ -114,7 +114,7 @@ export function AtsPanel({
           </div>
           {report.match.missing.length > 0 && (
             <>
-              <div className="label">Manquants — cliquez pour ajouter si vous les maîtrisez</div>
+              <div className="label">Manquants : cliquez pour ajouter ceux que vous maîtrisez</div>
               <div className="chips" style={{ gap: 6 }}>
                 {report.match.missing.map((k) => (
                   <button key={k.term} className="tag miss" style={{ border: 0, cursor: 'pointer' }} onClick={() => addSkill(k.term)} title="Ajouter à mes compétences">

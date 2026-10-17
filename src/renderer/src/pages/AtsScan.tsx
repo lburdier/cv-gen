@@ -6,6 +6,7 @@ import { ScoreRing } from '../components/ui'
 import { localAnalyze, scoreColor } from '../lib/ats'
 import { scanFromText, scoreExtraction, type PdfCategory } from '../lib/atsPdf'
 import { getTemplate } from '../templates/registry'
+import { actions } from '../lib/actions'
 import { useStore } from '../store'
 
 const CATS: [PdfCategory, string, string][] = [
@@ -82,12 +83,13 @@ export default function AtsScan() {
 
   const importIt = async () => {
     if (!file) return
-    const imported = await s.run('Lecture du CV par l’IA…', () => window.cvgen.ai.importResumeBytes(file.name, file.bytes))
-    if (!imported) return
+    const res = await actions.readCv({ name: file.name, bytes: file.bytes })
+    if (!res) return
+    const imported = res.resume
     const t = getTemplate('atelier')
     const name = `${imported.basics.firstName} ${imported.basics.lastName}`.trim()
     const r = s.createResume({
-      from: { ...imported, title: `CV importé${name ? ' — ' + name : ''}`, templateId: t.id, accent: t.accent, font: t.font, sectionOrder: [...DEFAULT_ORDER], hidden: [] }
+      from: { ...imported, title: `CV importé${name ? ' · ' + name : ''}`, templateId: t.id, accent: t.accent, font: t.font, sectionOrder: [...DEFAULT_ORDER], hidden: [] }
     })
     s.log('import', `CV importé depuis le score ATS : ${r.title}`)
     s.toast({ kind: 'success', title: 'CV importé dans CV GEN', detail: 'Il est maintenant en modèle ATS une colonne : vérifiez chaque section.' })
@@ -120,7 +122,7 @@ export default function AtsScan() {
         >
           {busy ? <Loader2 size={28} className="spin" /> : <FileUp size={28} />}
           <strong>{busy ? 'Lecture du CV…' : 'Déposez votre CV en PDF'}</strong>
-          <span>ou cliquez pour choisir un fichier — PDF ou DOCX, 25 Mo maximum.</span>
+          <span>ou cliquez pour choisir un fichier : PDF ou DOCX, 25 Mo maximum.</span>
           {error && <span className="ats-err">{error}</span>}
         </button>
       ) : (
@@ -162,7 +164,7 @@ export default function AtsScan() {
                   {offers.map((o) => (
                     <option key={o.id} value={o.id}>
                       {o.title || 'Offre'}
-                      {o.company ? ` — ${o.company}` : ''}
+                      {o.company ? ` · ${o.company}` : ''}
                     </option>
                   ))}
                   <option value="paste">Coller le texte d’une offre…</option>

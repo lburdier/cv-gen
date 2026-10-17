@@ -6,6 +6,7 @@ import { GalleryForm } from '../components/VisualForms'
 import { Modal } from '../components/ui'
 import { applyProfileTo, hasProfile, profileAs, profileCompletion, type SyncScope } from '../lib/profile'
 import { blankResume, isEmptyResume } from '../lib/sample'
+import { actions } from '../lib/actions'
 import { useStore } from '../store'
 import { TEMPLATES } from '../templates/registry'
 
@@ -43,9 +44,9 @@ export default function ProfilePage() {
     s.withUndo(`Profil rempli depuis « ${r.title} »`, () => s.setProfile(structuredClone(r)))
   }
   const importCv = async () => {
-    const imported = await s.run('Lecture du CV par l’IA…', () => window.cvgen.ai.importResume())
-    if (!imported) return
-    s.withUndo('Profil rempli depuis le CV importé', () => s.setProfile({ ...blankResume('vitrine'), ...imported }))
+    const res = await actions.readCv()
+    if (!res) return
+    s.withUndo('Profil rempli depuis le CV importé', () => s.setProfile({ ...blankResume('vitrine'), ...res.resume }))
   }
 
   return (

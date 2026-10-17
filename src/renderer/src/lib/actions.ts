@@ -1,4 +1,5 @@
 import { DEFAULT_ORDER } from '../../../shared/format'
+import type { CvImport } from '../../../shared/types'
 import { getPreset } from './presets'
 import { activeProfile, profileAs } from './profile'
 import { useStore } from '../store'
@@ -34,17 +35,40 @@ export const actions = {
     s.toast({ kind: 'success', title: 'CV créé avec votre profil', detail: 'Adaptez le titre et le profil à l’offre visée.' })
   },
 
-  async importResume() {
+  /**
+   * Lit un CV (PDF, Word, texte) : fichier choisi dans l'explorateur ou déjà fourni (glisser-déposer).
+   * Lecture locale, structurée par l'IA si une clé est enregistrée. Null si annulé ou en erreur.
+   */
+  async readCv(file?: { name: string; bytes: Uint8Array }): Promise<CvImport | null> {
     const s = useStore.getState()
-    const imported = await s.run('Lecture du CV par l’IA…', () => window.cvgen.ai.importResume())
-    if (!imported) return
+    const f = file ?? (await s.run('Ouverture du fichier…', () => window.cvgen.cv.pick()))
+    if (!f) return null
+    const label = s.settings.hasApiKey ? 'Lecture du CV, puis structuration par l’IA…' : 'Lecture du CV…'
+    return (await s.run(label, () => window.cvgen.cv.import(f.name, f.bytes))) ?? null
+  },
+
+  /** Importe un CV existant comme nouveau CV (modèle ATS une colonne) et l'ouvre dans l'éditeur. */
+  async importResume(file?: { name: string; bytes: Uint8Array }) {
+    const res = await actions.readCv(file)
+    if (!res) return
+    const s = useStore.getState()
+    const imported = res.resume
     const t = getTemplate('atelier')
     const name = `${imported.basics.firstName} ${imported.basics.lastName}`.trim()
     const r = s.createResume({
-      from: { ...imported, title: `CV importé${name ? ' — ' + name : ''}`, templateId: t.id, accent: t.accent, font: t.font, sectionOrder: [...DEFAULT_ORDER], hidden: [] }
+      from: { ...imported, title: `CV importé${name ? ' · ' + name : ''}`, templateId: t.id, accent: t.accent, font: t.font, sectionOrder: [...DEFAULT_ORDER], hidden: [] }
     })
     s.log('import', `CV importé : ${r.title}`)
-    s.toast({ kind: 'success', title: 'CV importé', detail: 'Vérifiez chaque section : l’IA a structuré votre document.' })
+    const counts = [
+      imported.experiences.length && `${imported.experiences.length} expérience${imported.experiences.length > 1 ? 's' : ''}`,
+      imported.education.length && `${imported.education.length} formation${imported.education.length > 1 ? 's' : ''}`,
+      imported.skills.reduce((n, g) => n + g.items.length, 0) && `${imported.skills.reduce((n, g) => n + g.items.length, 0)} compétences`
+    ].filter(Boolean)
+    s.toast({
+      kind: 'success',
+      title: res.method === 'ai' ? 'CV importé et structuré par l’IA' : 'CV importé',
+      detail: res.note ?? `${counts.join(', ') || 'Contenu repris'}. Relisez chaque rubrique : la mise en forme d’origine peut avoir mélangé certains champs.`
+    })
     s.go({ name: 'editor', id: r.id })
   },
 

@@ -263,7 +263,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
           <strong>{e.degree}</strong>
           <span>
             {[e.school, e.location].filter(Boolean).join(' · ')}
-            {(e.start || e.end) && ` — ${years(e.start, e.end, false, r.lang)}`}
+            {(e.start || e.end) && ` · ${years(e.start, e.end, false, r.lang)}`}
           </span>
           {e.details.trim() && <em>{e.details.trim()}</em>}
         </div>
@@ -763,7 +763,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
       <>
         <header className="mg-mast">
           <div className="mg-meta">
-            <span>Portfolio — CV</span>
+            <span>Portfolio · CV</span>
             <span>N° {new Date().getFullYear()}</span>
             <span>{b.location}</span>
           </div>
@@ -1237,7 +1237,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
       <>
         <header className="vt-hero">
           <div className="vt-id">
-            <span className="vz-kicker">Portfolio — CV</span>
+            <span className="vz-kicker">Portfolio · CV</span>
             <h1 className="vt-name" {...E('field:firstName', 'Modifier le nom')}>
               {b.firstName}
               <br />

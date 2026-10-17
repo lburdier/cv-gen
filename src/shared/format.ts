@@ -75,6 +75,23 @@ export const DEFAULT_ORDER: SectionKey[] = [
 const PRESENT: Record<Lang, string> = { fr: 'Présent', en: 'Present' }
 
 /** AAAA-MM → MM/AAAA, format le plus fiable pour les parseurs ATS. */
+/** Retire les tirets cadratins « — » (l'app n'en affiche aucun) : remplacés par le séparateur donné. */
+export function noDash(s: string, sep = ', '): string {
+  if (!s.includes('—')) return s
+  return s
+    .replace(/^([ \t]*)—[ \t]*/gm, '$1- ') // en début de ligne : puce
+    .replace(/[ \t]*—[ \t]*/g, sep)
+    .trim()
+}
+
+/** Même chose dans toutes les chaînes d'un objet (réponses structurées de l'IA). */
+export function noDashDeep<T>(v: T): T {
+  if (typeof v === 'string') return noDash(v) as T
+  if (Array.isArray(v)) return v.map(noDashDeep) as T
+  if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, noDashDeep(x)])) as T
+  return v
+}
+
 export function formatMonth(value: string): string {
   if (!value) return ''
   const m = /^(\d{4})-(\d{2})/.exec(value)
@@ -152,7 +169,7 @@ export function resumeToText(r: Resume): string {
         break
       case 'experience':
         for (const e of r.experiences) {
-          out.push(`${e.role}${e.company ? ' — ' + e.company : ''}${e.location ? ', ' + e.location : ''}`)
+          out.push(`${e.role}${e.company ? ' · ' + e.company : ''}${e.location ? ', ' + e.location : ''}`)
           const range = formatRange(e.start, e.end, e.current, r.lang)
           if (range) out.push(range)
           for (const b of e.bullets.filter((x) => x.trim())) out.push(`- ${b.trim()}`)
@@ -161,7 +178,7 @@ export function resumeToText(r: Resume): string {
         break
       case 'education':
         for (const e of r.education) {
-          out.push(`${e.degree}${e.school ? ' — ' + e.school : ''}${e.location ? ', ' + e.location : ''}`)
+          out.push(`${e.degree}${e.school ? ' · ' + e.school : ''}${e.location ? ', ' + e.location : ''}`)
           const range = formatRange(e.start, e.end, false, r.lang)
           if (range) out.push(range)
           if (e.details.trim()) out.push(e.details.trim())
@@ -171,10 +188,10 @@ export function resumeToText(r: Resume): string {
         for (const g of r.skills.filter((g) => g.items.length)) out.push(`${g.name ? g.name + ' : ' : ''}${g.items.join(', ')}`)
         break
       case 'projects':
-        for (const p of r.projects) out.push(`${p.name}${p.link ? ' (' + stripProtocol(p.link) + ')' : ''}${p.description ? ' — ' + p.description : ''}`)
+        for (const p of r.projects) out.push(`${p.name}${p.link ? ' (' + stripProtocol(p.link) + ')' : ''}${p.description ? ' : ' + p.description : ''}`)
         break
       case 'certifications':
-        for (const c of r.certifications) out.push([c.name, c.issuer, formatMonth(c.date)].filter(Boolean).join(' — '))
+        for (const c of r.certifications) out.push([c.name, c.issuer, formatMonth(c.date)].filter(Boolean).join(' · '))
         break
       case 'languages':
         out.push(r.languages.map((l) => (l.level ? `${l.name} (${l.level})` : l.name)).join(', '))

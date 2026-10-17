@@ -207,7 +207,7 @@ export default function ColorExplorer({ initialColors, resumeId }: { initialColo
               <>
                 <img src={image.src} alt="" />
                 <div className="stack" style={{ gap: 10 }}>
-                  <div className="mono-label">couleurs trouvées — cliquez pour choisir</div>
+                  <div className="mono-label">couleurs trouvées : cliquez pour choisir</div>
                   <div className="cx-found">
                     {image.colors.map((c) => {
                       const i = colors.indexOf(c)
@@ -232,7 +232,7 @@ export default function ColorExplorer({ initialColors, resumeId }: { initialColo
               <button className="cx-drop" onClick={() => loadImage()}>
                 <ImagePlus size={22} />
                 <strong>Déposez un logo, une charte ou une photo</strong>
-                <span>ou cliquez pour choisir un fichier — les couleurs dominantes sont extraites automatiquement.</span>
+                <span>ou cliquez pour choisir un fichier : les couleurs dominantes sont extraites automatiquement.</span>
               </button>
             )}
           </div>
@@ -316,7 +316,7 @@ function ApplyModal({ tpl, preview, base, mine, onClose }: { tpl: TemplateDef; p
     s.go({ name: 'editor', id: r.id })
   }
   const create = () => {
-    const r = s.createResume({ templateId: tpl.id, from: { ...preview, title: base ? `${base.title} — ${tpl.name}` : preview.title } })
+    const r = s.createResume({ templateId: tpl.id, from: { ...preview, title: base ? `${base.title} · ${tpl.name}` : preview.title } })
     onClose()
     s.go({ name: 'editor', id: r.id })
   }

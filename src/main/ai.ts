@@ -3,9 +3,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod'
 import * as z from 'zod/v4'
-import { readFileSync } from 'fs'
-import { extname } from 'path'
-import { resumeToText } from '../shared/format'
+import { noDash, noDashDeep, resumeToText } from '../shared/format'
 import { DEFAULT_DESIGN, normalizeDesign } from '../shared/design'
 import type {
   BulletVariants,
@@ -15,6 +13,7 @@ import type {
   ChatTurn,
   ImportedResume,
   Lang,
+  LetterOptions,
   ModelId,
   Offer,
   OfferAnalysis,
@@ -98,7 +97,7 @@ async function structured<S extends z.ZodType>(opts: {
       const out = await orJson<unknown>(or.key, or.model, schema, [{ role: 'system', content: opts.system }, { role: 'user', content: toOr(opts.content) }], opts.maxTokens ?? 16000)
       const parsed = opts.schema.safeParse(out)
       if (!parsed.success) throw new AiError("La réponse du modèle gratuit n'a pas pu être interprétée. Réessayez ou choisissez un autre modèle.")
-      return parsed.data as z.infer<S>
+      return noDashDeep(parsed.data) as z.infer<S>
     }
     const res = await client().beta.messages.parse({
       ...common(model, opts.effort),
@@ -109,17 +108,17 @@ async function structured<S extends z.ZodType>(opts: {
     })
     checkStop(res.stop_reason)
     if (res.parsed_output == null) throw new AiError("La réponse de l'IA n'a pas pu être interprétée. Réessayez.")
-    return res.parsed_output as z.infer<S>
+    return noDashDeep(res.parsed_output) as z.infer<S>
   } catch (e) {
     friendly(e)
   }
 }
 
-async function text(opts: { system: string; messages: { role: 'user' | 'assistant'; content: string }[]; effort: Effort; maxTokens?: number }): Promise<string> {
+async function text(opts: { system: string; messages: { role: 'user' | 'assistant'; content: string }[]; effort: Effort; maxTokens?: number; timeoutMs?: number }): Promise<string> {
   const { model } = getSettings()
   try {
     const or = openRouter()
-    if (or) return await orText(or.key, or.model, [{ role: 'system', content: opts.system }, ...opts.messages], opts.maxTokens ?? 16000)
+    if (or) return noDash(await orText(or.key, or.model, [{ role: 'system', content: opts.system }, ...opts.messages], opts.maxTokens ?? 16000, opts.timeoutMs))
     const res = await client().beta.messages.create({
       ...common(model, opts.effort),
       max_tokens: opts.maxTokens ?? 16000,
@@ -127,10 +126,12 @@ async function text(opts: { system: string; messages: { role: 'user' | 'assistan
       messages: opts.messages
     })
     checkStop(res.stop_reason)
-    return res.content
-      .map((b) => (b.type === 'text' ? b.text : ''))
-      .join('')
-      .trim()
+    return noDash(
+      res.content
+        .map((b) => (b.type === 'text' ? b.text : ''))
+        .join('')
+        .trim()
+    )
   } catch (e) {
     friendly(e)
   }
@@ -266,15 +267,66 @@ Réponds uniquement par le paragraphe, sans guillemets ni titre. Langue : ${resu
   })
 }
 
-export async function coverLetter(resume: Resume, offer: Offer | undefined, tone: string, lang: Lang): Promise<string> {
+const LETTER_RULES = `Règles d'écriture :
+- Pas de formules creuses : « je me permets », « dynamique et motivé », « force de proposition », « vif intérêt », « n'hésitez pas », « nouveaux défis ».
+- Des faits plutôt que des adjectifs : chaque qualité est prouvée par une réalisation précise du CV (chiffres compris).
+- Varie les débuts de phrase : pas plus d'une phrase sur trois ne commence par « Je ».
+- N'utilise jamais le tiret cadratin (—) : virgules, deux-points ou phrases courtes.
+- Si le genre de la personne n'est pas évident, choisis des tournures neutres (« Avec 5 ans d'expérience » plutôt que « Fort de »).
+- Texte brut, sans Markdown, sans objet ni en-tête (ils sont ajoutés par l'application).`
+
+const ANGLES: Record<LetterOptions['angle'], string> = {
+  poste: "Angle : l'adéquation avec le poste. Relie les attentes principales de l'offre aux réalisations du CV.",
+  entreprise: "Angle : l'entreprise. Ouvre sur ce qui attire la personne chez elle (uniquement à partir de sa motivation fournie), puis montre ce qu'elle apporte.",
+  reconversion: "Angle : reconversion. Explique le lien entre le parcours précédent et le nouveau métier, valorise les compétences transférables et les formations suivies.",
+  alternance: "Angle : stage ou alternance. Mets en avant la formation en cours, le rythme si connu, la capacité d'apprentissage et les premières expériences.",
+  spontanee: "Angle : candidature spontanée. Propose une valeur concrète à l'entreprise sans faire référence à une offre."
+}
+
+export async function coverLetter(resume: Resume, offer: Offer | undefined, o: LetterOptions): Promise<string> {
+  const [min, max] = o.length === 'courte' ? [150, 230] : o.length === 'detaillee' ? [380, 480] : [250, 360]
+  const highlights = o.highlights.length ? resume.experiences.filter((e) => o.highlights.includes(e.id)) : []
+  const en = o.lang === 'en'
   return text({
     effort: 'medium',
-    system: `Tu rédiges une lettre de motivation concise (250 à 380 mots), structurée en 4 paragraphes : accroche liée à l'entreprise,
-apport concret (2 réalisations tirées du CV), adéquation avec le poste, conclusion avec appel à l'échange.
-Ton : ${tone}. ${HONESTY}
-Commence directement par la formule d'appel (ex. « Madame, Monsieur, ») et termine par une formule de politesse puis le nom.
-Texte brut, sans Markdown. Langue : ${lang === 'en' ? 'anglais' : 'français'}.`,
-    messages: [{ role: 'user', content: `${offer ? 'Offre :\n' + offer.text + '\n\n' : 'Candidature spontanée.\n\n'}CV :\n${resumeToText(resume)}` }]
+    // Lettre complète : les modèles gratuits peuvent mettre plus d'une minute.
+    timeoutMs: 60_000,
+    maxTokens: 6000,
+    system: `Tu rédiges une lettre de motivation de ${min} à ${max} mots, en ${o.length === 'courte' ? '3' : '4'} paragraphes : accroche précise, apport concret (réalisations tirées du CV), adéquation avec le poste et l'entreprise, conclusion qui propose un échange.
+${ANGLES[o.angle]}
+Ton : ${o.tone}.
+${HONESTY}
+La motivation pour l'entreprise ne vient QUE du texte « Motivation » fourni par la personne ; s'il est vide, n'invente aucune raison personnelle (valeurs, produits aimés, anecdotes) : appuie-toi sur l'offre.
+${LETTER_RULES}
+Commence directement par la formule d'appel (${en ? '« Dear Hiring Manager, »' : '« Madame, Monsieur, »'}), seule sur sa ligne, puis une ligne vide. Sépare les paragraphes par une ligne vide. Termine par une formule de politesse, puis le prénom et le nom sur une ligne à part.
+Langue : ${en ? 'anglais' : 'français'}.`,
+    messages: [
+      {
+        role: 'user',
+        content: [
+          offer ? `Offre :\n${offer.text}` : 'Candidature spontanée (pas d’offre).',
+          `Motivation (mots de la personne) :\n${o.motivation.trim() || '(non renseignée)'}`,
+          highlights.length ? `Expériences à mettre en avant :\n${highlights.map((e) => `- ${e.role} chez ${e.company}`).join('\n')}` : '',
+          `CV :\n${resumeToText(resume)}`
+        ]
+          .filter(Boolean)
+          .join('\n\n')
+      }
+    ]
+  })
+}
+
+/** Retouche d'une lettre existante selon une consigne, sans ajouter de faits absents du CV. */
+export async function reviseLetter(body: string, instruction: string, resume: Resume, offer?: Offer, lang: Lang = 'fr'): Promise<string> {
+  return text({
+    effort: 'low',
+    timeoutMs: 60_000,
+    maxTokens: 6000,
+    system: `Tu retouches une lettre de motivation selon une consigne. Garde la structure (formule d'appel, paragraphes, formule de politesse, signature) sauf si la consigne demande autre chose.
+${HONESTY}
+${LETTER_RULES}
+Renvoie uniquement la lettre retouchée, complète. Langue : ${lang === 'en' ? 'anglais' : 'français'}.`,
+    messages: [{ role: 'user', content: `Consigne : ${instruction}\n\nLettre :\n${body}\n\n${offer ? 'Offre :\n' + offer.text + '\n\n' : ''}CV (seule source de faits) :\n${resumeToText(resume)}` }]
   })
 }
 
@@ -297,7 +349,7 @@ ${ctx ? '\n' + ctx : ''}`
     if (or) {
       // Réponse de chat : 4 000 jetons suffisent et restent compatibles avec les petits modèles gratuits.
       const r = await orReply(or.key, or.model, [{ role: 'system', content: system }, ...turns], 4000)
-      return { text: r.text, model: modelLabel(r.model) }
+      return { text: noDash(r.text), model: modelLabel(r.model) }
     }
   } catch (e) {
     friendly(e)
@@ -343,21 +395,18 @@ const ImportSchema = z.object({
 
 const uid = () => Math.random().toString(36).slice(2, 10)
 
-export async function importResumeFile(file: string): Promise<ImportedResume> {
-  const ext = extname(file).toLowerCase()
-  let content: Anthropic.Beta.BetaContentBlockParam[]
-  if (ext === '.pdf') {
-    content = [
-      { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: readFileSync(file).toString('base64') } },
-      { type: 'text', text: 'Extrais ce CV.' }
-    ]
-  } else if (ext === '.docx') {
-    const mammoth = await import('mammoth')
-    const { value } = await mammoth.extractRawText({ path: file })
-    content = [{ type: 'text', text: `CV :\n\n${value}` }]
-  } else {
-    content = [{ type: 'text', text: `CV :\n\n${readFileSync(file, 'utf8')}` }]
-  }
+/**
+ * Structure un CV avec l'IA. Claude lit le PDF lui-même (mise en page comprise) ; les autres
+ * fournisseurs reçoivent le texte déjà extrait localement, plus fiable que leur lecture de PDF.
+ */
+export async function importResumeAi(source: { pdf?: Buffer; text: string }): Promise<ImportedResume> {
+  const usePdf = source.pdf && getSettings().provider !== 'openrouter'
+  const content: Anthropic.Beta.BetaContentBlockParam[] = usePdf
+    ? [
+        { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: source.pdf!.toString('base64') } },
+        { type: 'text', text: 'Extrais ce CV.' }
+      ]
+    : [{ type: 'text', text: `CV (texte extrait du document, dans l'ordre de lecture) :\n\n${source.text}` }]
   const out = await structured({
     schema: ImportSchema,
     effort: 'low',

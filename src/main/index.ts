@@ -1,13 +1,14 @@
 import { app, BrowserWindow, dialog, ipcMain, nativeTheme, shell } from 'electron'
-import { join } from 'path'
-import type { AiProvider, AppData, DesignSpec, ChatTurn, CoverLetter, ExportFormat, Lang, Offer, Resume, Settings } from '../shared/types'
+import { basename, join } from 'path'
+import type { AiProvider, AppData, DesignSpec, ChatTurn, CoverLetter, ExportFormat, Lang, LetterOptions, Offer, Resume, Settings } from '../shared/types'
 import * as ai from './ai'
 import { exportLetter, exportResume, getPrintJob, markReady } from './export'
 import { listFreeModels } from './openrouter'
 import { extractPdf } from './pdfText'
 import { getStockImage, searchStock } from './stock'
+import { importCv } from './importCv'
 import { initUpdater } from './updater'
-import { rmSync, writeFileSync } from 'fs'
+import { readFileSync, statSync } from 'fs'
 import { dataDir, getSettings, listBackups, loadData, logError, readBackup, saveData, setApiKey, setSettings } from './storage'
 
 const LIGHT_BG = '#FFFFFF'
@@ -126,7 +127,8 @@ function registerIpc() {
   handle('ai:tailor', (r: Resume, o: Offer) => ai.tailor(r, o))
   handle('ai:improveBullet', (b: string, c: string, l: Lang) => ai.improveBullet(b, c, l))
   handle('ai:writeSummary', (r: Resume, o?: Offer) => ai.writeSummary(r, o))
-  handle('ai:coverLetter', (r: Resume, o: Offer | undefined, tone: string, l: Lang) => ai.coverLetter(r, o, tone, l))
+  handle('ai:coverLetter', (r: Resume, o: Offer | undefined, opts: LetterOptions) => ai.coverLetter(r, o, opts))
+  handle('ai:reviseLetter', (body: string, instruction: string, r: Resume, o?: Offer, l?: Lang) => ai.reviseLetter(body, instruction, r, o, l))
   handle('ai:chat', (h: ChatTurn[], r?: Resume, o?: Offer) => ai.chat(h, r, o))
   handle('ai:analyzeCvImage', (dataUrl: string, withContent: boolean, hint?: DesignSpec) => ai.analyzeCvImage(dataUrl, withContent, hint))
   handle('stock:search', (q: string, page?: number, orientation?: 'wide' | 'any') => searchStock(q, page, orientation))
@@ -136,26 +138,19 @@ function registerIpc() {
     const mammoth = await import('mammoth')
     return (await mammoth.extractRawText({ buffer: Buffer.from(bytes) })).value
   })
-  handle('ai:importBytes', async (name: string, bytes: Uint8Array) => {
-    // Fichier déposé dans l'app : copie temporaire puis lecture par l'IA comme un import classique.
-    const ext = (/\.(pdf|docx|txt|md)$/i.exec(name)?.[0] ?? '.pdf').toLowerCase()
-    const tmp = join(app.getPath('temp'), `cvgen-import-${Date.now()}${ext}`)
-    writeFileSync(tmp, Buffer.from(bytes))
-    try {
-      return await ai.importResumeFile(tmp)
-    } finally {
-      rmSync(tmp, { force: true })
-    }
-  })
-  handle('ai:import', async () => {
+  // Import d'un CV : choix du fichier, puis lecture locale (et IA si une clé est enregistrée).
+  handle('cv:pick', async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog(main!, {
       title: 'Importer un CV existant',
       properties: ['openFile'],
-      filters: [{ name: 'CV', extensions: ['pdf', 'docx', 'txt', 'md'] }]
+      filters: [{ name: 'CV (PDF, Word, texte)', extensions: ['pdf', 'docx', 'txt', 'md'] }]
     })
     if (canceled || !filePaths[0]) return null
-    return ai.importResumeFile(filePaths[0])
+    const file = filePaths[0]
+    if (statSync(file).size > 25 * 1024 * 1024) throw new Error('Fichier trop lourd (25 Mo maximum).')
+    return { name: basename(file), bytes: new Uint8Array(readFileSync(file)) }
   })
+  handle('cv:import', (name: string, bytes: Uint8Array, mode?: 'auto' | 'local') => importCv(name, bytes, mode))
 }
 
 app.setAppUserModelId('app.cvgen.desktop')

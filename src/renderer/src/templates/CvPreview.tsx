@@ -30,7 +30,7 @@ export function CvPreview({ resume, editable = false }: { resume: Resume; editab
       <EditableContext.Provider value={editable}>
       <div className={empty ? 'cv-ghost' : undefined}>
         <Cv resume={shown} />
-        {empty && <div className="ghost-label">Exemple — remplissez le formulaire, votre contenu remplacera ce texte</div>}
+        {empty && <div className="ghost-label">Exemple : remplissez le formulaire, votre contenu remplacera ce texte</div>}
       </div>
       </EditableContext.Provider>
     </PreviewContext.Provider>

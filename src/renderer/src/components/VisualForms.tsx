@@ -303,7 +303,7 @@ export function GalleryForm({ r, up }: { r: Resume; up: Up }) {
             <input
               className="input"
               value={g.caption}
-              placeholder="Légende (ex. DeLorean — lookdev)"
+              placeholder="Légende (ex. DeLorean, lookdev)"
               onChange={(e) => up((x) => void (x.gallery![i].caption = e.target.value))}
             />
             <div className="row" style={{ justifyContent: 'space-between' }}>

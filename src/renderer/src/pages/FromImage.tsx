@@ -79,7 +79,7 @@ export default function FromImage() {
           mark('ai', 'done', notes.slice(0, 3).join(' · '))
           if (read) mark('txt', text ? 'done' : 'error', text ? `${text.experiences.length} expériences, ${text.education.length} formations, ${text.skills.reduce((n, g) => n + g.items.length, 0)} compétences` : 'Texte non lu')
         } catch (e) {
-          mark('ai', 'error', (e as Error).message + ' — design de l’analyse locale conservé')
+          mark('ai', 'error', (e as Error).message + ' (design de l’analyse locale conservé)')
           if (read) mark('txt', 'error', 'Non lu')
         }
       }
@@ -109,17 +109,17 @@ export default function FromImage() {
         ...sample,
         ...c,
         basics: { ...c.basics, photo: result.photo },
-        title: `CV recréé${c.basics.firstName ? ' — ' + `${c.basics.firstName} ${c.basics.lastName}`.trim() : ''}`,
+        title: `CV recréé${c.basics.firstName ? ' · ' + `${c.basics.firstName} ${c.basics.lastName}`.trim() : ''}`,
         links: [],
         gallery: [],
         sectionOrder: [...DEFAULT_ORDER],
         hidden: []
       }
     } else if (content === 'profile' && s.data.profile) {
-      base = { ...s.data.profile, title: 'CV recréé — mon profil' }
+      base = { ...s.data.profile, title: 'CV recréé · mon profil' }
     } else if (content !== 'read' && content !== 'sample') {
       const r = mine.find((x) => x.id === content)
-      if (r) base = { ...r, title: `${r.title} — Sur mesure` }
+      if (r) base = { ...r, title: `${r.title} · Sur mesure` }
     }
     return { ...base, templateId: 'sur-mesure', design: result.design, accent: result.design.colors.primary, accent2: result.design.colors.secondary }
   }, [result, content, mine, s.data.profile])
@@ -149,7 +149,7 @@ export default function FromImage() {
           <span>Contenu du CV généré</span>
           <select className="select" value={content} onChange={(e) => setContent(e.target.value)}>
             <option value="read" disabled={!hasAi}>
-              Lire le texte de l’image (IA){hasAi ? '' : ' — clé API requise'}
+              Lire le texte de l’image (IA){hasAi ? '' : ' (clé API requise)'}
             </option>
             {mine.map((r) => (
               <option key={r.id} value={r.id}>
@@ -187,7 +187,7 @@ export default function FromImage() {
         >
           <ImagePlus size={28} />
           <strong>Déposez l’image d’un CV</strong>
-          <span>PNG, JPEG ou WebP — capture d’écran, photo, export Canva ou Behance. Plus l’image est nette, plus le résultat est fidèle.</span>
+          <span>PNG, JPEG ou WebP : capture d’écran, photo, export Canva ou Behance. Plus l’image est nette, plus le résultat est fidèle.</span>
         </button>
       ) : (
         <div className="fi-grid">

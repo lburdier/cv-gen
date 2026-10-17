@@ -201,12 +201,15 @@ export const TOURS: Tour[] = [
     name: 'Lettres de motivation',
     summary: 'Rédiger une lettre à partir d’un CV et d’une offre',
     steps: [
-      { title: 'Les lettres de motivation', body: 'Choisissez un CV et une offre : l’IA rédige une lettre personnalisée, que vous pouvez ensuite retoucher.' },
-      { sel: '.page-head .btn', text: 'Nouvelle lettre', title: 'Nouvelle lettre', body: 'Repart d’une lettre vierge, rédigée par l’IA ou par vous.' },
+      { title: 'Les lettres de motivation', body: 'Choisissez un CV et une offre : CV GEN prépare une lettre fondée sur votre parcours réel, que vous personnalisez ensuite.' },
+      { sel: '.page-head .btn', text: 'Nouvelle lettre', title: 'Nouvelle lettre', body: 'Repart de zéro pour une autre candidature.' },
       { sel: '.offer-list', title: 'Vos lettres', body: 'Toutes vos lettres, rangées par offre.', optional: true },
-      { sel: '.letter-opts', title: 'Les réglages', body: 'Le CV source, l’offre visée, le ton et la longueur.', optional: true },
-      { sel: '.panel .btn-accent', title: 'Rédiger', body: 'Nécessite une clé IA (Anthropic, ou OpenRouter avec des modèles gratuits), à saisir dans les Paramètres.', optional: true },
-      { sel: '.letter-paper', title: 'La lettre', body: 'Modifiable directement, puis exportable en PDF ou Word.', optional: true }
+      { sel: '.letter-opts', title: 'CV, offre, ton et langue', body: 'Le CV source et l’offre visée déterminent le contenu ; le ton et la langue, le style.', optional: true },
+      { sel: '.lt-row', title: 'Angle et longueur', body: 'Poste, entreprise, reconversion, stage ou alternance, candidature spontanée ; lettre courte, standard ou détaillée.', optional: true },
+      { sel: '.lt-motivation', title: 'Votre motivation', body: 'En une ou deux phrases, avec vos mots. C’est la seule source de motivation utilisée : rien n’est inventé.', optional: true },
+      { sel: '.panel .btn-outline', text: 'Brouillon guidé', title: 'Brouillon guidé ou IA', body: 'Le brouillon guidé fonctionne sans IA à partir de vos réalisations et des mots-clés de l’offre. Avec une clé, l’IA rédige une lettre complète.', optional: true },
+      { sel: '.letter-paper', title: 'La lettre', body: 'Destinataire, lieu et date, objet et texte se modifient directement, puis s’exportent en PDF, Word ou texte.', optional: true },
+      { sel: '.lt-side', title: 'Vérification et retouches', body: 'Longueur, entreprise et mots-clés cités, formules creuses ; puis raccourcir, rendre plus percutant ou corriger en un clic.', optional: true }
     ]
   },
   {
