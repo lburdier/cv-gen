@@ -6,6 +6,7 @@ import { exportLetter, exportResume, getPrintJob, markReady } from './export'
 import { listFreeModels } from './openrouter'
 import { extractPdf } from './pdfText'
 import { getStockImage, searchStock } from './stock'
+import { initUpdater } from './updater'
 import { rmSync, writeFileSync } from 'fs'
 import { dataDir, getSettings, listBackups, loadData, logError, readBackup, saveData, setApiKey, setSettings } from './storage'
 
@@ -184,6 +185,7 @@ process.on('unhandledRejection', (e) => logError('main', String((e as Error)?.st
 app.whenReady().then(() => {
   if (!gotLock) return
   registerIpc()
+  initUpdater()
   createWindow()
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

@@ -242,6 +242,15 @@ export type ImportedResume = Omit<
 export interface ChatTurn {
   role: 'user' | 'assistant'
   content: string
+  /** Modèle qui a produit la réponse (affiché sous le message). */
+  model?: string
+  /** Message d'erreur affiché dans la conversation, jamais renvoyé au modèle. */
+  error?: boolean
+}
+
+export interface ChatReply {
+  text: string
+  model?: string
 }
 
 export type ExportFormat = 'pdf' | 'docx' | 'txt'
@@ -353,6 +362,19 @@ export interface StockPage {
   total: number
 }
 
+/** État des mises à jour automatiques (releases GitHub). */
+export interface UpdateStatus {
+  state: 'disabled' | 'idle' | 'checking' | 'none' | 'available' | 'downloading' | 'downloaded' | 'error'
+  current: string
+  /** Version portable : pas d'installation automatique, seulement un lien de téléchargement. */
+  portable: boolean
+  version?: string
+  percent?: number
+  notes?: string
+  error?: string
+  checkedAt?: number
+}
+
 export interface CvGenApi {
   /** Tests automatisés : pas d'animation d'ouverture ni de tutoriel automatique. */
   quiet?: boolean
@@ -383,6 +405,13 @@ export interface CvGenApi {
   printReady(token: string): void
   openDataFolder(): Promise<void>
   openExternal(url: string): Promise<void>
+  updates: {
+    status(): Promise<UpdateStatus>
+    check(): Promise<UpdateStatus>
+    /** Redémarre et installe (version installée) ou ouvre la page de téléchargement (portable). */
+    install(): Promise<boolean>
+    onStatus(cb: (s: UpdateStatus) => void): () => void
+  }
   ai: {
     analyzeOffer(text: string): Promise<OfferAnalysis>
     tailor(resume: Resume, offer: Offer): Promise<TailorResult>
@@ -392,6 +421,6 @@ export interface CvGenApi {
     importResume(): Promise<ImportedResume | null>
     importResumeBytes(name: string, bytes: Uint8Array): Promise<ImportedResume>
     analyzeCvImage(dataUrl: string, withContent: boolean, hint?: DesignSpec): Promise<CvImageAnalysis>
-    chat(history: ChatTurn[], resume?: Resume, offer?: Offer): Promise<string>
+    chat(history: ChatTurn[], resume?: Resume, offer?: Offer): Promise<ChatReply>
   }
 }

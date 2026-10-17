@@ -16,13 +16,18 @@ win:
       arch: [x64]
     - target: portable
       arch: [x64]
-  artifactName: ${productName}-${version}-${arch}.${ext}
+  artifactName: CV-GEN-${version}-${arch}.${ext}
 portable:
-  artifactName: ${productName}-${version}-portable.${ext}
+  artifactName: CV-GEN-${version}-portable.${ext}
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   shortcutName: CV GEN
-  artifactName: ${productName}-Setup-${version}.${ext}
+  artifactName: CV-GEN-Setup-${version}.${ext}
 npmRebuild: false
+publish:
+  provider: github
+  owner: lburdier
+  repo: cv-gen
+  releaseType: release

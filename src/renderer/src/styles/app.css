@@ -4834,3 +4834,41 @@ ul.clean li {
     animation: none;
   }
 }
+
+/* ---------- Assistant : modèle, erreurs, attente ---------- */
+.chat-model {
+  height: 32px;
+  min-width: 0;
+  max-width: 230px;
+  flex: 1;
+  font-size: 12.5px;
+  padding: 0 28px 0 10px;
+}
+.msg-model {
+  margin-top: 6px;
+  font: 500 10px var(--mono, monospace);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+}
+.msg.err {
+  border: 1px solid color-mix(in srgb, var(--danger, #d33) 35%, transparent);
+}
+.chat-retry {
+  align-self: flex-start;
+}
+.chat-hint {
+  font-size: 12px;
+  margin: 0;
+  max-width: 85%;
+}
+.chat-key {
+  display: block;
+  margin-top: 8px;
+  font-size: 12.5px;
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}

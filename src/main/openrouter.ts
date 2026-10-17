@@ -4,7 +4,17 @@ import type { FreeModel } from '../shared/types'
 
 const BASE = 'https://openrouter.ai/api/v1'
 
-export class OpenRouterError extends Error {}
+export class OpenRouterError extends Error {
+  /** Erreur passagère propre au modèle (quota, panne, délai) : un autre modèle gratuit peut répondre. */
+  constructor(message: string, readonly retryable = false) {
+    super(message)
+  }
+}
+
+/** Routeur d'OpenRouter : choisit à chaque requête un modèle gratuit disponible. */
+export const FREE_ROUTER = 'openrouter/free'
+/** Au-delà, un modèle gratuit en file d'attente est abandonné au profit d'un autre. */
+const TIMEOUT_MS = 75_000
 
 type Part =
   | { type: 'text'; text: string }
@@ -45,36 +55,80 @@ function explain(status: number, message: string): string {
   return `Erreur OpenRouter (${status}) : ${message}`
 }
 
-async function post(key: string, body: unknown): Promise<{ text: string; finish?: string }> {
+async function post(key: string, body: unknown, timeoutMs = TIMEOUT_MS): Promise<{ text: string; finish?: string; model?: string }> {
   let res: Response
+  let raw: string
   try {
-    res = await fetch(`${BASE}/chat/completions`, { method: 'POST', headers: headers(key), body: JSON.stringify(body) })
-  } catch {
+    res = await fetch(`${BASE}/chat/completions`, { method: 'POST', headers: headers(key), body: JSON.stringify(body), signal: AbortSignal.timeout(timeoutMs) })
+    raw = await res.text()
+  } catch (e) {
+    if (e instanceof Error && (e.name === 'TimeoutError' || e.name === 'AbortError'))
+      throw new OpenRouterError(`Le modèle gratuit n’a pas répondu en ${Math.round(timeoutMs / 1000)} s (file d’attente chargée). Réessayez ou choisissez un autre modèle.`, true)
     throw new OpenRouterError('Impossible de joindre OpenRouter. Vérifiez votre connexion Internet.')
   }
-  const raw = await res.text()
   let json: {
+    model?: string
     error?: { message?: string; code?: number }
     choices?: { message?: { content?: string | null }; finish_reason?: string; error?: { message?: string } }[]
   } = {}
   try {
     json = JSON.parse(raw)
   } catch {
-    if (!res.ok) throw new OpenRouterError(explain(res.status, raw.slice(0, 200)))
+    if (!res.ok) throw new OpenRouterError(explain(res.status, raw.slice(0, 200)), retryableStatus(res.status))
   }
-  if (!res.ok || json.error) throw new OpenRouterError(explain(json.error?.code ?? res.status, json.error?.message ?? res.statusText))
+  if (!res.ok || json.error) {
+    const status = json.error?.code ?? res.status
+    const message = json.error?.message ?? res.statusText
+    // Modèle retiré ou inconnu (« not a valid model ID », « No endpoints found ») : un autre modèle peut répondre.
+    throw new OpenRouterError(explain(status, message), retryableStatus(status) || /valid model|no endpoints|not found|unavailable/i.test(message))
+  }
+  // Le routeur gratuit choisit parfois un classifieur de modération : sa sortie (« User Safety: safe ») n'est pas une réponse.
+  if (json.model && /safety|guard/i.test(json.model)) throw new OpenRouterError('Le routeur a choisi un modèle de modération au lieu d’un modèle de conversation. Réessayez.', true)
   const choice = json.choices?.[0]
-  if (choice?.error) throw new OpenRouterError(explain(502, choice.error.message ?? 'réponse en erreur'))
+  if (choice?.error) throw new OpenRouterError(explain(502, choice.error.message ?? 'réponse en erreur'), true)
   const text = (choice?.message?.content ?? '').trim()
-  if (!text) throw new OpenRouterError('Le modèle gratuit a renvoyé une réponse vide. Réessayez ou choisissez un autre modèle.')
-  return { text, finish: choice?.finish_reason }
+  if (!text) throw new OpenRouterError('Le modèle gratuit a renvoyé une réponse vide. Réessayez ou choisissez un autre modèle.', true)
+  return { text, finish: choice?.finish_reason, model: json.model }
+}
+
+const retryableStatus = (status: number) => status === 404 || status === 408 || status === 429 || status >= 500
+
+/**
+ * Exécute la requête avec le modèle choisi ; s'il est saturé, indisponible, trop lent ou hors sujet,
+ * réessaie avec le routeur gratuit, qui prend un autre modèle disponible (deux essais au plus).
+ */
+async function withFallback<T>(model: string, run: (model: string) => Promise<T>): Promise<T> {
+  const attempts = model === FREE_ROUTER ? [model, FREE_ROUTER] : [model, FREE_ROUTER, FREE_ROUTER]
+  let last: unknown
+  for (const m of attempts) {
+    try {
+      return await run(m)
+    } catch (e) {
+      if (!(e instanceof OpenRouterError) || !e.retryable) throw e
+      last = e
+    }
+  }
+  throw last
+}
+
+/** Nom lisible d'un identifiant de modèle (« meta-llama/llama-3.3-70b-instruct:free » → « llama-3.3-70b-instruct »). */
+export function modelLabel(id?: string): string | undefined {
+  if (!id) return undefined
+  return id.replace(/^[^/]+\//, '').replace(/:free$/, '')
 }
 
 export async function orText(key: string, model: string, messages: OrMessage[], maxTokens: number): Promise<string> {
-  const { text, finish } = await post(key, { model, messages, max_tokens: maxTokens, plugins: pdfPlugin(messages) })
-  if (finish === 'length') throw new OpenRouterError('La réponse a été tronquée (contenu trop long). Réessayez avec un texte plus court.')
-  // Certains modèles de raisonnement laissent leurs balises de réflexion dans la réponse.
-  return text.replace(/<think>[\s\S]*?<\/think>/g, '').trim()
+  return (await orReply(key, model, messages, maxTokens)).text
+}
+
+/** Réponse texte et modèle qui l'a réellement produite (le routeur gratuit en choisit un à chaque requête). */
+export async function orReply(key: string, model: string, messages: OrMessage[], maxTokens: number): Promise<{ text: string; model: string }> {
+  return withFallback(model, async (m) => {
+    const { text, finish, model: used } = await post(key, { model: m, messages, max_tokens: maxTokens, plugins: pdfPlugin(messages) })
+    if (finish === 'length') throw new OpenRouterError('La réponse a été tronquée (contenu trop long). Réessayez avec un texte plus court.')
+    // Certains modèles de raisonnement laissent leurs balises de réflexion dans la réponse.
+    return { text: text.replace(/<think>[\s\S]*?<\/think>/g, '').trim(), model: used ?? m }
+  })
 }
 
 /**
@@ -88,15 +142,18 @@ export async function orJson<T>(key: string, model: string, schema: JsonSchema, 
     content: `Réponds UNIQUEMENT par un objet JSON valide (sans Markdown ni texte autour) conforme à ce schéma JSON :\n${JSON.stringify(schema)}`
   }
   const all = [...messages, instruction]
-  const base = { model, messages: all, max_tokens: maxTokens, plugins: pdfPlugin(messages) }
-  let text: string
-  try {
-    ;({ text } = await post(key, { ...base, response_format: { type: 'json_schema', json_schema: { name: 'reponse', strict: true, schema } } }))
-  } catch (e) {
-    // Modèle sans sorties structurées : on réessaie avec la seule consigne.
-    if (!(e instanceof OpenRouterError) || !/\(400\)|\(404\)|response_format|structured|json_schema/i.test(e.message)) throw e
-    ;({ text } = await post(key, base))
-  }
+  // Import et analyses : réponses longues, délai plus large.
+  const text = await withFallback(model, async (m) => {
+    const base = { model: m, messages: all, max_tokens: maxTokens, plugins: pdfPlugin(messages) }
+    try {
+      return (await post(key, { ...base, response_format: { type: 'json_schema', json_schema: { name: 'reponse', strict: true, schema } } }, 150_000)).text
+    } catch (e) {
+      // Modèle sans sorties structurées (« No endpoints found that can handle the requested parameters ») :
+      // on réessaie avec la seule consigne.
+      if (!(e instanceof OpenRouterError) || !/\(400\)|indisponible|requested parameters|response_format|structured|json_schema/i.test(e.message)) throw e
+      return (await post(key, base, 150_000)).text
+    }
+  })
   const value = extractJson(text)
   if (value === undefined) throw new OpenRouterError("La réponse du modèle gratuit n'est pas un JSON valide. Réessayez ou choisissez un autre modèle.")
   return fill(schema, value) as T

@@ -11,6 +11,7 @@ import type {
   BulletVariants,
   CvImageAnalysis,
   DesignSpec,
+  ChatReply,
   ChatTurn,
   ImportedResume,
   Lang,
@@ -21,7 +22,7 @@ import type {
   Resume,
   TailorResult
 } from '../shared/types'
-import { OpenRouterError, orCheckKey, orJson, orText, type OrMessage } from './openrouter'
+import { OpenRouterError, modelLabel, orCheckKey, orJson, orReply, orText, type OrMessage } from './openrouter'
 import { getApiKey, getSettings } from './storage'
 
 export class AiError extends Error {}
@@ -277,17 +278,32 @@ Texte brut, sans Markdown. Langue : ${lang === 'en' ? 'anglais' : 'français'}.`
   })
 }
 
-export async function chat(history: ChatTurn[], resume?: Resume, offer?: Offer): Promise<string> {
+const CLAUDE_NAMES: Record<string, string> = { 'claude-opus-5-5': 'Claude Opus 5.5', 'claude-sonnet-5-5': 'Claude Sonnet 5.5', 'claude-haiku-5-5': 'Claude Haiku 5.5' }
+
+export async function chat(history: ChatTurn[], resume?: Resume, offer?: Offer): Promise<ChatReply> {
   const ctx = [resume ? `CV actuel :\n${resumeToText(resume)}` : '', offer ? `Offre ciblée :\n${offer.text}` : ''].filter(Boolean).join('\n\n')
-  return text({
-    effort: 'medium',
-    system: `Tu es l'assistant de CV GEN, une application de création de CV compatibles ATS.
+  const system = `Tu es l'assistant de CV GEN, une application de création de CV compatibles ATS.
 Tu aides à améliorer un CV, à préparer une candidature et à comprendre le fonctionnement des ATS.
 Réponses courtes, concrètes et actionnables, en français sauf demande contraire. Markdown léger autorisé (listes, gras).
 ${HONESTY}
-${ctx ? '\n' + ctx : ''}`,
-    messages: history.map((t) => ({ role: t.role, content: t.content }))
-  })
+${ctx ? '\n' + ctx : ''}`
+  // Les messages d'erreur affichés dans la conversation ne sont pas renvoyés au modèle ;
+  // la conversation doit commencer par un message de l'utilisateur.
+  const turns = history.filter((t) => !t.error && !t.content.startsWith('⚠️')).map((t) => ({ role: t.role, content: t.content }))
+  while (turns.length && turns[0].role !== 'user') turns.shift()
+  if (!turns.length) throw new AiError('Écrivez une question pour l’assistant.')
+  try {
+    const or = openRouter()
+    if (or) {
+      // Réponse de chat : 4 000 jetons suffisent et restent compatibles avec les petits modèles gratuits.
+      const r = await orReply(or.key, or.model, [{ role: 'system', content: system }, ...turns], 4000)
+      return { text: r.text, model: modelLabel(r.model) }
+    }
+  } catch (e) {
+    friendly(e)
+  }
+  const { model } = getSettings()
+  return { text: await text({ effort: 'medium', system, messages: turns, maxTokens: 8000 }), model: CLAUDE_NAMES[model] ?? model }
 }
 
 // ---------- Import d'un CV existant ----------
