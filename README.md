@@ -2,10 +2,13 @@
 
 Application Windows pour créer des CV lisibles par les ATS et les adapter à chaque offre avec Claude ou des modèles gratuits via OpenRouter.
 
+**[⬇ Télécharger pour Windows](https://github.com/lburdier/cv-gen/releases/latest)** · **[Guide d’installation](INSTALLATION.md)**
+
 ## Fonctionnalités
 
 - **DA** inspirée de bradleyziffer.com et gabrielvaldivia.com : titres immenses en Inter Display, mots d'emphase en serif italique (Crimson Pro), beaucoup d'air, liens discrets, pilules détourées, grandes cartes arrondies et tableaux à filets fins. Noir et blanc, thème clair par défaut et sombre au choix. Palette de commandes `Ctrl K`, assistant IA `Ctrl J`, nouveau CV `Ctrl N`.
-- **14 modèles** avec images d'aperçu : 4 visuels façon portfolio (Vitrine, Studio, Folio, Colonne : bandeau, photo, cartes, tuiles d'outils, galerie de rendus) et 10 modèles ATS une colonne (Essentiel, Éditorial, Rail, Mono, Atelier, Galerie, Direction, Classique, Compact, Brut ATS). Sélecteur visuel dans l'éditeur, couleur et police personnalisables.
+- **28 modèles** avec images d’aperçu : 12 visuels façon portfolio (Vitrine, Studio, Folio, Colonne, Sur mesure, Pop, Calque, Manifeste, Affiche, Magazine, Brutal…) et 16 modèles ATS une colonne. Couleurs (48 teintes, couleur secondaire), police et densité personnalisables, explorateur par couleurs.
+- **Profil** saisi une seule fois et repris par tous les modèles, **éditeur toile** façon Canva avec garde-fous ATS, **CV recréé depuis une image**, **score ATS de n’importe quel PDF**, banques d’icônes de logiciels et d’images libres de droits, tutoriels intégrés.
 - **Éditeur en direct** : formulaire par sections, aperçu A4 avec repères de sauts de page, réorganisation et masquage des sections, intitulés FR/EN.
 - **Score ATS local** (hors ligne) : format, contenu (verbes d'action, résultats chiffrés, longueur…) et couverture des mots-clés de l'offre, plus une « Vue ATS » du texte extrait.
 - **Presets complets** : 17 CV d'exemple réalistes par métier (tech, business, création, santé, droit et finance, étudiant), chacun avec son modèle, créables en un clic depuis la page Modèles ou la palette (Ctrl K).
@@ -16,7 +19,7 @@ Application Windows pour créer des CV lisibles par les ATS et les adapter à ch
 
 Modèles ATS et « version ATS » des modèles visuels : une seule colonne, ordre du DOM = ordre de lecture, vrais titres et listes, aucune information dans une image ou une icône, coordonnées dans le corps du document, dates MM/AAAA, séparateurs textuels entre compétences.
 
-## Lancer l'app
+## Lancer l'app depuis le code
 
 Double-cliquez sur `lancer.bat` : il installe les dépendances au premier lancement, compile puis ouvre l'app. `lancer.bat dev` lance le mode développement avec rechargement à chaud.
 
