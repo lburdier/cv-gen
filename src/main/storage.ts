@@ -148,8 +148,9 @@ function readSettings(): StoredSettings {
 
 export function getSettings(): Settings {
   const s = readSettings()
-  const hasClaudeKey = Boolean(s.apiKeyEnc || s.apiKeyPlain || process.env.ANTHROPIC_API_KEY)
-  const hasOpenRouterKey = Boolean(s.orKeyEnc || s.orKeyPlain || process.env.OPENROUTER_API_KEY)
+  // Une clé chiffrée illisible (profil Windows changé, fichier copié) compte comme absente.
+  const hasClaudeKey = Boolean(getApiKey('anthropic'))
+  const hasOpenRouterKey = Boolean(getApiKey('openrouter'))
   return {
     provider: s.provider,
     model: s.model,

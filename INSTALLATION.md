@@ -14,8 +14,8 @@ Dans la partie **Assets**, cliquez sur l’un des deux fichiers :
 
 | Fichier | Pour qui |
 | --- | --- |
-| **`CV-GEN-Setup-1.0.0.exe`** (recommandé) | Installe l’app avec un raccourci sur le Bureau et dans le menu Démarrer. |
-| `CV-GEN-1.0.0-portable.exe` | Aucune installation : l’app se lance directement, depuis une clé USB par exemple. Le démarrage est un peu plus lent. |
+| **`CV-GEN-Setup-x.y.z.exe`** (recommandé) | Installe l’app avec un raccourci sur le Bureau et dans le menu Démarrer, et se met à jour toute seule. |
+| `CV-GEN-x.y.z-portable.exe` | Aucune installation : l’app se lance directement, depuis une clé USB par exemple. Le démarrage est un peu plus lent. |
 
 Le fichier pèse environ 120 Mo. Si le navigateur affiche « Ce fichier n’est pas couramment téléchargé », ouvrez le menu **…** du téléchargement et choisissez **Conserver**.
 
@@ -72,7 +72,11 @@ Une sauvegarde automatique est créée à chaque lancement (les 15 plus récente
 
 ## 7. Mettre à jour
 
-Téléchargez la nouvelle version sur la même page (étape 1) et installez-la par-dessus. Vos CV sont conservés.
+**Version installée (Setup) : rien à faire.** Depuis la version 1.1.0, CV GEN vérifie les nouvelles versions au démarrage puis toutes les 6 heures. Il les télécharge en arrière-plan et les installe quand vous fermez l’app. Une notification propose aussi **Redémarrer** pour installer tout de suite. L’état est affiché dans **Paramètres › Mises à jour**. Vos CV sont conservés.
+
+> Vous avez installé la **1.0.0** ? Elle n’a pas encore ce système. Installez une fois la dernière version depuis la page de l’étape 1, par-dessus l’ancienne. Les mises à jour suivantes seront automatiques.
+
+**Version portable :** l’app signale qu’une nouvelle version est disponible et ouvre la page de téléchargement. Remplacez simplement l’ancien fichier.
 
 ## 8. Désinstaller
 

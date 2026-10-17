@@ -32,6 +32,16 @@ const api: CvGenApi = {
   printReady: (token) => ipcRenderer.send('print:ready', token),
   openDataFolder: call('shell:dataFolder'),
   openExternal: call('shell:external'),
+  updates: {
+    status: call('update:status'),
+    check: call('update:check'),
+    install: call('update:install'),
+    onStatus: (cb) => {
+      const h = (_e: unknown, s: Parameters<typeof cb>[0]) => cb(s)
+      ipcRenderer.on('update:status', h)
+      return () => ipcRenderer.removeListener('update:status', h)
+    }
+  },
   ai: {
     analyzeOffer: call('ai:analyzeOffer'),
     tailor: call('ai:tailor'),

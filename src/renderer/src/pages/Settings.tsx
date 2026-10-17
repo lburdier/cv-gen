@@ -1,5 +1,6 @@
 import { Check, FolderOpen, History, Info, KeyRound, Loader2, RefreshCw, ShieldCheck } from 'lucide-react'
 import { ToursSettings } from '../components/ToursSettings'
+import { UpdatesSettings } from '../components/Updates'
 import { useEffect, useState } from 'react'
 import type { FreeModel, ModelId, Settings } from '../../../shared/types'
 import { useStore } from '../store'
@@ -265,6 +266,14 @@ export default function SettingsPage() {
           <p className="desc">Copies horodatées créées au lancement (les 15 plus récentes). Restaurer est annulable.</p>
         </div>
         <Backups />
+      </div>
+
+      <div className="settings-grid" data-tour="updates">
+        <div>
+          <h3>Mises à jour</h3>
+          <p className="desc">Les nouvelles versions publiées sur GitHub se téléchargent en arrière-plan et s’installent à la fermeture de l’app.</p>
+        </div>
+        <UpdatesSettings />
       </div>
 
       <div className="settings-grid" data-tour="tours">

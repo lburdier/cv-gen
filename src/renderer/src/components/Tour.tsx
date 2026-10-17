@@ -64,6 +64,9 @@ export function launchTour(id: TourId): boolean {
     }
   }
   useTour.getState().stop()
+  // Marqué comme vu avant d'ouvrir la page : le tutoriel automatique de la première visite ne se lance pas en double.
+  markTourSeen(id)
+  clearTimeout(pending)
   s.go(route)
   if (id === 'canvas' || id === 'editor') window.dispatchEvent(new CustomEvent('cvgen:editor-mode', { detail: id === 'canvas' ? 'canvas' : 'form' }))
   // Attend que la page (chargée à la demande) soit affichée.

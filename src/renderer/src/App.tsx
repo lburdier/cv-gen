@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect, useState, useCallback } from 'react'
 import { IntroSplash } from './components/Intro'
 import { TourHost } from './components/Tour'
+import { UpdateNotifier } from './components/Updates'
 import { actions } from './lib/actions'
 import { Assistant } from './components/Assistant'
 import { CommandPalette } from './components/CommandPalette'
@@ -122,6 +123,7 @@ export default function App() {
       <ErrorBoundary resetKey={String(paletteOpen)}>{paletteOpen && <CommandPalette />}</ErrorBoundary>
       <ErrorBoundary resetKey={String(assistantOpen)}>{assistantOpen && <Assistant />}</ErrorBoundary>
       <Toasts />
+      <UpdateNotifier />
       <ErrorBoundary resetKey="tour">
         <TourHost />
       </ErrorBoundary>
