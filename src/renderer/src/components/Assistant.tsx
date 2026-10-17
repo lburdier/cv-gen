@@ -191,7 +191,7 @@ export function Assistant() {
           </div>
         )}
         {loading && elapsed >= 20 && (
-          <p className="muted chat-hint">Les modèles gratuits peuvent être en file d’attente. Après 75 s, l’app essaie automatiquement un autre modèle gratuit.</p>
+          <p className="muted chat-hint">Les modèles gratuits peuvent être en file d’attente. Si l’un ne répond pas, l’app passe automatiquement à un autre modèle gratuit.</p>
         )}
         <div ref={endRef} />
       </div>

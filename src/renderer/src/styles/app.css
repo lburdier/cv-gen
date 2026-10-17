@@ -4872,3 +4872,168 @@ ul.clean li {
   cursor: pointer;
   text-align: left;
 }
+
+/* ---------- Import d'un CV par glisser-déposer ---------- */
+.cv-drop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+  animation: fade 0.15s;
+}
+.cv-drop-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min(560px, 100%);
+  padding: 56px 32px;
+  text-align: center;
+  border: 2px dashed var(--text);
+  border-radius: 24px;
+  background: var(--bg);
+}
+.cv-drop-card strong {
+  font: 500 26px/1.15 var(--display, inherit);
+  letter-spacing: -0.02em;
+}
+.cv-drop-card span {
+  color: var(--text-2);
+  font-size: 14px;
+}
+
+/* ---------- Lettres : réglages, en-tête, vérification ---------- */
+.lt-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+  margin-top: 14px;
+}
+.lt-row .field {
+  min-width: 0;
+}
+.lt-motivation {
+  margin-top: 14px;
+}
+.lt-motivation textarea {
+  resize: vertical;
+}
+.lt-work {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 1250px) {
+  .lt-work {
+    grid-template-columns: 1fr;
+  }
+}
+.lt-from {
+  display: flex;
+  flex-direction: column;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #555;
+  margin-bottom: 18px;
+}
+.lt-from strong {
+  font-size: 17px;
+  color: #111;
+}
+.lt-to,
+.lt-when input,
+.lt-subject input {
+  border: 1px dashed transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 2px 6px;
+  outline: none;
+}
+.lt-to:hover,
+.lt-when input:hover,
+.lt-subject input:hover,
+.lt-to:focus,
+.lt-when input:focus,
+.lt-subject input:focus {
+  border-color: #c9c9c9;
+}
+.lt-to {
+  display: block;
+  width: 50%;
+  margin: 0 0 16px auto;
+  resize: none;
+  line-height: 1.5;
+  text-align: left;
+}
+.lt-when {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+  font-size: 13px;
+}
+.lt-when input {
+  width: 130px;
+}
+.lt-when .muted {
+  min-width: 0;
+}
+.lt-subject {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 22px;
+}
+.lt-subject input {
+  flex: 1;
+  font-weight: 600;
+}
+.lt-side {
+  position: sticky;
+  top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface, var(--bg));
+}
+.lt-score {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.lt-score .big {
+  font: 400 40px/1 var(--display, inherit);
+  letter-spacing: -0.04em;
+}
+.lt-score div {
+  display: flex;
+  flex-direction: column;
+}
+.lt-side .checks {
+  gap: 8px;
+}
+.lt-side .check-item p {
+  margin: 1px 0 0;
+  font-size: 12px;
+  color: var(--text-3);
+}
+.lt-revise .chips {
+  margin-top: 8px;
+}
+.lt-revise small {
+  display: block;
+  margin-top: 6px;
+  font-size: 11.5px;
+}

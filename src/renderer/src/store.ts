@@ -1,3 +1,4 @@
+import { noDash } from '../../shared/format'
 import { create } from 'zustand'
 import type { ActivityItem, AppData, ChatTurn, CoverLetter, Offer, Resume, Settings } from '../../shared/types'
 import { blankResume, normalizeResume, sampleResume, uid } from './lib/sample'
@@ -132,7 +133,12 @@ export const useStore = create<State>((set, get) => {
         if (!window.cvgen) throw new Error('Le pont avec Windows (preload) n’a pas été chargé.')
         const [data, settings] = await Promise.all([window.cvgen.loadData(), window.cvgen.getSettings()])
         set({
-          data: { ...data, resumes: data.resumes.map(normalizeResume), ...(data.profile ? { profile: normalizeResume(data.profile) } : {}) },
+          data: {
+            ...data,
+            resumes: data.resumes.map(normalizeResume),
+            letters: data.letters.map((l) => ({ ...l, title: noDash(l.title, ' · ') })),
+            ...(data.profile ? { profile: normalizeResume(data.profile) } : {})
+          },
           settings,
           loaded: true,
           initError: null
@@ -289,7 +295,8 @@ export const useStore = create<State>((set, get) => {
       try {
         return await fn()
       } catch (e) {
-        const msg = (e as Error).message
+        // Message d'erreur sans le préfixe technique d'Electron (« Error invoking remote method … »).
+        const msg = (e as Error).message.replace(/^Error invoking remote method '[^']+': (\w*Error: )?/, '')
         get().toast({
           kind: 'error',
           title: 'Action impossible',

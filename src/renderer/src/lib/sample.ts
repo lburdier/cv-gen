@@ -1,4 +1,4 @@
-import { DEFAULT_ORDER } from '../../../shared/format'
+import { DEFAULT_ORDER, noDash } from '../../../shared/format'
 import type { Resume } from '../../../shared/types'
 import { getTemplate, isVisual } from '../templates/registry'
 import { getPreset, presetForTemplate } from './presets'
@@ -42,7 +42,8 @@ export function blankResume(templateId = 'atelier'): Resume {
 /** Complète un CV enregistré avant l'ajout de nouveaux champs ou sections. */
 export function normalizeResume(r: Resume): Resume {
   const order = [...r.sectionOrder, ...DEFAULT_ORDER.filter((k) => !r.sectionOrder.includes(k))]
-  return { ...r, links: r.links ?? [], gallery: r.gallery ?? [], sectionOrder: order }
+  // Titres créés par les anciennes versions (« CV — Data Analyst ») : sans tiret cadratin.
+  return { ...r, title: noDash(r.title, ' · '), links: r.links ?? [], gallery: r.gallery ?? [], sectionOrder: order }
 }
 
 /** Profil créatif pour les aperçus des modèles visuels (photo, bandeau et rendus Unsplash). */
@@ -50,7 +51,7 @@ export function creativeSample(templateId = 'vitrine'): Resume {
   const r = blankResume(templateId)
   return {
     ...r,
-    title: 'CV — Artiste 3D',
+    title: 'CV · Artiste 3D',
     basics: {
       firstName: 'Inès',
       lastName: 'Moreau',
@@ -86,7 +87,7 @@ export function creativeSample(templateId = 'vitrine'): Resume {
       },
       {
         id: uid(),
-        role: 'Artiste 3D — Court-métrage « Perspective »',
+        role: 'Artiste 3D, Court-métrage « Perspective »',
         company: 'Court-métrage indépendant',
         location: 'Bénévolat',
         start: '2023-03',
@@ -107,7 +108,7 @@ export function creativeSample(templateId = 'vitrine'): Resume {
     ],
     education: [
       { id: uid(), degree: 'Bachelor Animation 3D & Jeux vidéo', school: 'Campus Créa', location: 'Lyon', start: '2025-09', end: '', details: 'En cours' },
-      { id: uid(), degree: 'BTS SIO — option SLAM', school: 'Lycée Les Catalins', location: 'Valence', start: '2023-09', end: '2025-06', details: '' }
+      { id: uid(), degree: 'BTS SIO, option SLAM', school: 'Lycée Les Catalins', location: 'Valence', start: '2023-09', end: '2025-06', details: '' }
     ],
     skills: [
       { id: uid(), name: 'Logiciels', items: ['Blender', 'Substance Painter', 'Unreal Engine', 'DaVinci Resolve', 'Photoshop', 'Plasticity'], display: 'tiles' },
@@ -115,9 +116,9 @@ export function creativeSample(templateId = 'vitrine'): Resume {
       { id: uid(), name: 'Soft skills', items: ['Curiosité', 'Autonomie', 'Rigueur', 'Esprit d’équipe'], display: 'chips' }
     ],
     gallery: [
-      { id: uid(), image: render1, caption: 'Pendule de Newton — lookdev' },
-      { id: uid(), image: render2, caption: 'Fluide chromé — simulation' },
-      { id: uid(), image: render3, caption: 'Molécules — shading' }
+      { id: uid(), image: render1, caption: 'Pendule de Newton, lookdev' },
+      { id: uid(), image: render2, caption: 'Fluide chromé, simulation' },
+      { id: uid(), image: render3, caption: 'Molécules, shading' }
     ],
     languages: [
       { id: uid(), name: 'Français', level: 'natif' },
@@ -130,7 +131,7 @@ export function creativeSample(templateId = 'vitrine'): Resume {
 /** CV complet d'un preset métier (contenu réaliste, modèle et couleur associés). */
 export function presetResume(presetId: string): Resume {
   const p = getPreset(presetId)
-  if (!p?.build) return { ...creativeSample(p?.templateId ?? 'studio'), title: 'CV — Artiste 3D' }
+  if (!p?.build) return { ...creativeSample(p?.templateId ?? 'studio'), title: 'CV · Artiste 3D' }
   const r = blankResume(p.templateId)
   const c = p.build()
   return {
@@ -151,7 +152,7 @@ export function sampleResume(templateId = 'atelier'): Resume {
   return { ...presetResume(p.id), templateId: t.id, accent: t.accent, font: t.font }
 }
 
-export const SAMPLE_OFFER = `Développeur·se Full-Stack React / Node.js (H/F) — CDI — Lyon (hybride)
+export const SAMPLE_OFFER = `Développeur·se Full-Stack React / Node.js (H/F), CDI, Lyon (hybride)
 
 Rejoignez notre équipe produit de 25 personnes pour construire la nouvelle génération de notre plateforme SaaS B2B.
 

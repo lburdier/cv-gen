@@ -39,7 +39,7 @@ export default function Templates() {
   const mine = [...s.data.resumes].sort((a, b) => b.updatedAt - a.updatedAt).find((r) => !isEmptyResume(r))
   const fromMine = (t: TemplateDef) => {
     if (!mine) return
-    const c = s.duplicateResume(mine.id, { title: `${mine.title} — ${t.name}`, templateId: t.id, accent: t.accent, font: t.font })
+    const c = s.duplicateResume(mine.id, { title: `${mine.title} · ${t.name}`, templateId: t.id, accent: t.accent, font: t.font })
     setOpen(null)
     if (c) s.go({ name: 'editor', id: c.id })
   }
@@ -262,7 +262,7 @@ function PresetModal({ preset: p, onClose }: { preset: PresetDef; onClose: () =>
   const r = profile ?? presetResume(p.id)
   const skills = r.skills.reduce((n, g) => n + g.items.length, 0)
   const facts = [
-    [profile ? 'Contenu' : 'Personne fictive', profile ? `Votre profil — ${r.basics.firstName} ${r.basics.lastName}` : `${r.basics.firstName} ${r.basics.lastName}`],
+    [profile ? 'Contenu' : 'Personne fictive', profile ? `Votre profil · ${r.basics.firstName} ${r.basics.lastName}` : `${r.basics.firstName} ${r.basics.lastName}`],
     ['Poste visé', r.basics.headline],
     ['Expériences', `${r.experiences.length} postes, ${r.experiences.reduce((n, e) => n + e.bullets.length, 0)} réalisations`],
     ['Formation', `${r.education.length} diplôme${r.education.length > 1 ? 's' : ''}`],
@@ -286,7 +286,7 @@ function PresetModal({ preset: p, onClose }: { preset: PresetDef; onClose: () =>
               Avec l’exemple
             </button>
           )}
-          <button className="btn btn-ink" onClick={() => (onClose(), profile ? actions.newFromProfile(p.templateId, `CV — ${p.name}`) : actions.newFromPreset(p.id))}>
+          <button className="btn btn-ink" onClick={() => (onClose(), profile ? actions.newFromProfile(p.templateId, `CV · ${p.name}`) : actions.newFromPreset(p.id))}>
             <Sparkles size={15} /> {profile ? 'Créer avec mon profil' : 'Créer ce CV'}
           </button>
         </>

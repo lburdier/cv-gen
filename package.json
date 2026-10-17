@@ -1,7 +1,7 @@
 {
   "name": "cv-gen",
   "productName": "CV GEN",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Générateur de CV 100 % compatibles ATS, avec matching IA sur les offres d'emploi.",
   "author": "CV GEN",
   "main": "./out/main/index.js",

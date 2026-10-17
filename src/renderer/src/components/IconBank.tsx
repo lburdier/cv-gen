@@ -96,7 +96,7 @@ export function IconBankModal({
           {list.map((s) => {
             const on = sel.has(norm(s.name))
             return (
-              <button key={s.id} className={`ib-cell ${on ? 'on' : ''}`} onClick={() => (mode === 'add' ? onToggle?.(s) : onPick?.(s))} title={logoSource(s) ? `${s.name} — logo officiel (${logoSource(s) === 'simple-icons' ? 'Simple Icons' : 'Devicon'})` : `${s.name} — icône aux couleurs de la marque`}>
+              <button key={s.id} className={`ib-cell ${on ? 'on' : ''}`} onClick={() => (mode === 'add' ? onToggle?.(s) : onPick?.(s))} title={logoSource(s) ? `${s.name} · logo officiel (${logoSource(s) === 'simple-icons' ? 'Simple Icons' : 'Devicon'})` : `${s.name} · icône aux couleurs de la marque`}>
                 <img src={iconDataUrl(s, design)} alt="" loading="lazy" />
                 <span>{s.name}</span>
                 {on && (

@@ -34,7 +34,7 @@ export function CommandPalette() {
       { id: 'ats-scan', group: 'actions', label: 'Score ATS d’un CV PDF', icon: <FileText size={17} />, run: () => go({ name: 'ats-scan' }) },
       { id: 'from-image', group: 'actions', label: 'Recréer un CV depuis une image', icon: <FileUp size={17} />, run: () => go({ name: 'from-image' }) },
       { id: 'colors', group: 'actions', label: 'Explorer les modèles par couleurs', icon: <Sparkles size={17} />, run: () => go({ name: 'colors' }) },
-      { id: 'import', group: 'actions', label: 'Importer un CV (PDF, DOCX, TXT) avec l’IA', icon: <FileUp size={17} />, run: () => actions.importResume() },
+      { id: 'import', group: 'actions', label: 'Importer un CV existant (PDF, Word, texte)', icon: <FileUp size={17} />, run: () => actions.importResume() },
       { id: 'offer', group: 'actions', label: 'Analyser une offre d’emploi', icon: <BriefcaseBusiness size={17} />, run: actions.newOffer },
       { id: 'assistant', group: 'actions', label: 'Ouvrir l’assistant IA', hint: 'Ctrl J', icon: <Bot size={17} />, run: () => s.setAssistant(true) },
       { id: 'theme', group: 'actions', label: 'Basculer thème clair / sombre', icon: <Moon size={17} />, run: actions.toggleTheme },

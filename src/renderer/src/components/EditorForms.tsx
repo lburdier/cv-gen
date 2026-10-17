@@ -195,7 +195,7 @@ function BulletImprover({ bullet, context, lang, onPick, onClose }: { bullet: st
             {res.variants.map((v, i) => (
               <button key={i} className="offer-item" style={{ fontSize: 14, gap: 6 }} onClick={() => onPick(v)}>
                 <span className="mono-label">
-                  variante {i + 1} — cliquer pour remplacer
+                  variante {i + 1} : cliquer pour remplacer
                 </span>
                 <span style={{ color: 'var(--text)', fontSize: 14 }}>{v}</span>
               </button>
@@ -297,7 +297,7 @@ export function ExperienceForm({ r, up }: { r: Resume; up: Up }) {
                     </button>
                   </div>
                 </div>
-                {words > 38 && <div className="bullet-hint warn">{words} mots — scindez en deux puces</div>}
+                {words > 38 && <div className="bullet-hint warn">{words} mots : scindez en deux puces</div>}
               </div>
             )
           })}
@@ -440,7 +440,7 @@ export function SkillsForm({ r, up }: { r: Resume; up: Up }) {
           )}
           {visual && (g.display ?? 'list') === 'tiles' && (
             <>
-              <span className="mono-label">Icônes des logiciels — banque d’icônes, ou déposez votre propre image</span>
+              <span className="mono-label">Icônes des logiciels : banque d’icônes, ou déposez votre propre image</span>
               <IconEditor r={r} groupIndex={i} up={up} />
             </>
           )}
@@ -521,7 +521,7 @@ export function ExtrasForm({ r, up }: { r: Resume; up: Up }) {
       ))}
 
       <SectionTitle>Centres d’intérêt</SectionTitle>
-      <input className="input" value={r.interests} placeholder="Facultatif — ce qui vous distingue" onChange={(ev) => up((x) => void (x.interests = ev.target.value))} />
+      <input className="input" value={r.interests} placeholder="Facultatif : ce qui vous distingue" onChange={(ev) => up((x) => void (x.interests = ev.target.value))} />
     </>
   )
 }

@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect, useState, useCallback } from 'react'
 import { IntroSplash } from './components/Intro'
 import { TourHost } from './components/Tour'
 import { UpdateNotifier } from './components/Updates'
+import { CvDropZone } from './components/CvDropZone'
 import { actions } from './lib/actions'
 import { Assistant } from './components/Assistant'
 import { CommandPalette } from './components/CommandPalette'
@@ -124,6 +125,7 @@ export default function App() {
       <ErrorBoundary resetKey={String(assistantOpen)}>{assistantOpen && <Assistant />}</ErrorBoundary>
       <Toasts />
       <UpdateNotifier />
+      <CvDropZone />
       <ErrorBoundary resetKey="tour">
         <TourHost />
       </ErrorBoundary>

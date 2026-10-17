@@ -12,6 +12,7 @@ import {
   TextRun
 } from 'docx'
 import { sectionTitles, atsSections, contactParts, formatMonth, formatRange, fullName, resumeToText, stripProtocol } from '../shared/format'
+import { placeDate } from '../shared/letter'
 import type { CoverLetter, ExportFormat, ExportResult, Resume } from '../shared/types'
 
 // ---------- Tâches d'impression (fenêtre cachée qui rend le CV puis génère le PDF) ----------
@@ -101,7 +102,7 @@ export async function exportLetter(
   if (canceled || !filePath) return { ok: false, canceled: true }
   try {
     if (format === 'pdf') writeFileSync(filePath, await renderPdf({ kind: 'letter', letter, resume }, loadUrl))
-    else if (format === 'txt') writeFileSync(filePath, '﻿' + letter.body, 'utf8')
+    else if (format === 'txt') writeFileSync(filePath, '﻿' + letterText(letter, resume), 'utf8')
     else writeFileSync(filePath, await letterToDocx(letter, resume))
     return { ok: true, path: filePath }
   } catch (e) {
@@ -164,14 +165,14 @@ async function resumeToDocx(r: Resume): Promise<Buffer> {
         break
       case 'experience':
         for (const e of r.experiences) {
-          children.push(line(`${e.role}${e.company ? ' — ' + e.company : ''}`, formatRange(e.start, e.end, e.current, r.lang)))
+          children.push(line(`${e.role}${e.company ? ' · ' + e.company : ''}`, formatRange(e.start, e.end, e.current, r.lang)))
           if (e.location) children.push(new Paragraph({ spacing: { after: 30 }, children: [new TextRun({ text: e.location, italics: true, size: 19, font: FONT, color: '555555' })] }))
           for (const b of e.bullets.filter((x) => x.trim())) children.push(bullet(b.trim()))
         }
         break
       case 'education':
         for (const e of r.education) {
-          children.push(line(`${e.degree}${e.school ? ' — ' + e.school : ''}`, formatRange(e.start, e.end, false, r.lang)))
+          children.push(line(`${e.degree}${e.school ? ' · ' + e.school : ''}`, formatRange(e.start, e.end, false, r.lang)))
           if (e.details.trim()) children.push(body(e.details.trim()))
         }
         break
@@ -195,13 +196,13 @@ async function resumeToDocx(r: Resume): Promise<Buffer> {
               children: [
                 new TextRun({ text: p.name, bold: true, size: 20, font: FONT }),
                 ...(p.link ? [new TextRun({ text: ` (${stripProtocol(p.link)})`, size: 19, font: FONT, color: '555555' })] : []),
-                ...(p.description ? [new TextRun({ text: ` — ${p.description}`, size: 20, font: FONT, color: '222222' })] : [])
+                ...(p.description ? [new TextRun({ text: ` : ${p.description}`, size: 20, font: FONT, color: '222222' })] : [])
               ]
             })
           )
         break
       case 'certifications':
-        for (const c of r.certifications) children.push(body([c.name, c.issuer, formatMonth(c.date)].filter(Boolean).join(' — ')))
+        for (const c of r.certifications) children.push(body([c.name, c.issuer, formatMonth(c.date)].filter(Boolean).join(' · ')))
         break
       case 'languages':
         children.push(body(r.languages.map((l) => (l.level ? `${l.name} (${l.level})` : l.name)).join(', ')))
@@ -217,7 +218,7 @@ async function resumeToDocx(r: Resume): Promise<Buffer> {
 
   const doc = new Document({
     creator: fullName(r),
-    title: `CV — ${fullName(r)}`,
+    title: `CV · ${fullName(r)}`,
     description: r.basics.headline,
     styles: { default: { document: { run: { font: FONT, size: 20 } } } },
     numbering: {
@@ -240,6 +241,22 @@ async function letterToDocx(letter: CoverLetter, resume?: Resume): Promise<Buffe
     const c = contactParts(resume)
     if (c.length) children.push(new Paragraph({ spacing: { after: 320 }, children: [new TextRun({ text: c.join('  |  '), size: 19, font: FONT, color: '555555' })] }))
   }
+  // En-tête : destinataire (moitié droite), lieu et date (à droite), objet (gras).
+  const recipient = letter.recipient?.trim()
+  if (recipient) {
+    const lines = recipient.split('\n')
+    children.push(
+      new Paragraph({
+        indent: { left: 5000 },
+        spacing: { after: 280 },
+        children: lines.map((t, i) => new TextRun({ text: t, size: 22, font: FONT, break: i ? 1 : 0 }))
+      })
+    )
+  }
+  const lang = letter.options?.lang ?? 'fr'
+  if (letter.place || letter.date) children.push(new Paragraph({ alignment: 'right', spacing: { after: 280 }, children: [new TextRun({ text: placeDate(letter.place ?? '', letter.date ?? '', lang), size: 22, font: FONT })] }))
+  if (letter.subject?.trim())
+    children.push(new Paragraph({ spacing: { after: 280 }, children: [new TextRun({ text: `${lang === 'en' ? 'Subject: ' : 'Objet : '}${letter.subject.trim()}`, bold: true, size: 22, font: FONT })] }))
   for (const para of letter.body.split(/\n\s*\n/)) {
     children.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: para.replace(/\n/g, ' ').trim(), size: 22, font: FONT })] }))
   }
@@ -249,4 +266,17 @@ async function letterToDocx(letter: CoverLetter, resume?: Resume): Promise<Buffe
     sections: [{ properties: { page: { margin: { top: 1130, bottom: 1130, left: 1130, right: 1130 } } }, children }]
   })
   return Packer.toBuffer(doc)
+}
+
+/** Lettre complète en texte brut : expéditeur, destinataire, lieu et date, objet, corps. */
+function letterText(letter: CoverLetter, resume?: Resume): string {
+  const lang = letter.options?.lang ?? 'fr'
+  const parts = [
+    resume ? [fullName(resume), ...contactParts(resume)].join('\n') : '',
+    letter.recipient?.trim() ?? '',
+    letter.place || letter.date ? placeDate(letter.place ?? '', letter.date ?? '', lang) : '',
+    letter.subject?.trim() ? `${lang === 'en' ? 'Subject: ' : 'Objet : '}${letter.subject.trim()}` : '',
+    letter.body.trim()
+  ]
+  return parts.filter(Boolean).join('\n\n') + '\n'
 }

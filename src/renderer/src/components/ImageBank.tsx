@@ -109,7 +109,7 @@ export function ImageBankModal({
       const file = new File([blob], `${img.id}.${blob.type.split('/')[1] || 'jpg'}`, { type: blob.type })
       const out = await chooseImage(kind === 'banner' ? 1800 : 1400, file)
       if (out) {
-        onPick(out, [img.title, img.creator && `par ${img.creator}`, `${img.license} via Openverse`].filter(Boolean).join(' — '))
+        onPick(out, [img.title, img.creator && `par ${img.creator}`, `${img.license} via Openverse`].filter(Boolean).join(' · '))
         onClose()
       }
     } catch (e) {
@@ -122,7 +122,7 @@ export function ImageBankModal({
   return (
     <Modal
       size="xl"
-      title={kind === 'banner' ? 'Banque d’images — bandeau' : 'Banque d’images — réalisation'}
+      title={kind === 'banner' ? 'Banque d’images : bandeau' : 'Banque d’images : réalisation'}
       onClose={onClose}
       footer={
         <>
@@ -207,7 +207,7 @@ export function ImageBankModal({
             {error && <div className="callout" style={{ fontSize: 13 }}>{error}</div>}
             <div className={`imb-grid photos ${kind}`}>
               {results.map((img) => (
-                <button key={img.id} className="imb-cell" onClick={() => pickPhoto(img)} disabled={Boolean(fetching)} title={`${img.title} — ${img.creator} (${img.license}, ${img.provider})`}>
+                <button key={img.id} className="imb-cell" onClick={() => pickPhoto(img)} disabled={Boolean(fetching)} title={`${img.title} · ${img.creator} (${img.license}, ${img.provider})`}>
                   <img src={img.thumb} alt={img.title} />
                   <span>
                     {img.creator || img.provider} · {img.license}

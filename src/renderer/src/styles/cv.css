@@ -1130,3 +1130,17 @@
 .tpl-ligne .cv-name {
   padding-right: 1.6em;
 }
+
+/* En-tête de lettre : destinataire, lieu et date à droite, objet en gras. */
+.letter-print .to {
+  margin: 0 0 1.6em 55%;
+  white-space: pre-line;
+}
+.letter-print .when {
+  text-align: right;
+  margin-bottom: 1.6em;
+}
+.letter-print .subject {
+  font-weight: 600;
+  margin-bottom: 1.6em;
+}

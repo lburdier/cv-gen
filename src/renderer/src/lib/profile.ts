@@ -28,7 +28,7 @@ export function profileAs(profile: Resume, templateId: string, opts: { accent?: 
   return {
     ...profile,
     id: `profile:${t.id}`,
-    title: opts.title ?? `CV — ${t.name}`,
+    title: opts.title ?? `CV · ${t.name}`,
     templateId: t.id,
     accent: opts.accent ?? t.accent,
     font: t.font,

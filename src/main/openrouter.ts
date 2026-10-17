@@ -13,8 +13,8 @@ export class OpenRouterError extends Error {
 
 /** Routeur d'OpenRouter : choisit à chaque requête un modèle gratuit disponible. */
 export const FREE_ROUTER = 'openrouter/free'
-/** Au-delà, un modèle gratuit en file d'attente est abandonné au profit d'un autre. */
-const TIMEOUT_MS = 75_000
+/** Silence maximal (réponse en flux) avant d'abandonner un modèle gratuit au profit d'un autre. */
+const TIMEOUT_MS = 45_000
 
 type Part =
   | { type: 'text'; text: string }
@@ -55,40 +55,90 @@ function explain(status: number, message: string): string {
   return `Erreur OpenRouter (${status}) : ${message}`
 }
 
-async function post(key: string, body: unknown, timeoutMs = TIMEOUT_MS): Promise<{ text: string; finish?: string; model?: string }> {
-  let res: Response
-  let raw: string
-  try {
-    res = await fetch(`${BASE}/chat/completions`, { method: 'POST', headers: headers(key), body: JSON.stringify(body), signal: AbortSignal.timeout(timeoutMs) })
-    raw = await res.text()
-  } catch (e) {
-    if (e instanceof Error && (e.name === 'TimeoutError' || e.name === 'AbortError'))
-      throw new OpenRouterError(`Le modèle gratuit n’a pas répondu en ${Math.round(timeoutMs / 1000)} s (file d’attente chargée). Réessayez ou choisissez un autre modèle.`, true)
-    throw new OpenRouterError('Impossible de joindre OpenRouter. Vérifiez votre connexion Internet.')
-  }
-  let json: {
-    model?: string
-    error?: { message?: string; code?: number }
-    choices?: { message?: { content?: string | null }; finish_reason?: string; error?: { message?: string } }[]
-  } = {}
+type ErrorBody = { error?: { message?: string; code?: number } }
+
+function httpError(status: number, raw: string, statusText: string): OpenRouterError {
+  let json: ErrorBody = {}
   try {
     json = JSON.parse(raw)
   } catch {
-    if (!res.ok) throw new OpenRouterError(explain(res.status, raw.slice(0, 200)), retryableStatus(res.status))
+    /* corps non JSON */
   }
-  if (!res.ok || json.error) {
-    const status = json.error?.code ?? res.status
-    const message = json.error?.message ?? res.statusText
-    // Modèle retiré ou inconnu (« not a valid model ID », « No endpoints found ») : un autre modèle peut répondre.
-    throw new OpenRouterError(explain(status, message), retryableStatus(status) || /valid model|no endpoints|not found|unavailable/i.test(message))
+  const code = json.error?.code ?? status
+  const message = json.error?.message ?? (raw.slice(0, 200) || statusText)
+  // Modèle retiré ou inconnu (« not a valid model ID », « No endpoints found ») : un autre modèle peut répondre.
+  return new OpenRouterError(explain(code, message), retryableStatus(code) || /valid model|no endpoints|not found|unavailable/i.test(message))
+}
+
+/**
+ * Requête en flux (SSE) : le délai ne porte que sur le silence du modèle (rien reçu depuis `idleMs`),
+ * pas sur la durée totale. Une longue lettre peut donc s'écrire sans être coupée, tandis qu'un modèle
+ * bloqué en file d'attente est abandonné au profit d'un autre.
+ */
+async function post(key: string, body: Record<string, unknown>, idleMs = TIMEOUT_MS): Promise<{ text: string; finish?: string; model?: string }> {
+  const ctrl = new AbortController()
+  let idle = setTimeout(() => ctrl.abort(), idleMs)
+  const alive = () => {
+    clearTimeout(idle)
+    idle = setTimeout(() => ctrl.abort(), idleMs)
   }
-  // Le routeur gratuit choisit parfois un classifieur de modération : sa sortie (« User Safety: safe ») n'est pas une réponse.
-  if (json.model && /safety|guard/i.test(json.model)) throw new OpenRouterError('Le routeur a choisi un modèle de modération au lieu d’un modèle de conversation. Réessayez.', true)
-  const choice = json.choices?.[0]
-  if (choice?.error) throw new OpenRouterError(explain(502, choice.error.message ?? 'réponse en erreur'), true)
-  const text = (choice?.message?.content ?? '').trim()
+  const cap = setTimeout(() => ctrl.abort(), 6 * 60_000)
+  let text = ''
+  let model: string | undefined
+  let finish: string | undefined
+  try {
+    let res: Response
+    try {
+      res = await fetch(`${BASE}/chat/completions`, { method: 'POST', headers: headers(key), body: JSON.stringify({ ...body, stream: true }), signal: ctrl.signal })
+    } catch (e) {
+      if (e instanceof Error && e.name === 'AbortError') throw e
+      throw new OpenRouterError('Impossible de joindre OpenRouter. Vérifiez votre connexion Internet.')
+    }
+    if (!res.ok || !res.body) throw httpError(res.status, await res.text().catch(() => ''), res.statusText)
+    const reader = res.body.getReader()
+    const decoder = new TextDecoder()
+    let buffer = ''
+    for (;;) {
+      const { value, done } = await reader.read()
+      if (done) break
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop() ?? ''
+      for (const line of lines) {
+        // « : OPENROUTER PROCESSING » : simple signe de vie pendant l'attente, sans contenu.
+        if (!line.startsWith('data:')) continue
+        const data = line.slice(5).trim()
+        if (data === '[DONE]') continue
+        let chunk: ErrorBody & { model?: string; choices?: { delta?: { content?: string | null; reasoning?: string | null }; finish_reason?: string | null; error?: { message?: string } }[] }
+        try {
+          chunk = JSON.parse(data)
+        } catch {
+          continue
+        }
+        if (chunk.error) throw new OpenRouterError(explain(chunk.error.code ?? 502, chunk.error.message ?? 'réponse en erreur'), true)
+        model ??= chunk.model
+        // Le routeur gratuit choisit parfois un classifieur de modération : sa sortie (« User Safety: safe ») n'est pas une réponse.
+        if (model && /safety|guard/i.test(model)) throw new OpenRouterError('Le routeur a choisi un modèle de modération au lieu d’un modèle de conversation. Réessayez.', true)
+        const c = chunk.choices?.[0]
+        if (c?.error) throw new OpenRouterError(explain(502, c.error.message ?? 'réponse en erreur'), true)
+        if (c?.delta?.content) text += c.delta.content
+        if (c?.delta?.content || c?.delta?.reasoning) alive()
+        if (c?.finish_reason) finish = c.finish_reason
+      }
+    }
+  } catch (e) {
+    if (e instanceof Error && e.name === 'AbortError')
+      throw new OpenRouterError(`Le modèle gratuit ne répond plus depuis ${Math.round(idleMs / 1000)} s (file d’attente chargée). Réessayez ou choisissez un autre modèle.`, true)
+    // Connexion coupée en cours de réponse (« terminated », « other side closed ») : un autre essai peut aboutir.
+    if (!(e instanceof OpenRouterError)) throw new OpenRouterError('La connexion avec le modèle gratuit a été coupée pendant la réponse. Réessayez.', true)
+    throw e
+  } finally {
+    clearTimeout(idle)
+    clearTimeout(cap)
+  }
+  text = text.trim()
   if (!text) throw new OpenRouterError('Le modèle gratuit a renvoyé une réponse vide. Réessayez ou choisissez un autre modèle.', true)
-  return { text, finish: choice?.finish_reason, model: json.model }
+  return { text, finish, model }
 }
 
 const retryableStatus = (status: number) => status === 404 || status === 408 || status === 429 || status >= 500
@@ -117,14 +167,14 @@ export function modelLabel(id?: string): string | undefined {
   return id.replace(/^[^/]+\//, '').replace(/:free$/, '')
 }
 
-export async function orText(key: string, model: string, messages: OrMessage[], maxTokens: number): Promise<string> {
-  return (await orReply(key, model, messages, maxTokens)).text
+export async function orText(key: string, model: string, messages: OrMessage[], maxTokens: number, timeoutMs = TIMEOUT_MS): Promise<string> {
+  return (await orReply(key, model, messages, maxTokens, timeoutMs)).text
 }
 
 /** Réponse texte et modèle qui l'a réellement produite (le routeur gratuit en choisit un à chaque requête). */
-export async function orReply(key: string, model: string, messages: OrMessage[], maxTokens: number): Promise<{ text: string; model: string }> {
+export async function orReply(key: string, model: string, messages: OrMessage[], maxTokens: number, timeoutMs = TIMEOUT_MS): Promise<{ text: string; model: string }> {
   return withFallback(model, async (m) => {
-    const { text, finish, model: used } = await post(key, { model: m, messages, max_tokens: maxTokens, plugins: pdfPlugin(messages) })
+    const { text, finish, model: used } = await post(key, { model: m, messages, max_tokens: maxTokens, plugins: pdfPlugin(messages) }, timeoutMs)
     if (finish === 'length') throw new OpenRouterError('La réponse a été tronquée (contenu trop long). Réessayez avec un texte plus court.')
     // Certains modèles de raisonnement laissent leurs balises de réflexion dans la réponse.
     return { text: text.replace(/<think>[\s\S]*?<\/think>/g, '').trim(), model: used ?? m }
@@ -146,12 +196,12 @@ export async function orJson<T>(key: string, model: string, schema: JsonSchema, 
   const text = await withFallback(model, async (m) => {
     const base = { model: m, messages: all, max_tokens: maxTokens, plugins: pdfPlugin(messages) }
     try {
-      return (await post(key, { ...base, response_format: { type: 'json_schema', json_schema: { name: 'reponse', strict: true, schema } } }, 150_000)).text
+      return (await post(key, { ...base, response_format: { type: 'json_schema', json_schema: { name: 'reponse', strict: true, schema } } }, 90_000)).text
     } catch (e) {
       // Modèle sans sorties structurées (« No endpoints found that can handle the requested parameters ») :
       // on réessaie avec la seule consigne.
       if (!(e instanceof OpenRouterError) || !/\(400\)|indisponible|requested parameters|response_format|structured|json_schema/i.test(e.message)) throw e
-      return (await post(key, base, 150_000)).text
+      return (await post(key, base, 90_000)).text
     }
   })
   const value = extractJson(text)

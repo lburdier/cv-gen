@@ -102,7 +102,7 @@ export default function Dashboard() {
             )}
           </p>
         ) : (
-          <p className="lede">Partez de l’exemple, importez un CV existant (PDF, Word) ou commencez sur une page blanche. Chaque modèle se décline en version lisible par les ATS.</p>
+          <p className="lede">Partez de l’exemple, importez un CV existant (PDF ou Word, ou déposez-le ici) ou commencez sur une page blanche. Chaque modèle se décline en version lisible par les ATS.</p>
         )}
         <div className="row wrap" style={{ marginTop: 22 }}>
           {focus ? (
@@ -228,7 +228,7 @@ export default function Dashboard() {
                 <span className="t">
                   <i style={{ width: `${v ?? 0}%` }} />
                 </span>
-                <b>{v ?? '—'}</b>
+                <b>{v ?? '-'}</b>
               </div>
             ))}
           </div>
@@ -238,7 +238,7 @@ export default function Dashboard() {
           {report?.match ? (
             <>
               <p className="home-kw-title">
-                {focusData?.offer?.title} — <em className="serif">{report.match.coverage} % couverts</em>
+                {focusData?.offer?.title} · <em className="serif">{report.match.coverage} % couverts</em>
               </p>
               <div className="chips" style={{ gap: 6 }}>
                 {report.match.found.slice(0, 10).map((k) => (
@@ -298,7 +298,7 @@ export default function Dashboard() {
           </h2>
           <span className="row" style={{ gap: 14 }}>
             <span className="mono-label">
-              {resumes.length} CV · {offers.length} offres · moyenne {resumes.length ? avg : '—'}
+              {resumes.length} CV · {offers.length} offres · moyenne {resumes.length ? avg : '-'}
             </span>
             {activity.length > 0 && (
               <button className="link-muted" onClick={() => s.clearActivity()}>

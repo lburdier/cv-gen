@@ -82,7 +82,7 @@ export const PRESETS: PresetDef[] = [
     templateId: 'signal',
     tagline: 'React, Node.js et cloud AWS : 5 ans d’expérience SaaS, résultats chiffrés.',
     build: () => ({
-      title: 'CV — Développeuse Full-Stack',
+      title: 'CV · Développeuse Full-Stack',
       basics: basics({
         firstName: 'Camille',
         lastName: 'Laurent',
@@ -106,16 +106,16 @@ export const PRESETS: PresetDef[] = [
           'Industrialisé le design system avec l’équipe design (Figma, Storybook).'
         ])
       ],
-      education: [edu('Master Informatique — Ingénierie du logiciel', 'Université Lyon 1', 'Lyon', '2017-09', '2019-06', 'Mention Bien.')],
+      education: [edu('Master Informatique, Ingénierie du logiciel', 'Université Lyon 1', 'Lyon', '2017-09', '2019-06', 'Mention Bien.')],
       skills: [
         sk('Langages', ['TypeScript', 'JavaScript', 'Python', 'SQL']),
         sk('Front-end', ['React', 'Next.js', 'Redux', 'Tailwind CSS', 'Storybook']),
         sk('Back-end & Cloud', ['Node.js', 'Express', 'PostgreSQL', 'AWS', 'Docker', 'GitHub Actions']),
         sk('Méthodes', ['Scrum', 'TDD', 'Code review', 'Accessibilité RGAA'])
       ],
-      projects: [proj('OpenBudget', 'github.com/camillelaurent/openbudget', 'Application open source de suivi budgétaire (React, Supabase) — 1 200 étoiles GitHub.')],
+      projects: [proj('OpenBudget', 'github.com/camillelaurent/openbudget', 'Application open source de suivi budgétaire (React, Supabase), 1 200 étoiles GitHub.')],
       certifications: [cert('AWS Certified Developer – Associate', 'Amazon Web Services', '2023-05')],
-      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'C1 — TOEIC 945')]
+      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'C1, TOEIC 945')]
     })
   },
   {
@@ -125,7 +125,7 @@ export const PRESETS: PresetDef[] = [
     templateId: 'mono',
     tagline: 'SQL, Python et Power BI : tableaux de bord et analyses qui orientent les décisions.',
     build: () => ({
-      title: 'CV — Data Analyst',
+      title: 'CV · Data Analyst',
       basics: basics({
         firstName: 'Yanis',
         lastName: 'Benali',
@@ -171,11 +171,11 @@ export const PRESETS: PresetDef[] = [
     templateId: 'atelier',
     tagline: 'Kubernetes, Terraform et CI/CD : fiabilité, automatisation et coûts cloud maîtrisés.',
     build: () => ({
-      title: 'CV — Ingénieur DevOps',
+      title: 'CV · Ingénieur DevOps',
       basics: basics({
         firstName: 'Maxime',
         lastName: 'Roux',
-        headline: 'Ingénieur DevOps / SRE — Kubernetes · Terraform · AWS',
+        headline: 'Ingénieur DevOps / SRE, Kubernetes · Terraform · AWS',
         location: 'Toulouse, France',
         linkedin: 'linkedin.com/in/maxime-roux',
         github: 'github.com/maximeroux',
@@ -195,7 +195,7 @@ export const PRESETS: PresetDef[] = [
           'Assuré les astreintes de niveau 2 avec un taux de disponibilité de 99,95 %.'
         ])
       ],
-      education: [edu('Diplôme d’ingénieur — Réseaux et télécommunications', 'INSA Toulouse', 'Toulouse', '2014-09', '2019-06')],
+      education: [edu('Diplôme d’ingénieur, Réseaux et télécommunications', 'INSA Toulouse', 'Toulouse', '2014-09', '2019-06')],
       skills: [
         sk('Cloud & conteneurs', ['AWS', 'Kubernetes', 'Docker', 'Helm', 'Argo CD']),
         sk('Infrastructure as Code', ['Terraform', 'Ansible', 'Packer']),
@@ -216,11 +216,11 @@ export const PRESETS: PresetDef[] = [
     templateId: 'rail',
     tagline: 'Discovery, roadmap et delivery agile : produit B2B piloté par la valeur.',
     build: () => ({
-      title: 'CV — Product Owner',
+      title: 'CV · Product Owner',
       basics: basics({
         firstName: 'Sarah',
         lastName: 'Kowalski',
-        headline: 'Product Owner — SaaS B2B',
+        headline: 'Product Owner, SaaS B2B',
         location: 'Paris, France',
         linkedin: 'linkedin.com/in/sarah-kowalski',
         summary:
@@ -257,7 +257,7 @@ export const PRESETS: PresetDef[] = [
     templateId: 'horizon',
     tagline: 'Acquisition, contenus et CRM : campagnes multicanales et ROI mesuré.',
     build: () => ({
-      title: 'CV — Marketing digital',
+      title: 'CV · Marketing digital',
       basics: basics({
         firstName: 'Léa',
         lastName: 'Fontaine',
@@ -287,7 +287,7 @@ export const PRESETS: PresetDef[] = [
         sk('CRM & data', ['Brevo', 'HubSpot', 'GA4', 'Looker Studio', 'Tests A/B']),
         sk('Contenus', ['Stratégie éditoriale', 'Canva', 'Figma', 'Brief créatif'])
       ],
-      certifications: [cert('Google Ads — Search Certification', 'Google', '2024-04')],
+      certifications: [cert('Google Ads, Search Certification', 'Google', '2024-04')],
       languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'C1'), lang('Espagnol', 'B1')],
       interests: 'Photographie argentique, vélo de randonnée, ateliers d’écriture.'
     })
@@ -299,11 +299,11 @@ export const PRESETS: PresetDef[] = [
     templateId: 'direction',
     tagline: 'Prospection, négociation et grands comptes : objectifs dépassés, chiffres à l’appui.',
     build: () => ({
-      title: 'CV — Business Developer',
+      title: 'CV · Business Developer',
       basics: basics({
         firstName: 'Thomas',
         lastName: 'Girard',
-        headline: 'Business Developer B2B — Solutions logicielles',
+        headline: 'Business Developer B2B, Solutions logicielles',
         location: 'Lille, France',
         linkedin: 'linkedin.com/in/thomas-girard',
         summary:
@@ -339,7 +339,7 @@ export const PRESETS: PresetDef[] = [
     templateId: 'compact',
     tagline: 'Entrepôt, transport et équipes : coûts réduits, délais tenus, sécurité au premier plan.',
     build: () => ({
-      title: 'CV — Responsable logistique',
+      title: 'CV · Responsable logistique',
       basics: basics({
         firstName: 'Karim',
         lastName: 'Mansouri',
@@ -385,7 +385,7 @@ export const PRESETS: PresetDef[] = [
     templateId: 'brut',
     tagline: 'Organisation, accueil et gestion administrative : le CV le plus sûr pour tous les ATS.',
     build: () => ({
-      title: 'CV — Assistante administrative',
+      title: 'CV · Assistante administrative',
       basics: basics({
         firstName: 'Sophie',
         lastName: 'Morel',
@@ -425,7 +425,7 @@ export const PRESETS: PresetDef[] = [
     templateId: 'essentiel',
     tagline: 'Recherche utilisateur, prototypes et design system : un CV calme et typographique.',
     build: () => ({
-      title: 'CV — Designer UX/UI',
+      title: 'CV · Designer UX/UI',
       basics: basics({
         firstName: 'Manon',
         lastName: 'Rousseau',
@@ -467,7 +467,7 @@ export const PRESETS: PresetDef[] = [
     templateId: 'editorial',
     tagline: 'Relations presse, réseaux sociaux et événements : un ton éditorial affirmé.',
     build: () => ({
-      title: 'CV — Chargée de communication',
+      title: 'CV · Chargée de communication',
       basics: basics({
         firstName: 'Chloé',
         lastName: 'Bernard',
@@ -507,11 +507,11 @@ export const PRESETS: PresetDef[] = [
     templateId: 'galerie',
     tagline: 'Conception d’espaces, suivi de chantier et clients exigeants : un CV au graphisme net.',
     build: () => ({
-      title: 'CV — Architecte d’intérieur',
+      title: 'CV · Architecte d’intérieur',
       basics: basics({
         firstName: 'Élise',
         lastName: 'Garnier',
-        headline: 'Architecte d’intérieur — Résidentiel et hôtellerie',
+        headline: 'Architecte d’intérieur, Résidentiel et hôtellerie',
         location: 'Nice, France',
         website: 'elisegarnier.studio',
         linkedin: 'linkedin.com/in/elise-garnier',
@@ -548,11 +548,11 @@ export const PRESETS: PresetDef[] = [
     templateId: 'ligne',
     tagline: 'Soins, urgences et coordination : un CV clair, lisible en quelques secondes.',
     build: () => ({
-      title: 'CV — Infirmière',
+      title: 'CV · Infirmière',
       basics: basics({
         firstName: 'Clara',
         lastName: 'Petit',
-        headline: 'Infirmière diplômée d’État — Urgences et soins continus',
+        headline: 'Infirmière diplômée d’État, Urgences et soins continus',
         location: 'Strasbourg, France',
         summary:
           'Infirmière diplômée d’État avec 6 ans d’expérience en services d’urgences et de soins continus. Réactive et rigoureuse, assure la prise en charge globale des patients, la coordination avec les équipes médicales et l’encadrement des étudiants infirmiers.'
@@ -591,7 +591,7 @@ export const PRESETS: PresetDef[] = [
     templateId: 'chrono',
     tagline: 'Sourcing, entretiens et marque employeur : un parcours lisible comme une frise.',
     build: () => ({
-      title: 'CV — Chargée de recrutement',
+      title: 'CV · Chargée de recrutement',
       basics: basics({
         firstName: 'Nadia',
         lastName: 'Haddad',
@@ -631,11 +631,11 @@ export const PRESETS: PresetDef[] = [
     templateId: 'prestige',
     tagline: 'Budgets, reporting et pilotage de la performance : sobriété et précision.',
     build: () => ({
-      title: 'CV — Contrôleur de gestion',
+      title: 'CV · Contrôleur de gestion',
       basics: basics({
         firstName: 'Julien',
         lastName: 'Marchand',
-        headline: 'Contrôleur de gestion — Industrie',
+        headline: 'Contrôleur de gestion, Industrie',
         location: 'Clermont-Ferrand, France',
         linkedin: 'linkedin.com/in/julien-marchand',
         summary:
@@ -660,7 +660,7 @@ export const PRESETS: PresetDef[] = [
         sk('Outils', ['SAP FI/CO', 'Excel avancé (VBA)', 'Power BI', 'Power Query']),
         sk('Savoir-être', ['Rigueur', 'Pédagogie', 'Esprit d’analyse'])
       ],
-      certifications: [cert('Diplôme supérieur de comptabilité et de gestion (DSCG) — UE 3', 'Ministère de l’Enseignement supérieur', '2019-11')],
+      certifications: [cert('Diplôme supérieur de comptabilité et de gestion (DSCG), UE 3', 'Ministère de l’Enseignement supérieur', '2019-11')],
       languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'B2')],
       interests: 'Trail, histoire économique, trésorier d’un club de basket.'
     })
@@ -672,7 +672,7 @@ export const PRESETS: PresetDef[] = [
     templateId: 'classique',
     tagline: 'Contrats, conformité et contentieux : la tradition du CV juridique.',
     build: () => ({
-      title: 'CV — Juriste droit des affaires',
+      title: 'CV · Juriste droit des affaires',
       basics: basics({
         firstName: 'Alexandre',
         lastName: 'Dupuis',
@@ -704,7 +704,7 @@ export const PRESETS: PresetDef[] = [
         sk('Outils', ['Lexis 360', 'Dalloz', 'Doctrine', 'Gestion de contrats (CLM)']),
         sk('Savoir-être', ['Négociation', 'Rigueur rédactionnelle', 'Sens du conseil'])
       ],
-      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'C1 — juridique'), lang('Allemand', 'B1')],
+      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'C1, juridique'), lang('Allemand', 'B1')],
       interests: 'Piano, histoire de l’art, course d’orientation.'
     })
   },
@@ -715,11 +715,11 @@ export const PRESETS: PresetDef[] = [
     templateId: 'campus',
     tagline: 'Premier CV : formation, stages et projets mis en avant, rythme d’alternance indiqué.',
     build: () => ({
-      title: 'CV — Recherche d’alternance',
+      title: 'CV · Recherche d’alternance',
       basics: basics({
         firstName: 'Hugo',
         lastName: 'Lefèvre',
-        headline: 'Recherche alternance — Assistant chef de projet commercial (24 mois)',
+        headline: 'Recherche alternance, Assistant chef de projet commercial (24 mois)',
         location: 'Rennes, France',
         linkedin: 'linkedin.com/in/hugo-lefevre',
         summary:
@@ -738,7 +738,7 @@ export const PRESETS: PresetDef[] = [
       ],
       education: [
         edu('BUT Techniques de commercialisation', 'IUT de Rennes', 'Rennes', '2024-09', '2027-06', 'Parcours business développement et management de la relation client. Diplôme attendu en juin 2027.'),
-        edu('Baccalauréat général — Mathématiques et SES', 'Lycée Chateaubriand', 'Rennes', '2021-09', '2024-07', 'Mention Assez bien.')
+        edu('Baccalauréat général, Mathématiques et SES', 'Lycée Chateaubriand', 'Rennes', '2021-09', '2024-07', 'Mention Assez bien.')
       ],
       skills: [
         sk('Commerce', ['Prospection', 'Vente conseil', 'Relation client', 'Négociation (bases)']),
@@ -748,7 +748,7 @@ export const PRESETS: PresetDef[] = [
       projects: [
         proj('Organisation d’un tournoi de futsal caritatif', '', 'Projet tutoré à 5 : 200 participants, 3 200 € reversés à une association locale ; responsable des partenariats.')
       ],
-      certifications: [cert('Projet Voltaire — niveau Affaires', 'Woonoz', '2025-05')],
+      certifications: [cert('Projet Voltaire, niveau Affaires', 'Woonoz', '2025-05')],
       languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'B2'), lang('Espagnol', 'A2')],
       interests: 'Futsal en club, randonnée, montage vidéo.'
     })

@@ -391,7 +391,7 @@ export default function Editor({ id }: { id: string }) {
 
       {plain && (
         <Modal
-          title="Vue ATS — texte extrait"
+          title="Vue ATS : texte extrait"
           icon={<ScanText size={16} />}
           onClose={() => setPlain(false)}
           footer={

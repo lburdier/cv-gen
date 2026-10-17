@@ -32,6 +32,7 @@ const api: CvGenApi = {
   printReady: (token) => ipcRenderer.send('print:ready', token),
   openDataFolder: call('shell:dataFolder'),
   openExternal: call('shell:external'),
+  cv: { pick: call('cv:pick'), import: call('cv:import') },
   updates: {
     status: call('update:status'),
     check: call('update:check'),
@@ -48,8 +49,7 @@ const api: CvGenApi = {
     improveBullet: call('ai:improveBullet'),
     writeSummary: call('ai:writeSummary'),
     coverLetter: call('ai:coverLetter'),
-    importResume: call('ai:import'),
-    importResumeBytes: call('ai:importBytes'),
+    reviseLetter: call('ai:reviseLetter'),
     analyzeCvImage: call('ai:analyzeCvImage'),
     chat: call('ai:chat')
   }

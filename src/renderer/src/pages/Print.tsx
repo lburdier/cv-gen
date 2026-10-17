@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { contactParts, fullName } from '../../../shared/format'
+import { placeDate } from '../../../shared/letter'
 import type { CoverLetter, Resume } from '../../../shared/types'
 import { Cv } from '../templates/Cv'
 
@@ -13,7 +14,7 @@ export default function PrintPage({ token }: { token: string }) {
     document.documentElement.dataset.theme = 'light'
     window.cvgen.getPrintJob(token).then((j) => {
       if (!j) return
-      document.title = j.kind === 'resume' ? `CV — ${fullName(j.resume)}` : j.letter.title
+      document.title = j.kind === 'resume' ? `CV · ${fullName(j.resume)}` : j.letter.title
       setJob(j)
     })
   }, [token])
@@ -36,6 +37,14 @@ export default function PrintPage({ token }: { token: string }) {
             <div className="from">
               <strong>{fullName(job.resume)}</strong>
               <span>{contactParts(job.resume).join('  |  ')}</span>
+            </div>
+          )}
+          {job.letter.recipient?.trim() && <div className="to">{job.letter.recipient.trim()}</div>}
+          {(job.letter.place || job.letter.date) && <div className="when">{placeDate(job.letter.place ?? '', job.letter.date ?? '', job.letter.options?.lang ?? 'fr')}</div>}
+          {job.letter.subject?.trim() && (
+            <div className="subject">
+              {(job.letter.options?.lang ?? 'fr') === 'en' ? 'Subject: ' : 'Objet : '}
+              {job.letter.subject.trim()}
             </div>
           )}
           {job.letter.body.split(/\n\s*\n/).map((p, i) => (
