@@ -1,0 +1,437 @@
+/* ==========================================================================
+   SUR MESURE — rendu piloté par un design paramétrable (recréé depuis une image).
+   Les couleurs, polices et tailles arrivent en variables depuis CvCustom.tsx.
+   ========================================================================== */
+.cv.cm {
+  --v-page: var(--cm-page);
+  --v-text: var(--cm-text);
+  --v-muted: var(--cm-muted);
+  --v-line: var(--cm-line);
+  font-family: var(--cm-body);
+  font-size: 9pt;
+  line-height: 1.45;
+  color: var(--cm-text);
+  background: var(--cm-page);
+}
+.cm.cm-compact {
+  font-size: 8.4pt;
+  line-height: 1.38;
+}
+.cm h1,
+.cm h2,
+.cm h3,
+.cm p,
+.cm ul {
+  margin: 0;
+}
+
+/* ---------- Structure ---------- */
+.cm-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+.cm-sidebar-left .cm-body {
+  grid-template-columns: var(--cm-side-w) 1fr;
+}
+.cm-sidebar-right .cm-body {
+  grid-template-columns: 1fr var(--cm-side-w);
+}
+.cm-sidebar-right .cm-side {
+  grid-column: 2;
+  grid-row: 1;
+}
+.cm-sidebar-right .cm-main {
+  grid-column: 1;
+  grid-row: 1;
+}
+.cm-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px 22px;
+  background: var(--cm-sidebar);
+  color: var(--cm-on-sidebar);
+}
+.cm-main {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 26px 30px 26px 26px;
+}
+.cm-single .cm-main {
+  padding: 16px 32px 28px;
+}
+.cm-compact .cm-main,
+.cm-compact .cm-side {
+  gap: 12px;
+}
+
+/* ---------- En-tête ---------- */
+.cm-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 30px 32px 18px;
+  background: var(--cm-header);
+  color: var(--cm-on-header);
+}
+.cm-main > .cm-header {
+  padding: 0 0 14px;
+  background: none;
+}
+.cm-header-band > .cm-header {
+  padding: 30px 32px;
+}
+.cm-header-card > .cm-header {
+  margin: 24px 32px 4px;
+  padding: 22px 24px;
+  border-radius: var(--cm-radius);
+}
+.cm-main > .cm-header-card,
+.cm-header-card .cm-main > .cm-header {
+  margin: 0 0 4px;
+  padding: 20px 22px;
+  border-radius: var(--cm-radius);
+  background: var(--cm-header);
+}
+.cm-header-minimal > .cm-header,
+.cm-header-split > .cm-header {
+  margin: 0 32px;
+  padding: 30px 0 16px;
+  border-bottom: 1px solid var(--cm-line);
+}
+.cm-header-minimal .cm-main > .cm-header {
+  border-bottom: 1px solid var(--cm-line);
+}
+.cm-header-split > .cm-header {
+  justify-content: space-between;
+}
+.cm-align-center .cm-header {
+  flex-direction: column;
+  text-align: center;
+}
+.cm-align-center .cm-contact.inline {
+  justify-content: center;
+}
+.cm-id {
+  min-width: 0;
+}
+.cm-name {
+  font-family: var(--cm-display);
+  font-size: var(--cm-name-size);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.cm-display-serif .cm-name {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.cm-display-wide .cm-name {
+  font-stretch: 125%;
+}
+.cm-name span {
+  color: var(--cm-name-accent);
+}
+.cm-name-upper .cm-name {
+  text-transform: uppercase;
+}
+.cm-headline {
+  margin-top: 6px !important;
+  font-size: 1.18em;
+  font-weight: 500;
+  opacity: 0.82;
+}
+.cm-contact {
+  list-style: none;
+  padding: 0;
+  font-size: 0.9em;
+}
+.cm-contact.inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  margin-top: 10px !important;
+  opacity: 0.85;
+}
+.cm-contact.stack li {
+  margin: 2px 0;
+  overflow-wrap: anywhere;
+}
+.cm-header .cm-contact.stack {
+  text-align: right;
+  font-size: 0.88em;
+}
+
+/* ---------- Photo ---------- */
+.cm-photo {
+  flex-shrink: 0;
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+}
+.cm-photo-circle .cm-photo {
+  border-radius: 50%;
+}
+.cm-photo-rounded .cm-photo {
+  border-radius: 18px;
+}
+.cm-photo-square .cm-photo {
+  border-radius: 0;
+}
+.cm-side-photo .cm-photo {
+  display: block;
+  width: 128px;
+  height: 128px;
+  margin: 0 auto 4px;
+}
+.cm-initials {
+  display: grid;
+  place-items: center;
+  background: var(--cm-primary);
+  color: var(--cm-on-primary);
+  font: 800 28px var(--cm-display);
+}
+
+/* ---------- Titres de section ---------- */
+.cm-h {
+  margin-bottom: 8px !important;
+  font-family: var(--cm-display);
+  font-size: 9.6pt;
+  font-weight: 750;
+  color: var(--cm-primary);
+}
+.cm-side .cm-h {
+  color: var(--cm-side-accent);
+}
+.cm-h-underline .cm-h {
+  padding-bottom: 4px;
+  border-bottom: 1.5px solid currentColor;
+  font-size: 8.6pt;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.cm-h-caps .cm-h {
+  font-size: 8pt;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+}
+.cm-h-bar .cm-h {
+  padding-left: 8px;
+  border-left: 4px solid currentColor;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 8.8pt;
+}
+.cm-h-pill .cm-h span,
+.cm-h-block .cm-h span {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: var(--cm-primary);
+  color: var(--cm-on-primary);
+}
+.cm-corners-square.cm-h-pill .cm-h span {
+  border-radius: 2px;
+}
+.cm-h-block .cm-h span {
+  display: block;
+  border-radius: calc(var(--cm-radius) / 2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 8.6pt;
+}
+.cm-h-highlight .cm-h {
+  font-size: 11.5pt;
+  color: inherit;
+}
+.cm-h-highlight .cm-h span {
+  padding: 0 3px;
+  background: linear-gradient(transparent 52%, var(--cm-secondary) 52%);
+}
+
+/* ---------- Contenu ---------- */
+.cm-text {
+  white-space: pre-line;
+}
+.cm-entry + .cm-entry {
+  margin-top: 9px;
+}
+.cm-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+.cm-entry h3 {
+  font-size: 1.04em;
+  font-weight: 700;
+}
+.cm-date {
+  flex-shrink: 0;
+  font-size: 0.86em;
+  color: var(--cm-muted);
+  font-variant-numeric: tabular-nums;
+}
+.cm-sub {
+  font-size: 0.92em;
+  color: var(--cm-muted);
+}
+.cm-sub b {
+  font-weight: 600;
+  color: var(--cm-primary);
+}
+.cm-side .cm-sub,
+.cm-side .cm-date {
+  color: inherit;
+  opacity: 0.75;
+}
+.cm-side .cm-sub b {
+  color: inherit;
+}
+.cm-bullets {
+  margin-top: 3px !important;
+  padding-left: 14px !important;
+}
+.cm-bullets li {
+  margin: 1px 0;
+}
+.cm-bullets li::marker {
+  color: var(--cm-primary);
+}
+.cm-detail {
+  margin-top: 2px !important;
+  color: var(--cm-muted);
+}
+.cm-side .cm-detail {
+  color: inherit;
+  opacity: 0.8;
+}
+.cm-timeline {
+  margin-left: 4px;
+  padding-left: 15px;
+  border-left: 1.5px solid var(--cm-line);
+}
+.cm-timeline .cm-entry {
+  position: relative;
+}
+.cm-timeline .cm-entry::before {
+  content: '';
+  position: absolute;
+  left: -20.5px;
+  top: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cm-primary);
+  box-shadow: 0 0 0 2px var(--cm-page);
+}
+.cm-skill + .cm-skill {
+  margin-top: 8px;
+}
+.cm-label {
+  margin-bottom: 4px;
+  font-size: 0.82em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+.cm-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.cm-chip {
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--cm-primary) 13%, transparent);
+  font-size: 0.9em;
+}
+.cm-side .cm-chip {
+  background: color-mix(in srgb, currentColor 13%, transparent);
+}
+.cm-corners-square .cm-chip {
+  border-radius: 2px;
+}
+.cm-cols {
+  columns: 2;
+  column-gap: 18px;
+  padding-left: 14px !important;
+}
+.cm-cols.one {
+  columns: 1;
+}
+.cm-cols li {
+  break-inside: avoid;
+}
+.cm-cols li::marker {
+  color: var(--cm-primary);
+}
+.cm-langs {
+  list-style: none;
+  padding: 0;
+}
+.cm-langs li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 2px 0;
+}
+.cm-langs span {
+  opacity: 0.75;
+}
+.cm-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.cm-gallery.side {
+  grid-template-columns: repeat(2, 1fr);
+}
+.cm-gallery figure {
+  margin: 0;
+}
+.cm-gallery img,
+.cm-shot {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: calc(var(--cm-radius) * 0.7);
+  background: var(--cm-line);
+}
+.cm-gallery figcaption {
+  margin-top: 3px;
+  font-size: 0.8em;
+  color: var(--cm-muted);
+}
+.cm .cm-contact li {
+  margin: 0 0 3px;
+  line-height: 1.35;
+}
+
+/* Fond de la colonne peint sur la page entière (plutôt qu'en étirant la colonne) :
+   la colonne reste colorée jusqu'en bas sans jamais déborder sur une 2e page à l'impression. */
+.cv.cm .cm-body {
+  flex: none;
+}
+.cv.cm.cm-sidebar-left {
+  background: linear-gradient(90deg, var(--cm-sidebar) 0 var(--cm-side-w), var(--cm-page) var(--cm-side-w));
+}
+.cv.cm.cm-sidebar-right {
+  background: linear-gradient(90deg, var(--cm-page) 0 calc(100% - var(--cm-side-w)), var(--cm-sidebar) calc(100% - var(--cm-side-w)));
+}
+.cv.cm .cm-side {
+  background: none;
+}
+
+/* Photo à droite de l'en-tête. */
+.cm-photo-side-right:not(.cm-align-center) .cm-header {
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+.cm-photo-side-right.cm-header-split .cm-header .cm-contact.stack {
+  text-align: left;
+}

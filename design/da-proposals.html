@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CV GEN — Directions artistiques v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link
+  href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Courier+Prime:wght@400;700&family=Special+Elite&family=Caveat:wght@600&family=Archivo:wght@400;600;800;900&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=Barlow+Condensed:wght@500;600;800&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #dcdad5; font-family: 'Archivo', system-ui, sans-serif; color: #1a1a1a; }
+  .intro { max-width: 1240px; margin: 0 auto; padding: 40px 24px 0; }
+  .intro h1 { font-size: 30px; letter-spacing: -0.02em; margin: 0 0 6px; }
+  .intro p { margin: 0; color: #555; font-size: 15px; }
+  .board { max-width: 1240px; margin: 0 auto; padding: 24px; display: grid; gap: 44px; }
+  .label { display: flex; align-items: baseline; gap: 14px; margin-bottom: 12px; }
+  .label .n { font: 600 13px 'IBM Plex Mono', monospace; background: #1a1a1a; color: #fff; padding: 3px 9px; border-radius: 4px; }
+  .label h2 { margin: 0; font-size: 21px; letter-spacing: -0.01em; }
+  .label span { color: #555; font-size: 14px; }
+  .mock { height: 540px; overflow: hidden; position: relative; box-shadow: 0 24px 50px -22px rgba(0,0,0,.45); }
+
+  /* =====================================================================
+     A — KIOSQUE : l'app est un quotidien
+     ===================================================================== */
+  .kiosque { background: #f1ede4; color: #141414; font-family: 'Old Standard TT', serif; padding: 16px 28px; }
+  .k-top { display: flex; justify-content: space-between; font: 11px 'IBM Plex Mono'; text-transform: uppercase; letter-spacing: .08em; border-bottom: 1px solid #141414; padding-bottom: 6px; }
+  .k-mast { text-align: center; font: 900 60px/1 'Playfair Display', serif; letter-spacing: -0.02em; padding: 8px 0 4px; }
+  .k-mast i { color: #e63b1f; font-style: italic; }
+  .k-date { display: flex; justify-content: center; gap: 18px; font: italic 13px 'Old Standard TT'; border-top: 3px double #141414; border-bottom: 1px solid #141414; padding: 4px 0; }
+  .k-nav { display: flex; justify-content: center; border-bottom: 1px solid #141414; }
+  .k-nav span { font: 600 11px 'Archivo'; text-transform: uppercase; letter-spacing: .14em; padding: 8px 18px; border-right: 1px solid #c9c2b4; }
+  .k-nav span:last-child { border: 0; }
+  .k-nav .on { box-shadow: inset 0 -4px 0 #e63b1f; }
+  .k-grid { display: grid; grid-template-columns: 1.7fr 1fr 1fr; gap: 0; margin-top: 14px; }
+  .k-grid > div { padding: 0 18px; border-right: 1px solid #c9c2b4; }
+  .k-grid > div:first-child { padding-left: 0; }
+  .k-grid > div:last-child { border: 0; padding-right: 0; }
+  .k-kicker { font: 700 11px 'Archivo'; color: #e63b1f; text-transform: uppercase; letter-spacing: .12em; }
+  .k-head { font: 900 36px/1.02 'Playfair Display'; margin: 4px 0 8px; letter-spacing: -0.01em; }
+  .k-deck { font: italic 16px/1.35 'Old Standard TT'; color: #3a3a3a; margin: 0 0 10px; }
+  .k-body { columns: 2; column-gap: 18px; font-size: 13px; line-height: 1.5; text-align: justify; }
+  .k-body::first-letter { float: left; font: 900 46px/0.8 'Playfair Display'; padding: 4px 6px 0 0; color: #e63b1f; }
+  .k-btns { display: flex; gap: 10px; margin-top: 12px; }
+  .k-btn { font: 700 12px 'Archivo'; text-transform: uppercase; letter-spacing: .1em; padding: 9px 14px; background: #141414; color: #f1ede4; }
+  .k-btn.alt { background: transparent; color: #141414; border: 1px solid #141414; }
+  .k-sub { font: 900 15px 'Playfair Display'; border-bottom: 2px solid #141414; padding-bottom: 4px; margin-bottom: 6px; display: flex; justify-content: space-between; }
+  .k-sub small { font: 11px 'IBM Plex Mono'; font-weight: 400; }
+  .k-ticker div { display: flex; justify-content: space-between; font: 13px 'IBM Plex Mono'; padding: 6px 0; border-bottom: 1px dotted #9d968a; }
+  .k-ticker b { font-weight: 600; }
+  .up { color: #1f7a3f; } .down { color: #e63b1f; }
+  .k-ad { border: 1px solid #141414; padding: 8px 10px; margin-bottom: 8px; font-size: 12.5px; line-height: 1.4; }
+  .k-ad strong { font: 900 14px 'Playfair Display'; display: block; }
+  .k-ad em { font: 11px 'IBM Plex Mono'; font-style: normal; color: #e63b1f; }
+
+  /* =====================================================================
+     B — DOSSIER : chemise kraft, fiches, tampons
+     ===================================================================== */
+  .dossier { background: #3b2f25 radial-gradient(circle at 20% 10%, #4a3b2e, #2c231b 70%); padding: 26px 34px 0; font-family: 'Courier Prime', monospace; color: #2a2118; }
+  .d-tabs { display: flex; gap: 4px; padding-left: 18px; }
+  .d-tab { background: #d8c49c; padding: 8px 18px 6px; border-radius: 10px 10px 0 0; font: 700 13px 'Courier Prime'; color: #5b4a33; }
+  .d-tab.on { background: #eadab6; color: #2a2118; position: relative; z-index: 2; }
+  .d-folder { background: #eadab6; border-radius: 4px 14px 0 0; height: 480px; padding: 24px 26px; display: grid; grid-template-columns: 1.25fr 1fr 0.9fr; gap: 22px; position: relative; box-shadow: inset 0 0 60px rgba(120,90,40,.25); }
+  .d-title { font: 400 30px 'Special Elite'; margin: 0 0 6px; }
+  .d-meta { font-size: 12px; color: #6b5a41; border-bottom: 1px dashed #a48d64; padding-bottom: 8px; margin-bottom: 12px; }
+  .d-sheet { background: #fffdf6; padding: 18px 18px 16px; box-shadow: 0 2px 0 #e2d6bc, 0 3px 0 #fffdf6, 0 4px 0 #e2d6bc, 0 8px 18px rgba(60,40,10,.25); transform: rotate(-0.8deg); position: relative;
+    background-image: repeating-linear-gradient(#fffdf6 0 25px, #e8e2d3 25px 26px); line-height: 26px; font-size: 13.5px; }
+  .d-sheet p { margin: 0; }
+  .d-clip { position: absolute; top: -14px; left: 26px; width: 18px; height: 52px; border: 3px solid #8d8d8d; border-radius: 10px; border-bottom-color: transparent; }
+  .d-stamp { position: absolute; right: 14px; top: 30px; transform: rotate(-11deg); border: 4px double #c8321e; color: #c8321e; font: 400 22px 'Special Elite'; padding: 4px 12px; text-align: center; line-height: 1; opacity: .88; mix-blend-mode: multiply; }
+  .d-stamp small { display: block; font-size: 11px; letter-spacing: .1em; }
+  .d-btn { display: inline-block; margin-top: 14px; margin-right: 8px; font: 700 13px 'Courier Prime'; padding: 8px 14px; background: #2a2118; color: #eadab6; }
+  .d-btn.alt { background: transparent; color: #2a2118; border: 2px solid #2a2118; }
+  .d-card { background: #fff; border-top: 4px solid #c8321e; padding: 10px 12px; margin-bottom: 12px; box-shadow: 0 6px 14px rgba(60,40,10,.18); font-size: 13px; transform: rotate(var(--r, 0deg)); }
+  .d-card strong { display: flex; justify-content: space-between; font-size: 13.5px; }
+  .d-card strong em { font-style: normal; color: #c8321e; }
+  .d-postit { background: #ffe66d; padding: 14px; font: 600 19px/1.15 'Caveat', cursive; transform: rotate(2.5deg); box-shadow: 0 10px 18px rgba(60,40,10,.28); color: #3a2f12; }
+  .d-label { font: 700 11px 'Courier Prime'; text-transform: uppercase; letter-spacing: .14em; color: #6b5a41; margin: 0 0 8px; }
+  .d-kw { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .d-kw span { font-size: 12px; padding: 2px 8px; border: 1.5px solid #2a2118; }
+  .d-kw .miss { border-style: dashed; color: #c8321e; border-color: #c8321e; }
+
+  /* =====================================================================
+     C — AFFICHE SUISSE : grille stricte, chiffres géants
+     ===================================================================== */
+  .suisse { background: #f2f0eb; color: #0a0a0a; font-family: 'Archivo', sans-serif; display: grid; grid-template-columns: 200px 1fr; }
+  .s-nav { border-right: 2px solid #0a0a0a; padding: 22px 18px; display: flex; flex-direction: column; gap: 2px; }
+  .s-logo { font: 900 26px/0.9 'Archivo'; letter-spacing: -0.04em; margin-bottom: 26px; }
+  .s-logo span { color: #ff2d1a; }
+  .s-item { display: grid; grid-template-columns: 28px 1fr; font: 600 15px 'Archivo'; padding: 6px 0; border-top: 1px solid #0a0a0a; }
+  .s-item i { font-style: normal; font: 500 11px 'IBM Plex Mono'; padding-top: 3px; }
+  .s-item.on { color: #ff2d1a; }
+  .s-new { margin-top: auto; background: #ff2d1a; color: #fff; font: 800 15px 'Archivo'; padding: 12px; }
+  .s-main { display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: auto 1fr auto; position: relative; }
+  .s-head { grid-column: 1 / 13; border-bottom: 2px solid #0a0a0a; display: flex; justify-content: space-between; padding: 10px 20px; font: 500 11px 'IBM Plex Mono'; text-transform: uppercase; }
+  .s-score { grid-column: 1 / 8; position: relative; padding: 0 20px; overflow: hidden; }
+  .s-num { font: 900 300px/0.78 'Archivo'; letter-spacing: -0.07em; color: #ff2d1a; margin-top: 78px; margin-left: -10px; }
+  .s-cap { position: absolute; left: 24px; top: 18px; font: 800 15px/1.2 'Archivo'; max-width: 220px; }
+  .s-cap small { display: block; font: 500 11px 'IBM Plex Mono'; margin-top: 4px; }
+  .s-right { grid-column: 8 / 13; border-left: 2px solid #0a0a0a; padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+  .s-h { font: 900 34px/0.95 'Archivo'; letter-spacing: -0.04em; margin: 0; }
+  .s-lab { font: 500 10.5px 'IBM Plex Mono'; text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid #0a0a0a; padding-bottom: 3px; }
+  .s-row { display: flex; justify-content: space-between; font: 600 14px 'Archivo'; padding: 5px 0; border-bottom: 1px solid #c8c5bd; }
+  .s-row b { font: 800 14px 'Archivo'; }
+  .s-kw { font: 800 19px/1.25 'Archivo'; letter-spacing: -0.02em; }
+  .s-kw s { color: #ff2d1a; text-decoration-thickness: 3px; }
+  .s-bottom { grid-column: 1 / 13; border-top: 2px solid #0a0a0a; display: grid; grid-template-columns: repeat(4, 1fr); }
+  .s-bottom div { padding: 10px 20px; border-right: 1px solid #0a0a0a; font: 600 13px 'Archivo'; }
+  .s-bottom div:last-child { background: #0a0a0a; color: #f2f0eb; border: 0; }
+  .s-bottom small { display: block; font: 500 10.5px 'IBM Plex Mono'; opacity: .7; }
+
+  /* =====================================================================
+     D — RISO : impression risographie, rose fluo + vert
+     ===================================================================== */
+  .riso { background: #f5f0e6; color: #23201c; font-family: 'Bricolage Grotesque', sans-serif; padding: 20px 28px; }
+  .riso::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .5; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .35 0 0 0 0 .3 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .r-top { display: flex; align-items: center; gap: 10px; }
+  .r-logo { font: 800 30px 'Bricolage Grotesque'; letter-spacing: -0.04em; color: #ff48b0; text-shadow: 3px 2px 0 #00a95c; mix-blend-mode: multiply; margin-right: 14px; }
+  .r-pill { font: 500 13px 'IBM Plex Mono'; padding: 5px 13px; border-radius: 999px; border: 1.5px solid #23201c; }
+  .r-pill.on { background: #00a95c; color: #f5f0e6; border-color: #00a95c; }
+  .r-new { margin-left: auto; background: #ff48b0; color: #23201c; font: 800 14px 'Bricolage Grotesque'; padding: 9px 16px; border-radius: 999px; box-shadow: 3px 3px 0 #23201c; }
+  .r-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 22px; margin-top: 22px; }
+  .r-hero { position: relative; padding: 22px; background: #ff48b0; mix-blend-mode: multiply; transform: rotate(-1.2deg); min-height: 330px; overflow: hidden; }
+  .r-hero::after { content: ''; position: absolute; right: -40px; bottom: -40px; width: 230px; height: 230px; border-radius: 50%;
+    background: radial-gradient(#00a95c 32%, transparent 34%) 0 0 / 9px 9px; mix-blend-mode: multiply; }
+  .r-hero h3 { font: 800 44px/0.92 'Bricolage Grotesque'; letter-spacing: -0.04em; margin: 0 0 12px; position: relative; z-index: 1; }
+  .r-hero p { font: 500 14px/1.45 'IBM Plex Mono'; max-width: 300px; position: relative; z-index: 1; margin: 0; }
+  .r-btn { display: inline-block; margin-top: 16px; background: #23201c; color: #f5f0e6; font: 800 14px 'Bricolage Grotesque'; padding: 9px 15px; border-radius: 999px; position: relative; z-index: 1; }
+  .r-sheet { background: #fffaf0; padding: 16px; box-shadow: 0 10px 24px -10px rgba(0,0,0,.35); transform: rotate(var(--r)); position: relative; }
+  .r-sheet::before { content: ''; position: absolute; top: -10px; left: 40%; width: 70px; height: 22px; background: rgba(0,169,92,.35); transform: rotate(-4deg); }
+  .r-sheet h4 { margin: 0 0 10px; font: 800 18px 'Bricolage Grotesque'; letter-spacing: -0.02em; }
+  .r-score { font: 800 96px/0.9 'Bricolage Grotesque'; letter-spacing: -0.06em; color: #00a95c; text-shadow: 4px 3px 0 #ff48b0; mix-blend-mode: multiply; }
+  .r-li { display: flex; justify-content: space-between; font: 500 13px 'IBM Plex Mono'; padding: 6px 0; border-bottom: 1.5px dashed #23201c; }
+  .r-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .r-tags span { font: 500 12px 'IBM Plex Mono'; padding: 3px 9px; border-radius: 999px; background: #00a95c; color: #f5f0e6; }
+  .r-tags .miss { background: transparent; color: #23201c; border: 1.5px dashed #ff48b0; }
+
+  /* =====================================================================
+     E — PLAN TECHNIQUE : bureau d'études, cartouche, cotes
+     ===================================================================== */
+  .plan { background-color: #e9ece3; color: #1f2a22; font-family: 'IBM Plex Mono', monospace;
+    background-image: linear-gradient(#cfd5c6 1px, transparent 1px), linear-gradient(90deg, #cfd5c6 1px, transparent 1px), linear-gradient(#dde2d6 1px, transparent 1px), linear-gradient(90deg, #dde2d6 1px, transparent 1px);
+    background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px; display: grid; grid-template-columns: 64px 1fr; }
+  .p-ruler { border-right: 2px solid #1f2a22; background: #e9ece3; display: flex; flex-direction: column; align-items: center; padding-top: 16px; gap: 22px;
+    background-image: repeating-linear-gradient(#1f2a22 0 1px, transparent 1px 10px); background-size: 10px 100%; background-repeat: no-repeat; background-position: right top; }
+  .p-ico { width: 34px; height: 34px; border: 1.5px solid #1f2a22; display: grid; place-items: center; font: 600 10px 'IBM Plex Mono'; background: #e9ece3; }
+  .p-ico.on { background: #ff6a13; border-color: #ff6a13; color: #fff; }
+  .p-main { padding: 20px 26px; position: relative; }
+  .p-title { font: 800 46px/0.9 'Barlow Condensed'; text-transform: uppercase; letter-spacing: .01em; margin: 0; }
+  .p-title span { color: #ff6a13; }
+  .p-sub { font-size: 12px; margin: 6px 0 18px; }
+  .p-frame { position: relative; border: 1.5px solid #1f2a22; padding: 16px; background: rgba(233,236,227,.85); }
+  .p-frame::before, .p-frame::after { content: ''; position: absolute; width: 12px; height: 12px; border: 2px solid #ff6a13; }
+  .p-frame::before { top: -7px; left: -7px; border-right: 0; border-bottom: 0; }
+  .p-frame::after { bottom: -7px; right: -7px; border-left: 0; border-top: 0; }
+  .p-tag { position: absolute; top: -10px; left: 14px; background: #e9ece3; padding: 0 6px; font: 600 11px 'IBM Plex Mono'; text-transform: uppercase; letter-spacing: .08em; }
+  .p-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 26px; }
+  .p-gauge { display: flex; align-items: flex-end; gap: 18px; }
+  .p-big { font: 800 120px/0.8 'Barlow Condensed'; }
+  .p-dim { flex: 1; font-size: 11px; }
+  .p-dimline { position: relative; height: 18px; border-left: 1.5px solid #1f2a22; border-right: 1.5px solid #1f2a22; margin: 8px 0 4px; }
+  .p-dimline::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1.5px solid #1f2a22; }
+  .p-dimline b { position: absolute; top: 2px; height: 14px; background: #ff6a13; left: 0; }
+  .p-ticks { display: flex; justify-content: space-between; font-size: 10px; }
+  .p-btn { display: inline-block; margin-top: 16px; margin-right: 8px; font: 600 12px 'IBM Plex Mono'; text-transform: uppercase; padding: 9px 14px; background: #1f2a22; color: #e9ece3; }
+  .p-btn.alt { background: #ff6a13; }
+  .p-list div { display: grid; grid-template-columns: 30px 1fr auto; font-size: 12.5px; padding: 7px 0; border-bottom: 1px solid #1f2a22; }
+  .p-list i { font-style: normal; color: #ff6a13; }
+  .p-cart { position: absolute; right: 26px; bottom: 18px; border: 2px solid #1f2a22; display: grid; grid-template-columns: repeat(3, auto); font-size: 10.5px; background: #e9ece3; }
+  .p-cart div { padding: 5px 10px; border-right: 1px solid #1f2a22; border-bottom: 1px solid #1f2a22; }
+  .p-cart div:nth-child(3n) { border-right: 0; }
+  .p-cart div:nth-last-child(-n+3) { border-bottom: 0; }
+  .p-cart b { display: block; font: 800 15px 'Barlow Condensed'; text-transform: uppercase; }
+  .p-kw { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .p-kw span { font-size: 11.5px; padding: 2px 7px; border: 1.5px solid #1f2a22; }
+  .p-kw .miss { border-color: #ff6a13; color: #ff6a13; border-style: dashed; }
+</style>
+</head>
+<body>
+<div class="intro">
+  <h1>CV GEN — 5 univers (v2)</h1>
+  <p>Fini le tableau de bord SaaS : chaque piste change la mise en page, la typo et la façon de raconter vos candidatures. Dites-moi la lettre qui vous parle (ou un mélange).</p>
+</div>
+<div class="board">
+
+  <!-- A -->
+  <section>
+    <div class="label"><span class="n">A</span><h2>Kiosque</h2><span>L’app est un quotidien : manchette, rubriques, « cote ATS » façon Bourse, offres en petites annonces. Noir, papier journal, vermillon.</span></div>
+    <div class="mock kiosque">
+      <div class="k-top"><span>Édition candidat · Valence</span><span>Ctrl K — Rechercher</span><span>+ Nouveau CV</span></div>
+      <div class="k-mast">Le <i>CV</i> Gen</div>
+      <div class="k-date"><span>N° 128</span><span>Jeudi 15 octobre 2026</span><span>Météo de l’emploi : éclaircies</span></div>
+      <div class="k-nav"><span class="on">À la une</span><span>Mes CV</span><span>Modèles</span><span>Offres</span><span>Lettres</span><span>Assistant</span></div>
+      <div class="k-grid">
+        <div>
+          <div class="k-kicker">Candidature · Artiste 3D</div>
+          <div class="k-head">Le CV « Vitrine » grimpe à 84 points avant l’envoi au Studio Nébuleuse</div>
+          <p class="k-deck">Il manque encore « Houdini » et « Nuke » pour décrocher l’entretien, selon notre analyse.</p>
+          <div class="k-body">Lucas a retravaillé trois réalisations et ajouté ses rendus cinématiques. Le format passe tous les contrôles ; seule la couverture des mots-clés freine encore le score, à 72 % de l’offre. L’assistant propose une version adaptée en un clic, sans rien inventer du parcours.</div>
+          <div class="k-btns"><span class="k-btn">Adapter à l’offre</span><span class="k-btn alt">Ouvrir l’éditeur</span></div>
+        </div>
+        <div>
+          <div class="k-sub">La cote ATS <small>clôture</small></div>
+          <div class="k-ticker">
+            <div><b>CV Vitrine</b><span>84 <span class="up">▲ 6</span></span></div>
+            <div><b>CV Dév. web</b><span>91 <span class="up">▲ 2</span></span></div>
+            <div><b>CV Motion</b><span>67 <span class="down">▼ 3</span></span></div>
+          </div>
+        </div>
+        <div>
+          <div class="k-sub">Petites annonces <small>3</small></div>
+          <div class="k-ad"><strong>Artiste 3D — Studio Nébuleuse</strong>CDI, Lyon. Blender, Substance, Unreal. <em>Match 72 %</em></div>
+          <div class="k-ad"><strong>Motion designer junior</strong>Alternance, Valence. <em>Match 58 %</em></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- B -->
+  <section>
+    <div class="label"><span class="n">B</span><h2>Dossier</h2><span>Chemise kraft à onglets, fiches cartonnées, trombone, tampon « ATS validé », post-it de l’assistant. Machine à écrire + rouge tampon.</span></div>
+    <div class="mock dossier">
+      <div class="d-tabs"><span class="d-tab on">Accueil</span><span class="d-tab">Mes CV</span><span class="d-tab">Modèles</span><span class="d-tab">Offres</span><span class="d-tab">Lettres</span><span class="d-tab">+ Nouveau</span></div>
+      <div class="d-folder">
+        <div>
+          <div class="d-title">Dossier n° 07 — Lucas</div>
+          <div class="d-meta">Ouvert le 15/10/2026 · 3 CV · 2 offres en cours</div>
+          <div class="d-sheet">
+            <span class="d-clip"></span>
+            <div class="d-stamp">ATS 84<small>VALIDÉ</small></div>
+            <p><b>Objet :</b> CV « Vitrine » → Studio Nébuleuse</p>
+            <p>Format : conforme.</p>
+            <p>Contenu : 92 / 100.</p>
+            <p>Mots-clés : 72 % de l’offre.</p>
+            <p>Manque : Houdini, Nuke.</p>
+          </div>
+          <span class="d-btn">Adapter à l’offre</span><span class="d-btn alt">Ouvrir</span>
+        </div>
+        <div>
+          <p class="d-label">Fiches CV</p>
+          <div class="d-card" style="--r:-1deg"><strong>CV — Vitrine <em>84</em></strong>Artiste 3D · modifié à l’instant</div>
+          <div class="d-card" style="--r:1.2deg"><strong>CV — Dév. web <em>91</em></strong>Full-stack · hier</div>
+          <div class="d-card" style="--r:-0.5deg"><strong>CV — Motion <em>67</em></strong>Brouillon · 3 j</div>
+        </div>
+        <div>
+          <div class="d-postit">Psst ! Ajoute tes rendus Unreal dans la galerie, l’offre en parle 3 fois. — l’assistant</div>
+          <div class="d-kw"><span>Blender</span><span>Substance</span><span class="miss">Houdini</span><span>Unreal</span><span class="miss">Nuke</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- C -->
+  <section>
+    <div class="label"><span class="n">C</span><h2>Affiche suisse</h2><span>Grille stricte, filets noirs, zéro arrondi, chiffres géants qui débordent. Noir, blanc cassé, rouge signal.</span></div>
+    <div class="mock suisse">
+      <nav class="s-nav">
+        <div class="s-logo">CV<br/>GEN<span>.</span></div>
+        <div class="s-item on"><i>01</i>Accueil</div>
+        <div class="s-item"><i>02</i>Mes CV</div>
+        <div class="s-item"><i>03</i>Modèles</div>
+        <div class="s-item"><i>04</i>Offres</div>
+        <div class="s-item"><i>05</i>Lettres</div>
+        <div class="s-item"><i>06</i>Assistant</div>
+        <div class="s-new">+ Nouveau CV</div>
+      </nav>
+      <div class="s-main">
+        <div class="s-head"><span>Accueil / Lucas</span><span>15.10.2026</span><span>Ctrl K</span></div>
+        <div class="s-score">
+          <div class="s-cap">Score ATS du CV Vitrine<small>Format 100 — Contenu 92 — Mots-clés 64</small></div>
+          <div class="s-num">84</div>
+        </div>
+        <div class="s-right">
+          <p class="s-h">Studio Nébuleuse attend votre CV.</p>
+          <div><div class="s-lab">Mots-clés de l’offre</div>
+            <div class="s-kw">Blender Substance Unreal <s>Houdini</s> Lookdev <s>Nuke</s></div></div>
+          <div><div class="s-lab">Mes CV</div>
+            <div class="s-row">CV Vitrine <b>84</b></div>
+            <div class="s-row">CV Développeur web <b>91</b></div></div>
+        </div>
+        <div class="s-bottom">
+          <div><small>Format</small>100</div><div><small>Contenu</small>92</div><div><small>Mots-clés</small>64</div><div><small>Action</small>Adapter à l’offre →</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- D -->
+  <section>
+    <div class="label"><span class="n">D</span><h2>Riso</h2><span>Impression risographie : grain papier, rose fluo et vert en surimpression, trames de points, feuilles scotchées. Créatif et joyeux.</span></div>
+    <div class="mock riso">
+      <div class="r-top"><span class="r-logo">cv gen!</span><span class="r-pill on">accueil</span><span class="r-pill">mes cv</span><span class="r-pill">modèles</span><span class="r-pill">offres</span><span class="r-pill">lettres</span><span class="r-new">+ nouveau cv</span></div>
+      <div class="r-grid">
+        <div class="r-hero"><h3>Lucas, ton CV est presque prêt à imprimer.</h3><p>Le Studio Nébuleuse cherche Houdini et Nuke. On ajuste ensemble ?</p><span class="r-btn">Adapter à l’offre →</span></div>
+        <div class="r-sheet" style="--r:1.5deg"><h4>score ats</h4><div class="r-score">84</div><div class="r-li"><span>format</span><span>100</span></div><div class="r-li"><span>contenu</span><span>92</span></div><div class="r-li"><span>mots-clés</span><span>64</span></div></div>
+        <div class="r-sheet" style="--r:-1.8deg"><h4>mots-clés de l’offre</h4><div class="r-tags"><span>blender</span><span>substance</span><span class="miss">houdini</span><span>unreal</span><span class="miss">nuke</span><span>lookdev</span></div>
+          <h4 style="margin-top:18px">mes cv</h4><div class="r-li"><span>vitrine</span><span>84</span></div><div class="r-li"><span>dév. web</span><span>91</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- E -->
+  <section>
+    <div class="label"><span class="n">E</span><h2>Plan technique</h2><span>Bureau d’études : papier millimétré, cotes, repères de coupe, cartouche en bas à droite. Encre vert-noir et orange chantier.</span></div>
+    <div class="mock plan">
+      <div class="p-ruler"><span class="p-ico on">ACC</span><span class="p-ico">CV</span><span class="p-ico">MOD</span><span class="p-ico">OFF</span><span class="p-ico">LET</span><span class="p-ico">IA</span><span class="p-ico">+</span></div>
+      <div class="p-main">
+        <h3 class="p-title">Plan de candidature <span>/ Rév. 07</span></h3>
+        <div class="p-sub">Objet : CV « Vitrine » → Artiste 3D, Studio Nébuleuse — Ctrl K pour rechercher</div>
+        <div class="p-grid">
+          <div class="p-frame"><span class="p-tag">Fig. 1 — Score ATS</span>
+            <div class="p-gauge"><div class="p-big">84</div>
+              <div class="p-dim">Format 100 · Contenu 92 · Mots-clés 64
+                <div class="p-dimline"><b style="width:84%"></b></div><div class="p-ticks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div></div></div>
+            <span class="p-btn alt">Adapter à l’offre</span><span class="p-btn">Ouvrir l’éditeur</span>
+          </div>
+          <div class="p-frame"><span class="p-tag">Fig. 2 — Nomenclature</span>
+            <div class="p-list"><div><i>01</i>CV Vitrine<b>84</b></div><div><i>02</i>CV Développeur web<b>91</b></div><div><i>03</i>CV Motion<b>67</b></div></div>
+            <div class="p-kw"><span>Blender</span><span>Substance</span><span class="miss">Houdini</span><span>Unreal</span><span class="miss">Nuke</span></div>
+          </div>
+        </div>
+        <div class="p-cart"><div>Projet<b>CV Gen</b></div><div>Candidat<b>Lucas</b></div><div>Échelle<b>1:1</b></div><div>Date<b>15.10.26</b></div><div>Offres<b>02</b></div><div>Feuille<b>01/01</b></div></div>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>
