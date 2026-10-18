@@ -142,6 +142,7 @@ export const useStore = create<State>((set, get) => {
             ...(data.profile ? { profile: normalizeResume(data.profile) } : {})
           },
           settings,
+          route: restoredRoute() ?? get().route,
           loaded: true,
           initError: null
         })
@@ -326,5 +327,16 @@ export const useStore = create<State>((set, get) => {
 declare global {
   interface Window {
     cvgen: import('../../shared/types').CvGenApi
+  }
+}
+
+/** Page à rouvrir après un rechargement automatique (voir reloadIfStale). */
+function restoredRoute(): Route | null {
+  try {
+    const raw = sessionStorage.getItem('cvgen.route')
+    sessionStorage.removeItem('cvgen.route')
+    return raw ? (JSON.parse(raw) as Route) : null
+  } catch {
+    return null
   }
 }

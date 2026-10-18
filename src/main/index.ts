@@ -102,6 +102,8 @@ function registerIpc() {
     }
   })
   ipcMain.on('log:error', (_e, msg: string) => logError('interface', String(msg)))
+  // Rechargement demandé par l'interface (location.reload() est bloqué par le filtre de navigation).
+  ipcMain.on('app:reload', (e) => e.sender.reloadIgnoringCache())
   handle('backups:list', () => listBackups())
   handle('backups:read', (name: string) => readBackup(name))
   handle('settings:get', () => getSettings())

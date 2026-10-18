@@ -1,4 +1,5 @@
 import { createRoot } from 'react-dom/client'
+import { reloadIfStale } from './components/ErrorBoundary'
 // Inter avec l'axe de taille optique : les grands titres passent en « Display ».
 import '@fontsource-variable/inter/opsz.css'
 import '@fontsource-variable/crimson-pro/wght.css'
@@ -20,6 +21,11 @@ import { launchTour, useTour } from './components/Tour'
 
 // Accès au store pour le débogage depuis les DevTools.
 Object.assign(window, { __cvgenStore: useStore, __cvgenTour: { useTour, launchTour } })
+
+// Fichier d'une page introuvable avant même son affichage (app reconstruite pendant qu'elle tournait).
+window.addEventListener('vite:preloadError', (e) => {
+  if (reloadIfStale((e as Event & { payload?: unknown }).payload ?? new Error('dynamically imported module'))) e.preventDefault()
+})
 
 // Toute erreur non rattrapée est consignée dans cvgen-erreurs.log.
 window.addEventListener('error', (e) => window.cvgen?.logError?.(`${e.message} @ ${e.filename}:${e.lineno}`))
