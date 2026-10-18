@@ -5037,3 +5037,55 @@ ul.clean li {
   margin-top: 6px;
   font-size: 11.5px;
 }
+
+/* ---------- IA locale ---------- */
+.lm-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: default;
+}
+.lm-pick {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+}
+.lm-pick:disabled {
+  cursor: default;
+}
+.lm-pick:disabled .radio-dot {
+  opacity: 0.3;
+}
+.lm-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.lm-progress {
+  width: 120px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--line);
+  overflow: hidden;
+}
+.lm-progress span {
+  display: block;
+  height: 100%;
+  background: var(--text);
+  transition: width 0.3s;
+}
+
+.msg.streaming {
+  opacity: 0.92;
+}
+.lm-card.on .lm-pick > .radio-dot {
+  border: 5px solid var(--accent);
+}

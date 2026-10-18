@@ -222,6 +222,7 @@ export const TOURS: Tour[] = [
       { sel: '.settings-grid > div', text: 'Modèle', title: 'Le modèle', body: 'Plus rapide ou plus précis. Avec OpenRouter, la liste montre les modèles gratuits disponibles.' },
       { sel: '.settings-grid > div', text: 'Apparence', title: 'Apparence', body: 'Thème clair, sombre ou celui de Windows.' },
       { sel: '.settings-grid > div', text: 'Sauvegardes', title: 'Sauvegardes', body: 'Exportez toutes vos données dans un fichier et restaurez-les sur un autre ordinateur.' },
+      { sel: '[data-tour="local"]', title: 'IA hors ligne', body: 'Un petit modèle installé sur l’ordinateur : gratuit, sans clé ni limite. Il répond dans l’assistant, et prend le relais si le fournisseur en ligne ne répond pas.', optional: true },
       { sel: '[data-tour="updates"]', title: 'Mises à jour', body: 'L’app installée se met à jour toute seule depuis GitHub. Vous pouvez aussi lancer une vérification ici.' },
       { sel: '[data-tour="tours"]', title: 'Tutoriels', body: 'Relancez n’importe quel tutoriel, ou réactivez-les tous.' }
     ]

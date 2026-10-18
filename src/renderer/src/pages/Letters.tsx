@@ -41,7 +41,8 @@ export default function Letters({ id }: { id?: string }) {
 
   const resume = resumes.find((r) => r.id === resumeId)
   const offer = offerOf(offerId)
-  const hasAi = s.settings.hasApiKey
+  // Le mini modèle local ne rédige pas de lettres (trop peu fiable) : brouillon guidé à la place.
+  const hasAi = s.settings.hasApiKey && s.settings.provider !== 'local'
   const set = (patch: Partial<LetterOptions>) => setOpts((o) => ({ ...o, ...patch }))
 
   /** Enregistre le texte rédigé : nouvelle lettre, ou remplacement annulable de la lettre ouverte. */

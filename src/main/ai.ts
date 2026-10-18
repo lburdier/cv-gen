@@ -1,6 +1,7 @@
 // Toutes les requêtes Claude passent par le processus principal :
 // la clé API ne quitte jamais ce processus et n'est jamais exposée à l'interface.
 import Anthropic from '@anthropic-ai/sdk'
+import { BrowserWindow } from 'electron'
 import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod'
 import * as z from 'zod/v4'
 import { noDash, noDashDeep, resumeToText } from '../shared/format'
@@ -14,6 +15,7 @@ import type {
   ImportedResume,
   Lang,
   LetterOptions,
+  LocalModel,
   ModelId,
   Offer,
   OfferAnalysis,
@@ -23,6 +25,7 @@ import type {
 } from '../shared/types'
 import { OpenRouterError, modelLabel, orCheckKey, orJson, orReply, orText, type OrMessage } from './openrouter'
 import { getApiKey, getSettings } from './storage'
+import { anyInstalled, localGenerate, modelById } from './localLlm'
 
 export class AiError extends Error {}
 
@@ -89,6 +92,8 @@ async function structured<S extends z.ZodType>(opts: {
   effort: Effort
   maxTokens?: number
 }): Promise<z.infer<S>> {
+  if (getSettings().provider === 'local')
+    throw new AiError(LOCAL_SCOPE)
   const { model } = getSettings()
   try {
     const or = openRouter()
@@ -114,28 +119,65 @@ async function structured<S extends z.ZodType>(opts: {
   }
 }
 
-async function text(opts: { system: string; messages: { role: 'user' | 'assistant'; content: string }[]; effort: Effort; maxTokens?: number; timeoutMs?: number }): Promise<string> {
-  const { model } = getSettings()
+type Turn = { role: 'user' | 'assistant'; content: string }
+
+async function claudeText(model: ModelId, effort: Effort, system: string, messages: Turn[], maxTokens: number): Promise<string> {
+  const res = await client().beta.messages.create({ ...common(model, effort), max_tokens: maxTokens, system, messages })
+  checkStop(res.stop_reason)
+  return noDash(
+    res.content
+      .map((b) => (b.type === 'text' ? b.text : ''))
+      .join('')
+      .trim()
+  )
+}
+
+// ---------- IA locale (sur l'ordinateur) ----------
+
+/** Texte partiel envoyé à l'interface pendant qu'un modèle local écrit. */
+function partial(t: string) {
+  for (const w of BrowserWindow.getAllWindows()) if (!w.isDestroyed()) w.webContents.send('ai:partial', noDash(t))
+}
+
+async function runLocal(id: string, system: string, turns: Turn[], maxTokens: number, stream: boolean): Promise<string> {
+  try {
+    // Petit modèle : réponses plus courtes (et plus rapides sur processeur).
+    return noDash(await localGenerate(id, system, turns, { maxTokens: Math.min(maxTokens, 1100), onChunk: stream ? partial : undefined }))
+  } catch (e) {
+    throw new AiError((e as Error).message)
+  }
+}
+
+/** Échec du fournisseur en ligne (quota, réseau, clé absente…) : le modèle local peut prendre le relais. */
+function localFallback(e: unknown): LocalModel | undefined {
+  if (e instanceof AiError && /décliné|tronquée|Écrivez/.test(e.message)) return undefined
+  return anyInstalled(getSettings().localModel)
+}
+
+/** Le mini modèle local est réservé à l'assistant : trop petit pour écrire du contenu de CV ou de lettre fiable. */
+const LOCAL_SCOPE = 'Le modèle local, très petit, sert à l’assistant. Pour cette fonction, choisissez Claude ou OpenRouter dans Paramètres, ou utilisez la version sans IA.'
+
+async function text(opts: { system: string; messages: Turn[]; effort: Effort; maxTokens?: number; timeoutMs?: number; localScope?: string }): Promise<string> {
+  const s = getSettings()
+  if (s.provider === 'local') throw new AiError(opts.localScope ?? LOCAL_SCOPE)
   try {
     const or = openRouter()
     if (or) return noDash(await orText(or.key, or.model, [{ role: 'system', content: opts.system }, ...opts.messages], opts.maxTokens ?? 16000, opts.timeoutMs))
-    const res = await client().beta.messages.create({
-      ...common(model, opts.effort),
-      max_tokens: opts.maxTokens ?? 16000,
-      system: opts.system,
-      messages: opts.messages
-    })
-    checkStop(res.stop_reason)
-    return noDash(
-      res.content
-        .map((b) => (b.type === 'text' ? b.text : ''))
-        .join('')
-        .trim()
-    )
+    return await claudeText(s.model, opts.effort, opts.system, opts.messages, opts.maxTokens ?? 16000)
   } catch (e) {
     friendly(e)
   }
 }
+
+/** Repères donnés au mini modèle local (il en sait peu et invente facilement). */
+const LOCAL_PRIMER = `Repères fiables (utilise-les, n'invente rien d'autre) :
+- ATS (Applicant Tracking System) : logiciel de recrutement qui lit et trie les CV (Workday, Taleo, Greenhouse…). Il préfère une seule colonne, des intitulés standards (Expérience, Formation, Compétences), du vrai texte (pas d'image) et les mots-clés de l'offre.
+- Un bon CV : titre clair, profil de 2 à 3 phrases, expériences avec verbes d'action et résultats chiffrés, compétences regroupées, 1 page (2 au-delà de 10 ans d'expérience).
+- CV GEN : « Mes CV » (éditeur formulaire ou toile), « Modèles » (modèles ATS et visuels, presets par métier), « Offres » (analyse d'une annonce et mots-clés), « Lettres » (brouillon guidé ou IA), « Score ATS » (tester un PDF), « Mon profil » (infos reprises partout).
+Réponds en français, en 6 phrases au maximum, avec des conseils concrets tirés du CV ci-dessous. Si tu ne sais pas, dis-le simplement.`
+
+const withPrimer = (system: string) => `${LOCAL_PRIMER}\n\n${system}`
+
 
 const HONESTY = `Règle absolue : n'invente JAMAIS d'employeur, de diplôme, de date, de chiffre, de certification ni de compétence que la personne n'a pas.
 Tu peux reformuler, réordonner, condenser, mettre en avant et employer le vocabulaire de l'offre quand il décrit fidèlement ce qui figure déjà dans le CV.
@@ -284,10 +326,12 @@ const ANGLES: Record<LetterOptions['angle'], string> = {
 }
 
 export async function coverLetter(resume: Resume, offer: Offer | undefined, o: LetterOptions): Promise<string> {
+  const localScope = 'Le modèle local est trop petit pour écrire une lettre fiable : utilisez le « Brouillon guidé » (sans IA), ou choisissez Claude ou OpenRouter dans Paramètres.'
   const [min, max] = o.length === 'courte' ? [150, 230] : o.length === 'detaillee' ? [380, 480] : [250, 360]
   const highlights = o.highlights.length ? resume.experiences.filter((e) => o.highlights.includes(e.id)) : []
   const en = o.lang === 'en'
   return text({
+    localScope,
     effort: 'medium',
     // Lettre complète : les modèles gratuits peuvent mettre plus d'une minute.
     timeoutMs: 60_000,
@@ -319,6 +363,7 @@ Langue : ${en ? 'anglais' : 'français'}.`,
 /** Retouche d'une lettre existante selon une consigne, sans ajouter de faits absents du CV. */
 export async function reviseLetter(body: string, instruction: string, resume: Resume, offer?: Offer, lang: Lang = 'fr'): Promise<string> {
   return text({
+    localScope: 'Le modèle local est trop petit pour écrire une lettre fiable : utilisez le « Brouillon guidé » (sans IA), ou choisissez Claude ou OpenRouter dans Paramètres.',
     effort: 'low',
     timeoutMs: 60_000,
     maxTokens: 6000,
@@ -344,6 +389,11 @@ ${ctx ? '\n' + ctx : ''}`
   const turns = history.filter((t) => !t.error && !t.content.startsWith('⚠️')).map((t) => ({ role: t.role, content: t.content }))
   while (turns.length && turns[0].role !== 'user') turns.shift()
   if (!turns.length) throw new AiError('Écrivez une question pour l’assistant.')
+  const s = getSettings()
+  if (s.provider === 'local') {
+    const m = modelById(s.localModel)
+    return { text: await runLocal(s.localModel, withPrimer(system), turns, 700, true), model: `${m?.name ?? 'Modèle'} · sur cet ordinateur` }
+  }
   try {
     const or = openRouter()
     if (or) {
@@ -351,11 +401,13 @@ ${ctx ? '\n' + ctx : ''}`
       const r = await orReply(or.key, or.model, [{ role: 'system', content: system }, ...turns], 4000)
       return { text: noDash(r.text), model: modelLabel(r.model) }
     }
+    return { text: await claudeText(s.model, 'medium', system, turns, 8000), model: CLAUDE_NAMES[s.model] ?? s.model }
   } catch (e) {
+    // Quota atteint, réseau coupé, clé absente : le modèle local répond à la place s'il est installé.
+    const fb = localFallback(e)
+    if (fb) return { text: await runLocal(fb.id, withPrimer(system), turns, 700, true), model: `${fb.name} · sur cet ordinateur (secours)` }
     friendly(e)
   }
-  const { model } = getSettings()
-  return { text: await text({ effort: 'medium', system, messages: turns, maxTokens: 8000 }), model: CLAUDE_NAMES[model] ?? model }
 }
 
 // ---------- Import d'un CV existant ----------

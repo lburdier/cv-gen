@@ -211,7 +211,27 @@ export interface ActivityItem {
 
 export type ModelId = 'claude-opus-5-5' | 'claude-sonnet-5-5' | 'claude-haiku-5-5'
 
-export type AiProvider = 'anthropic' | 'openrouter'
+/** Fournisseurs qui ont une clé API. */
+export type KeyProvider = 'anthropic' | 'openrouter'
+/** « local » : petit modèle exécuté sur l'ordinateur, sans clé ni réseau. */
+export type AiProvider = KeyProvider | 'local'
+
+export interface LocalModel {
+  id: string
+  name: string
+  label: string
+  desc: string
+  file: string
+  url: string
+  /** Taille du fichier en octets. */
+  size: number
+}
+
+export interface LocalModelState extends LocalModel {
+  installed: boolean
+  downloading: boolean
+  percent?: number
+}
 
 /** Modèle gratuit proposé par OpenRouter. */
 export interface FreeModel {
@@ -230,6 +250,10 @@ export interface Settings {
   model: ModelId
   /** Modèle OpenRouter (par défaut le routeur gratuit « openrouter/free »). */
   orModel: string
+  /** Modèle local choisi (identifiant du catalogue). */
+  localModel: string
+  /** Un modèle local est installé (repli automatique possible). */
+  hasLocalModel: boolean
   theme: 'light' | 'dark' | 'system'
   userName: string
   encryptionAvailable: boolean
@@ -420,8 +444,16 @@ export interface CvGenApi {
   /** Texte brut d'un DOCX. */
   extractDocx(bytes: Uint8Array): Promise<string>
   getSettings(): Promise<Settings>
-  setSettings(patch: Partial<Pick<Settings, 'provider' | 'model' | 'orModel' | 'theme' | 'userName'>>): Promise<Settings>
-  setApiKey(key: string, provider?: AiProvider): Promise<Settings>
+  setSettings(patch: Partial<Pick<Settings, 'provider' | 'model' | 'orModel' | 'localModel' | 'theme' | 'userName'>>): Promise<Settings>
+  setApiKey(key: string, provider?: KeyProvider): Promise<Settings>
+  /** IA locale : catalogue, téléchargement du modèle, suppression. */
+  local: {
+    list(): Promise<LocalModelState[]>
+    download(id: string): Promise<LocalModelState[]>
+    cancel(id: string): Promise<LocalModelState[]>
+    remove(id: string): Promise<LocalModelState[]>
+    onState(cb: (s: LocalModelState[]) => void): () => void
+  }
   listFreeModels(): Promise<FreeModel[]>
   testApiKey(): Promise<{ ok: boolean; error?: string }>
   setTitleBarTheme(dark: boolean): void
@@ -453,5 +485,7 @@ export interface CvGenApi {
     reviseLetter(body: string, instruction: string, resume: Resume, offer?: Offer, lang?: Lang): Promise<string>
     analyzeCvImage(dataUrl: string, withContent: boolean, hint?: DesignSpec): Promise<CvImageAnalysis>
     chat(history: ChatTurn[], resume?: Resume, offer?: Offer): Promise<ChatReply>
+    /** Texte partiel pendant qu'un modèle local écrit (affiché en direct dans l'assistant). */
+    onPartial(cb: (text: string) => void): () => void
   }
 }

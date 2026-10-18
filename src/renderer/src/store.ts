@@ -84,6 +84,8 @@ const defaultSettings: Settings = {
   provider: 'anthropic',
   model: 'claude-opus-5-5',
   orModel: 'openrouter/free',
+  localModel: 'qwen3-0.6b',
+  hasLocalModel: false,
   theme: 'light',
   userName: '',
   encryptionAvailable: true
