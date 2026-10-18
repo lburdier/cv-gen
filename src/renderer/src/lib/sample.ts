@@ -9,6 +9,17 @@ import render1 from '../assets/samples/render1.jpg'
 import render2 from '../assets/samples/render2.jpg'
 import render3 from '../assets/samples/render3.jpg'
 
+// Portraits des personnes fictives (Unsplash, voir assets/samples/CREDITS.md) : une photo du bon genre par prénom.
+const PEOPLE = import.meta.glob('../assets/samples/people/*.jpg', { eager: true, import: 'default' }) as Record<string, string>
+const PHOTO_OF: Record<string, string> = {
+  Camille: 'f02', Sarah: 'f05', Léa: 'f04', Sophie: 'f03', Manon: 'f06', Chloé: 'f08', Élise: 'f01', Clara: 'f11',
+  Nadia: 'f12', Yasmine: 'f09', Margaux: 'f10', Laura: 'f07', Karima: 'f09', Julie: 'f03', Alexandra: 'f01', Emma: 'f11',
+  Lucas: 'm06', Yanis: 'm03', Maxime: 'm01', Thomas: 'm07', Karim: 'm10', Julien: 'm09', Alexandre: 'm04', Hugo: 'm08',
+  Antoine: 'm02', Samuel: 'm05', Léo: 'm11', Simon: 'm12', Mathis: 'm02', Clément: 'm03', Étienne: 'm07', Cyril: 'm01', Nabil: 'm10'
+}
+/** Photo d'exemple associée à un prénom fictif (aucune pour un prénom inconnu). */
+export const photoFor = (firstName: string): string | undefined => PEOPLE[`../assets/samples/people/${PHOTO_OF[firstName]}.jpg`]
+
 export const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-3)
 
 export function blankResume(templateId = 'atelier'): Resume {
@@ -138,6 +149,7 @@ export function presetResume(presetId: string): Resume {
   return {
     ...r,
     ...c,
+    basics: { ...c.basics, photo: c.basics.photo ?? photoFor(c.basics.firstName) },
     projects: c.projects ?? [],
     certifications: c.certifications ?? [],
     languages: c.languages ?? [],
@@ -215,7 +227,7 @@ function creativeMale(base: Resume): Resume {
     .replace(/développeuse/g, 'développeur')
     .replace(/Passionnée/g, 'Passionné')
   const r = JSON.parse(text) as Resume
-  return { ...r, basics: { ...r.basics, banner }, gallery }
+  return { ...r, basics: { ...r.basics, banner, photo: photoFor('Lucas') }, gallery }
 }
 
 // Chaque personne fictive a son équivalent de l'autre genre (prénom proche), pour proposer
@@ -295,7 +307,7 @@ export function presetAs(presetId: string, gender: PreviewGender): Resume {
     .replace(word(from), to)
     .replace(new RegExp(`(?<![a-z])${plain(from)}(?=[.-])`, 'g'), plain(to))
   const out = JSON.parse(agree(json, gender)) as Resume
-  return { ...out, basics: { ...out.basics, photo, banner }, gallery: r.gallery }
+  return { ...out, basics: { ...out.basics, photo: photoFor(to) ?? photo, banner }, gallery: r.gallery }
 }
 
 /** Nom du métier affiché sur la carte d'un preset, accordé au choix « Fille / Garçon ». */

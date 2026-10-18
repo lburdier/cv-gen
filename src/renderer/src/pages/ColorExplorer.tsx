@@ -7,14 +7,18 @@ import { Modal } from '../components/ui'
 import { chooseImage } from '../lib/image'
 import { HARMONIES, extractColors, pickPair } from '../lib/palette'
 import { activeProfile } from '../lib/profile'
-import { isEmptyResume, sampleResume } from '../lib/sample'
+import { isEmptyResume, sampleFor, sampleResume } from '../lib/sample'
 import { useStore } from '../store'
 import { contrast } from '../templates/color'
-import { CORE_TEMPLATES, type TemplateDef } from '../templates/registry'
+import { DESIGN_STRUCTURES, recolorStudio } from '../templates/designCatalog'
+import { CORE_TEMPLATES, getTemplate, type TemplateDef } from '../templates/registry'
 import { Select } from '../components/Select'
 
 type Mode = 'free' | 'harmonies' | 'image'
-type Filter = 'all' | 'visual' | 'ats' | 'duo'
+type Filter = 'all' | 'visual' | 'ats' | 'duo' | 'studio'
+
+// Studio de design : une carte par structure (une fois recolorées, ses dix palettes se confondent).
+const STUDIO_BASES: TemplateDef[] = DESIGN_STRUCTURES.map((x) => ({ ...getTemplate(`d-${x.id}-corail`), name: x.name }))
 
 const HEX = /^#?([\da-f]{6}|[\da-f]{3})$/i
 function normalizeHex(v: string): string | null {
@@ -57,19 +61,37 @@ export default function ColorExplorer({ initialColors, resumeId }: { initialColo
 
   const base = source === 'sample' ? null : source === 'profile' ? (s.data.profile ?? null) : (mine.find((r) => r.id === source) ?? null)
   // Exemples calculés une fois ; les rendus ne changent qu'avec les couleurs ou le contenu choisi.
-  const samples = useMemo(() => Object.fromEntries(CORE_TEMPLATES.map((t) => [t.id, sampleResume(t.id)])), [])
+  const gender = s.previewGender
+  const samples = useMemo(
+    () => Object.fromEntries([...CORE_TEMPLATES.map((t) => [t.id, sampleResume(t.id)]), ...STUDIO_BASES.map((t) => [t.id, sampleFor(t.id, gender)])]),
+    [gender]
+  )
   const renders = useMemo(
     () =>
       Object.fromEntries(
         CORE_TEMPLATES.map((t): [string, Resume] => {
           const content = base ? { ...base, templateId: t.id } : samples[t.id]
           return [t.id, { ...content, accent: shown[0] ?? t.accent, accent2: shown[1] }]
-        })
+        }).concat(
+          STUDIO_BASES.map((t): [string, Resume] => {
+            const content = base ?? samples[t.id]
+            // Couleurs choisies : structure recolorée en entier (accent, bandeau, colonne, teintes).
+            const re = shown[0] ? recolorStudio(t.id, shown[0], shown[1]) : null
+            return [
+              t.id,
+              re
+                ? { ...content, templateId: re.id, accent: shown[0], accent2: shown[1], design: re.design, designFor: re.id }
+                : { ...content, templateId: t.id, accent: t.accent, accent2: undefined, design: undefined, designFor: undefined }
+            ]
+          })
+        )
       ),
     [base, samples, shown]
   )
 
-  let list = CORE_TEMPLATES.filter((t) => (filter === 'visual' ? t.visual : filter === 'ats' ? !t.visual : filter === 'duo' ? t.secondary : true))
+  let list = [...CORE_TEMPLATES, ...STUDIO_BASES].filter((t) =>
+    filter === 'studio' ? Boolean(t.studio) : filter === 'visual' ? t.visual : filter === 'ats' ? !t.visual : filter === 'duo' ? t.secondary : true
+  )
   // Avec deux couleurs, les modèles qui exploitent la couleur secondaire passent en premier.
   if (shown.length === 2) list = [...list].sort((a, b) => Number(Boolean(b.secondary)) - Number(Boolean(a.secondary)))
   const lowContrast = shown[0] ? contrast(shown[0], '#ffffff') < 3 : false
@@ -247,7 +269,8 @@ export default function ColorExplorer({ initialColors, resumeId }: { initialColo
               ['all', 'Tous'],
               ['duo', 'Deux couleurs'],
               ['visual', 'Visuels'],
-              ['ats', 'ATS']
+              ['ats', 'ATS'],
+              ['studio', 'Studio de design']
             ] as [Filter, string][]
           ).map(([k, label]) => (
             <button key={k} className={`chip ${filter === k ? 'active' : ''}`} onClick={() => setFilter(k)}>
@@ -284,7 +307,7 @@ export default function ColorExplorer({ initialColors, resumeId }: { initialColo
               <div>
                 <strong>{t.name}</strong>
                 <span>
-                  {t.visual ? 'Modèle visuel' : 'Modèle ATS'}
+                  {t.studio ? `Studio · ${t.studio.family}` : t.visual ? 'Modèle visuel' : 'Modèle ATS'}
                   {t.secondary ? ' · deux couleurs' : ' · une couleur'}
                 </span>
               </div>
@@ -307,17 +330,22 @@ function ApplyModal({ tpl, preview, base, mine, onClose }: { tpl: TemplateDef; p
     if (!r) return
     s.withUndo(`« ${tpl.name} » et ses couleurs appliqués à « ${r.title} »`, () =>
       s.updateResume(r.id, (x) => {
-        x.templateId = tpl.id
+        x.templateId = preview.templateId
         x.accent = preview.accent
         if (preview.accent2) x.accent2 = preview.accent2
         else delete x.accent2
+        // Studio recoloré : le design aux couleurs choisies suit le CV.
+        if (tpl.studio && preview.design) {
+          x.design = preview.design
+          x.designFor = preview.templateId
+        }
       })
     )
     onClose()
     s.go({ name: 'editor', id: r.id })
   }
   const create = () => {
-    const r = s.createResume({ templateId: tpl.id, from: { ...preview, title: base ? `${base.title} · ${tpl.name}` : preview.title } })
+    const r = s.createResume({ templateId: preview.templateId, from: { ...preview, title: base ? `${base.title} · ${tpl.name}` : preview.title } })
     onClose()
     s.go({ name: 'editor', id: r.id })
   }

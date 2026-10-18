@@ -1,4 +1,4 @@
-// Studio de design : 200 modèles = 20 structures (mise en page, en-tête, typographie, décors)
+// Studio de design : 500 modèles = 50 structures (mise en page, en-tête, typographie, décors)
 // × 10 palettes. Chaque modèle est un design complet rendu par CvCustom, entièrement réglable
 // (onglet Design du formulaire, toile) et exportable aussi en version ATS une colonne.
 import { DEFAULT_DESIGN, normalizeDesign } from '../../../shared/design'
@@ -223,6 +223,278 @@ const STRUCTURES: Structure[] = [
     tone: 'dark-side',
     headerFill: 'primary',
     design: { layout: 'sidebar-right', sidebarWidth: 31, header: 'band', headerShape: 'flat', photo: 'rounded', photoPlace: 'sidebar', headings: 'bar', decor: 'none', nameStyle: 'highlight', corners: 'square', icons: true }
+  },
+
+  // ---------- Collection 2 : trente structures de plus (300 modèles), même moteur, mêmes fonctions ----------
+  {
+    id: 'meridien',
+    name: 'Méridien',
+    family: 'Corporate',
+    tagline: 'Pour le conseil et la finance : nom en serif, coordonnées à droite, colonne fine, parcours sur filets.',
+    tone: 'plain',
+    headerFill: 'page',
+    design: { layout: 'sidebar-right', sidebarWidth: 28, header: 'split', photo: 'none', headings: 'rule', displayFont: 'serif', nameStyle: 'plain', skills: 'list', timeline: false, entries: 'rule', bullets: 'dash', icons: true }
+  },
+  {
+    id: 'lumen',
+    name: 'Lumen',
+    family: 'Minimal',
+    tagline: 'Tout est centré et respire : photo ronde, grand nom, titres en capitales espacées.',
+    tone: 'light',
+    headerFill: 'page',
+    design: { layout: 'single', header: 'minimal', headerAlign: 'center', photo: 'circle', photoPlace: 'header', headings: 'caps', nameSize: 'xl', nameStyle: 'plain', skills: 'chips', timeline: false, bullets: 'dot', icons: true }
+  },
+  {
+    id: 'cadence',
+    name: 'Cadence',
+    family: 'Compact',
+    tagline: 'Dense mais lisible : beaucoup de contenu sur une page, titres à barre, compétences en colonnes.',
+    tone: 'light',
+    headerFill: 'page',
+    design: { layout: 'single', header: 'split', photo: 'none', headings: 'bar', density: 'compact', skills: 'columns', bullets: 'square', corners: 'square', nameSize: 'm' }
+  },
+  {
+    id: 'oree',
+    name: 'Orée',
+    family: 'Doux',
+    tagline: 'Carte d’en-tête aux vagues légères, colonne teintée avec photo, parcours en cartes.',
+    tone: 'tinted',
+    headerFill: 'tint',
+    design: { layout: 'sidebar-left', sidebarWidth: 34, header: 'card', photo: 'rounded', photoPlace: 'sidebar', headings: 'pill', decor: 'waves', entries: 'cards', bullets: 'check', skills: 'chips', icons: true }
+  },
+  {
+    id: 'sillage',
+    name: 'Sillage',
+    family: 'Bandeau',
+    tagline: 'Bandeau sombre au bord ondulé, nom en serif, photo à droite, une colonne aérée.',
+    tone: 'light',
+    headerFill: 'deep',
+    design: { layout: 'single', header: 'band', headerShape: 'wave', photo: 'circle', photoPlace: 'header', photoSide: 'right', headings: 'rule', displayFont: 'serif', nameStyle: 'plain', decor: 'none', icons: true }
+  },
+  {
+    id: 'nova',
+    name: 'Nova',
+    family: 'Audacieux',
+    tagline: 'Bandeau plein, nom en capitales géantes, photo carrée, titres en blocs de couleur.',
+    tone: 'light',
+    headerFill: 'primary',
+    design: { layout: 'sidebar-left', sidebarWidth: 30, header: 'band', headerShape: 'flat', photo: 'square', photoPlace: 'header', headings: 'block', displayFont: 'wide', nameCase: 'upper', nameSize: 'xl', corners: 'square', decor: 'none' }
+  },
+  {
+    id: 'vertex',
+    name: 'Vertex',
+    family: 'Tech',
+    tagline: 'Liseré latéral, titres à chasse fixe, colonne de droite à filet et puces fléchées.',
+    tone: 'plain',
+    headerFill: 'page',
+    design: { layout: 'sidebar-right', sidebarWidth: 28, header: 'minimal', photo: 'none', headings: 'bar', displayFont: 'mono', skills: 'columns', bullets: 'arrow', frame: 'side', corners: 'square' }
+  },
+  {
+    id: 'quartz',
+    name: 'Quartz',
+    family: 'Élégant',
+    tagline: 'Cadre fin, serif partout, nom en capitales centré : la sobriété d’un faire-part.',
+    tone: 'light',
+    headerFill: 'page',
+    design: { layout: 'single', header: 'minimal', headerAlign: 'center', photo: 'none', headings: 'underline', bodyFont: 'serif', displayFont: 'serif', nameCase: 'upper', nameStyle: 'plain', frame: 'border', entries: 'rule', timeline: false, skills: 'list' }
+  },
+  {
+    id: 'alpin',
+    name: 'Alpin',
+    family: 'Colonne',
+    tagline: 'Colonne fine teintée avec photo, nom en dégradé, titres surlignés et frise.',
+    tone: 'light',
+    headerFill: 'page',
+    design: { layout: 'sidebar-left', sidebarWidth: 28, header: 'minimal', photo: 'circle', photoPlace: 'sidebar', headings: 'highlight', nameStyle: 'gradient', skills: 'chips', timeline: true, icons: true }
+  },
+  {
+    id: 'delta',
+    name: 'Delta',
+    family: 'Corporate',
+    tagline: 'Bandeau pâle, photo à droite, une colonne très lisible : le CV d’entreprise par excellence.',
+    tone: 'light',
+    headerFill: 'tint',
+    design: { layout: 'single', header: 'band', headerShape: 'flat', photo: 'rounded', photoPlace: 'header', photoSide: 'right', headings: 'underline', nameStyle: 'plain', skills: 'list', bullets: 'dot', icons: true }
+  },
+  {
+    id: 'echo',
+    name: 'Écho',
+    family: 'Éditorial',
+    tagline: 'Intitulés dans la marge, grand nom en serif, liseré d’accent en haut de page.',
+    tone: 'light',
+    headerFill: 'page',
+    design: { layout: 'single', header: 'minimal', photo: 'none', headings: 'rail', displayFont: 'serif', nameSize: 'xl', nameStyle: 'accent', skills: 'list', bullets: 'dash', frame: 'top', timeline: false }
+  },
+  {
+    id: 'fjord',
+    name: 'Fjord',
+    family: 'Colonne',
+    tagline: 'Colonne de droite sombre avec photo, nom en serif, titres en capitales espacées.',
+    tone: 'dark-side',
+    headerFill: 'page',
+    design: { layout: 'sidebar-right', sidebarWidth: 32, header: 'minimal', photo: 'circle', photoPlace: 'sidebar', headings: 'caps', displayFont: 'serif', nameStyle: 'plain', skills: 'chips', icons: true }
+  },
+  {
+    id: 'halo',
+    name: 'Halo',
+    family: 'Doux',
+    tagline: 'Carte d’en-tête centrée à fine trame de points, photo ronde, titres surlignés.',
+    tone: 'tinted',
+    headerFill: 'tint',
+    design: { layout: 'single', header: 'card', headerAlign: 'center', photo: 'circle', photoPlace: 'header', headings: 'highlight', decor: 'dots', entries: 'cards', skills: 'chips', icons: true }
+  },
+  {
+    id: 'kairos',
+    name: 'Kairos',
+    family: 'Créatif',
+    tagline: 'Bandeau arrondi à cercles fins, nom surligné, large colonne et pastilles.',
+    tone: 'light',
+    headerFill: 'primary',
+    design: { layout: 'sidebar-left', sidebarWidth: 35, header: 'band', headerShape: 'curve', photo: 'circle', photoPlace: 'header', headings: 'pill', displayFont: 'wide', nameStyle: 'highlight', decor: 'circles', skills: 'chips', icons: true }
+  },
+  {
+    id: 'lotus',
+    name: 'Lotus',
+    family: 'Élégant',
+    tagline: 'Fond teinté, serif, colonne avec photo et titres en capitales : élégant et chaleureux.',
+    tone: 'tinted',
+    headerFill: 'page',
+    design: { layout: 'sidebar-left', sidebarWidth: 30, header: 'minimal', photo: 'circle', photoPlace: 'sidebar', headings: 'caps', bodyFont: 'serif', displayFont: 'serif', nameStyle: 'plain', skills: 'list', timeline: false, icons: true }
+  },
+  {
+    id: 'mistral',
+    name: 'Mistral',
+    family: 'Bandeau',
+    tagline: 'Bandeau nuit centré à grille discrète, nom en capitales, colonne de droite à filet.',
+    tone: 'plain',
+    headerFill: 'deep',
+    design: { layout: 'sidebar-right', sidebarWidth: 30, header: 'band', headerShape: 'flat', headerAlign: 'center', photo: 'circle', photoPlace: 'header', headings: 'underline', nameCase: 'upper', nameStyle: 'plain', decor: 'grid', icons: true }
+  },
+  {
+    id: 'nord',
+    name: 'Nord',
+    family: 'Minimal',
+    tagline: 'Colonne étroite sans couleur, grand nom, filets et tirets : le minimalisme scandinave.',
+    tone: 'plain',
+    headerFill: 'page',
+    design: { layout: 'sidebar-left', sidebarWidth: 26, header: 'minimal', photo: 'none', headings: 'rule', nameSize: 'xl', nameStyle: 'plain', skills: 'list', timeline: false, bullets: 'dash' }
+  },
+  {
+    id: 'opale',
+    name: 'Opale',
+    family: 'Doux',
+    tagline: 'Bandeau pâle arrondi et centré, photo ronde, titres en pastilles, puces cochées.',
+    tone: 'tinted',
+    headerFill: 'tint',
+    design: { layout: 'single', header: 'band', headerShape: 'curve', headerAlign: 'center', photo: 'circle', photoPlace: 'header', headings: 'pill', decor: 'none', bullets: 'check', entries: 'cards', skills: 'chips', icons: true }
+  },
+  {
+    id: 'pivot',
+    name: 'Pivot',
+    family: 'Tech',
+    tagline: 'En-tête en deux parties, titres en blocs à chasse fixe, liseré en haut, puces fléchées.',
+    tone: 'light',
+    headerFill: 'page',
+    design: { layout: 'single', header: 'split', photo: 'none', headings: 'block', displayFont: 'mono', skills: 'columns', bullets: 'arrow', corners: 'square', frame: 'top' }
+  },
+  {
+    id: 'rivage',
+    name: 'Rivage',
+    family: 'Colonne',
+    tagline: 'Carte d’en-tête pâle, colonne teintée avec photo, parcours séparés par des filets.',
+    tone: 'light',
+    headerFill: 'tint',
+    design: { layout: 'sidebar-left', sidebarWidth: 33, header: 'card', photo: 'rounded', photoPlace: 'sidebar', headings: 'underline', entries: 'rule', skills: 'chips', icons: true }
+  },
+  {
+    id: 'ulysse',
+    name: 'Ulysse',
+    family: 'Créatif',
+    tagline: 'Bandeau nuit à points, nom en dégradé, colonne de droite teintée avec photo.',
+    tone: 'tinted',
+    headerFill: 'deep',
+    design: { layout: 'sidebar-right', sidebarWidth: 32, header: 'band', headerShape: 'flat', photo: 'circle', photoPlace: 'sidebar', headings: 'highlight', displayFont: 'wide', nameCase: 'upper', nameStyle: 'gradient', decor: 'dots', skills: 'chips', icons: true }
+  },
+  {
+    id: 'velin',
+    name: 'Vélin',
+    family: 'Élégant',
+    tagline: 'Le classique à la française : serif, colonne étroite avec formation et compétences.',
+    tone: 'plain',
+    headerFill: 'page',
+    design: { layout: 'sidebar-left', sidebarWidth: 27, header: 'minimal', photo: 'none', headings: 'caps', bodyFont: 'serif', displayFont: 'serif', nameStyle: 'plain', skills: 'list', timeline: false, sidebarSections: ['education', 'skills', 'languages', 'interests'] }
+  },
+  {
+    id: 'zenith',
+    name: 'Zénith',
+    family: 'Audacieux',
+    tagline: 'Bandeau nuit centré, nom en capitales géantes et contour, titres à barre.',
+    tone: 'light',
+    headerFill: 'deep',
+    design: { layout: 'single', header: 'band', headerShape: 'flat', headerAlign: 'center', photo: 'none', headings: 'bar', displayFont: 'wide', nameCase: 'upper', nameSize: 'xl', nameStyle: 'outline', decor: 'none' }
+  },
+  {
+    id: 'albatre',
+    name: 'Albâtre',
+    family: 'Minimal',
+    tagline: 'Une colonne claire, photo ronde à droite du nom, compétences en pastilles et frise.',
+    tone: 'light',
+    headerFill: 'page',
+    design: { layout: 'single', header: 'minimal', photo: 'circle', photoPlace: 'header', photoSide: 'right', headings: 'underline', nameStyle: 'accent', skills: 'chips', timeline: true, bullets: 'dot', icons: true }
+  },
+  {
+    id: 'boussole',
+    name: 'Boussole',
+    family: 'Corporate',
+    tagline: 'Bandeau plein, colonne pâle avec photo et certifications, titres à filet.',
+    tone: 'light',
+    headerFill: 'primary',
+    design: { layout: 'sidebar-left', sidebarWidth: 30, header: 'band', headerShape: 'flat', photo: 'circle', photoPlace: 'sidebar', headings: 'rule', nameStyle: 'plain', decor: 'none', icons: true, sidebarSections: ['skills', 'certifications', 'languages', 'interests'] }
+  },
+  {
+    id: 'carnet',
+    name: 'Carnet',
+    family: 'Compact',
+    tagline: 'Compact et net : colonne de droite à filet, photo carrée, parcours sur filets.',
+    tone: 'plain',
+    headerFill: 'page',
+    design: { layout: 'sidebar-right', sidebarWidth: 28, header: 'minimal', photo: 'square', photoPlace: 'sidebar', headings: 'caps', density: 'compact', skills: 'list', entries: 'rule', bullets: 'dash', corners: 'square', nameSize: 'm' }
+  },
+  {
+    id: 'domaine',
+    name: 'Domaine',
+    family: 'Éditorial',
+    tagline: 'Fond teinté, serif, liseré latéral et compétences en colonnes : un CV de revue.',
+    tone: 'tinted',
+    headerFill: 'page',
+    design: { layout: 'single', header: 'split', photo: 'none', headings: 'underline', bodyFont: 'serif', displayFont: 'serif', nameSize: 'xl', nameStyle: 'plain', skills: 'columns', entries: 'rule', frame: 'side', timeline: false }
+  },
+  {
+    id: 'escale',
+    name: 'Escale',
+    family: 'Bandeau',
+    tagline: 'Bandeau coloré au bord ondulé, photo ronde, colonne latérale et pastilles.',
+    tone: 'light',
+    headerFill: 'primary',
+    design: { layout: 'sidebar-left', sidebarWidth: 32, header: 'band', headerShape: 'wave', photo: 'circle', photoPlace: 'header', headings: 'pill', decor: 'none', skills: 'chips', icons: true }
+  },
+  {
+    id: 'faubourg',
+    name: 'Faubourg',
+    family: 'Compact',
+    tagline: 'Carte d’en-tête avec photo, titres en blocs, tout tient sur une page.',
+    tone: 'light',
+    headerFill: 'tint',
+    design: { layout: 'single', header: 'card', photo: 'rounded', photoPlace: 'header', headings: 'block', density: 'compact', skills: 'chips', bullets: 'square', corners: 'square', icons: true }
+  },
+  {
+    id: 'comete',
+    name: 'Comète',
+    family: 'Créatif',
+    tagline: 'Colonne sombre semée de points, nom surligné, titres à barre et photo ronde.',
+    tone: 'dark-side',
+    headerFill: 'page',
+    design: { layout: 'sidebar-left', sidebarWidth: 31, header: 'minimal', photo: 'circle', photoPlace: 'sidebar', headings: 'bar', displayFont: 'wide', nameStyle: 'highlight', decor: 'dots', skills: 'chips', icons: true }
   }
 ]
 
@@ -279,6 +551,28 @@ const BY_ID = new Map(DESIGN_TEMPLATES.map((t) => [t.id, t]))
 
 export const isDesignTemplate = (id: string) => BY_ID.has(id)
 export const designTemplate = (id: string) => BY_ID.get(id)
+
+const structureOf = (id: string) => STRUCTURES.find((s) => s.id === id.slice(2, id.lastIndexOf('-')))
+
+/** Palette du catalogue la plus proche d'une couleur (pour nommer le modèle recoloré). */
+export function nearestPalette(hex: string): string {
+  const rgb = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16))
+  const [r, g, b] = rgb(hex)
+  const dist = (p: Palette) => rgb(p.primary).reduce((n, v, i) => n + (v - [r, g, b][i]) ** 2, 0)
+  return DESIGN_PALETTES.reduce((best, p) => (dist(p) < dist(best) ? p : best)).id
+}
+
+/**
+ * Modèle du studio recoloré avec une ou deux couleurs choisies (explorateur de couleurs) :
+ * même structure, fonds, bandeau et teintes recalculés. L'identifiant suit la palette la plus proche.
+ */
+export function recolorStudio(templateId: string, primary: string, secondary?: string): { id: string; design: DesignSpec } | null {
+  const s = structureOf(templateId)
+  const t = BY_ID.get(templateId)
+  if (!s || !t) return null
+  const p: Palette = { id: 'custom', name: '', hue: '', primary, secondary: secondary ?? mixHex(primary, '#FFFFFF', 0.6) }
+  return { id: `d-${s.id}-${nearestPalette(primary)}`, design: { ...t.design, colors: colorsFor(s, p) } }
+}
 
 /** Modèles rendus par le moteur de design (studio + « Sur mesure »), donc éditables en toile et dans l'onglet Design. */
 export const usesDesignEngine = (id: string) => id === 'sur-mesure' || BY_ID.has(id)

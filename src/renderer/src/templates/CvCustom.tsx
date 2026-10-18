@@ -7,7 +7,7 @@ import { T, useCanvasMarks } from './Editable'
 import { EditableContext, usePlaceholders } from './previewContext'
 
 /**
- * Moteur de design : « Sur mesure » (recréé depuis une image) et les 200 modèles du studio.
+ * Moteur de design : « Sur mesure » (recréé depuis une image) et les modèles du studio.
  * Mise en page entièrement pilotée par un design paramétrable (colonne, en-tête et sa forme,
  * photo, titres, polices, couleurs, décors, puces, cartes). En mode toile, chaque texte
  * s'édite sur place et sections et entrées se réorganisent.

@@ -92,7 +92,7 @@ export const TOURS: Tour[] = [
       { sel: '.gallery.lg .shot', title: 'Choisir un modèle', body: 'Cliquez sur une vignette pour l’aperçu détaillé, puis créez un CV avec votre profil, l’exemple ou un CV existant.' },
       { sel: '.hero .btn', text: 'couleurs', title: 'Explorer par couleurs', body: 'Choisissez une ou deux couleurs et voyez tous les modèles et presets dans ces teintes.' },
       { sel: '.hero .btn', text: 'image', title: 'Recréer depuis une image', body: 'Déposez la capture d’un CV que vous aimez : l’app reproduit sa mise en page avec vos informations.' },
-      { sel: '#studio', title: 'Studio de design', body: '200 modèles : 20 structures déclinées en 10 palettes. Filtrez par famille, couleur ou fond ; chaque modèle se retouche entièrement, dans l’onglet Design ou sur la toile.' },
+      { sel: '#studio', title: 'Studio de design', body: '500 modèles : 50 structures déclinées en 10 palettes. Filtrez par famille, couleur ou fond ; chaque modèle se retouche entièrement, dans l’onglet Design ou sur la toile.' },
       { sel: '#presets', title: 'Presets par métier', body: 'Des CV complets par métier : modèle, couleurs, intitulés et contenu d’exemple adaptés. Filtrez par secteur.' }
     ]
   },

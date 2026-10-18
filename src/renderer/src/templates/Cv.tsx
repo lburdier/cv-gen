@@ -17,7 +17,7 @@ import { FONTS, isVisual } from './registry'
  */
 export function Cv({ resume }: { resume: Resume }) {
   // Les modèles visuels ont leur propre mise en page (bandeau, colonnes, images).
-  // « Sur mesure » et les 200 modèles du studio : moteur de design paramétrable.
+  // « Sur mesure » et les modèles du studio : moteur de design paramétrable.
   if (usesDesignEngine(resume.templateId)) return <CvCustom resume={resume} />
   if (isVisual(resume.templateId)) return <CvVisual resume={resume} />
   return <CvAts resume={resume} />

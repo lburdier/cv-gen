@@ -9,7 +9,7 @@ const HUES = [...new Set(DESIGN_PALETTES.map((p) => p.hue))]
 const HUE_COLOR = Object.fromEntries(DESIGN_PALETTES.map((p) => [p.hue, p.primary]))
 
 /**
- * Studio de design : 200 modèles filtrables par famille, couleur, fond et nom.
+ * Studio de design : 500 modèles (50 structures × 10 palettes) filtrables par famille, couleur, fond et nom.
  * Les aperçus sont rendus à la volée, par lots, au fil du défilement.
  */
 export function StudioGallery({ onPick, current, compact }: { onPick: (t: TemplateDef) => void; current?: string; compact?: boolean }) {

@@ -151,7 +151,7 @@ export default function Templates() {
           <h2>
             {STUDIO_TEMPLATES.length} modèles <em>à composer</em>.
           </h2>
-          <p>Vingt structures inspirées des meilleurs CV réels, déclinées en dix palettes : colonnes latérales, bandeaux, mises en page éditoriales, titres à filet, icônes de contact. Chacun se retouche entièrement, dans l’onglet Design ou directement sur la toile, et s’exporte aussi en version ATS.</p>
+          <p>Cinquante structures inspirées des meilleurs CV réels, déclinées en dix palettes : colonnes latérales, bandeaux, mises en page éditoriales, CV compacts, corporate ou élégants, titres à filet, icônes de contact. Chacun se retouche entièrement, dans l’onglet Design ou directement sur la toile, et s’exporte aussi en version ATS.</p>
         </div>
         <StudioGallery onPick={setOpen} />
       </section>
