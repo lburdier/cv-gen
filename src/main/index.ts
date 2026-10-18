@@ -1,12 +1,13 @@
 import { app, BrowserWindow, dialog, ipcMain, nativeTheme, shell } from 'electron'
 import { basename, join } from 'path'
-import type { AiProvider, AppData, DesignSpec, ChatTurn, CoverLetter, ExportFormat, Lang, LetterOptions, Offer, Resume, Settings } from '../shared/types'
+import type { KeyProvider, AppData, DesignSpec, ChatTurn, CoverLetter, ExportFormat, Lang, LetterOptions, Offer, Resume, Settings } from '../shared/types'
 import * as ai from './ai'
 import { exportLetter, exportResume, getPrintJob, markReady } from './export'
 import { listFreeModels } from './openrouter'
 import { extractPdf } from './pdfText'
 import { getStockImage, searchStock } from './stock'
 import { importCv } from './importCv'
+import { cancelDownload, downloadModel, localState, removeModel } from './localLlm'
 import { initUpdater } from './updater'
 import { readFileSync, statSync } from 'fs'
 import { dataDir, getSettings, listBackups, loadData, logError, readBackup, saveData, setApiKey, setSettings } from './storage'
@@ -105,7 +106,11 @@ function registerIpc() {
   handle('backups:read', (name: string) => readBackup(name))
   handle('settings:get', () => getSettings())
   handle('settings:set', (patch: Partial<Settings>) => setSettings(patch))
-  handle('settings:apiKey', (key: string, provider?: AiProvider) => setApiKey(key, provider))
+  handle('settings:apiKey', (key: string, provider?: KeyProvider) => setApiKey(key, provider))
+  handle('local:list', () => localState())
+  handle('local:download', (id: string) => downloadModel(id))
+  handle('local:cancel', (id: string) => cancelDownload(id))
+  handle('local:remove', (id: string) => removeModel(id))
   handle('settings:freeModels', () => listFreeModels())
   handle('settings:testKey', () => ai.testKey())
   ipcMain.on('titlebar:theme', (_e, dark: boolean) => main?.setTitleBarOverlay(overlay(dark)))

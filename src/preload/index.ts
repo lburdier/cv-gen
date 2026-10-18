@@ -32,6 +32,17 @@ const api: CvGenApi = {
   printReady: (token) => ipcRenderer.send('print:ready', token),
   openDataFolder: call('shell:dataFolder'),
   openExternal: call('shell:external'),
+  local: {
+    list: call('local:list'),
+    download: call('local:download'),
+    cancel: call('local:cancel'),
+    remove: call('local:remove'),
+    onState: (cb) => {
+      const h = (_e: unknown, s: Parameters<typeof cb>[0]) => cb(s)
+      ipcRenderer.on('local:state', h)
+      return () => ipcRenderer.removeListener('local:state', h)
+    }
+  },
   cv: { pick: call('cv:pick'), import: call('cv:import') },
   updates: {
     status: call('update:status'),
@@ -51,7 +62,12 @@ const api: CvGenApi = {
     coverLetter: call('ai:coverLetter'),
     reviseLetter: call('ai:reviseLetter'),
     analyzeCvImage: call('ai:analyzeCvImage'),
-    chat: call('ai:chat')
+    chat: call('ai:chat'),
+    onPartial: (cb) => {
+      const h = (_e: unknown, t: string) => cb(t)
+      ipcRenderer.on('ai:partial', h)
+      return () => ipcRenderer.removeListener('ai:partial', h)
+    }
   }
 }
 

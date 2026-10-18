@@ -7,8 +7,18 @@ directories:
 files:
   - out/**/*
   - package.json
+  # IA locale : seul le moteur processeur (win-x64) est livré ; variantes GPU et sources de llama.cpp exclues.
+  - "!node_modules/@node-llama-cpp/win-x64-cuda/**"
+  - "!node_modules/@node-llama-cpp/win-x64-cuda-ext/**"
+  - "!node_modules/@node-llama-cpp/win-x64-vulkan/**"
+  - "!node_modules/@node-llama-cpp/win-arm64/**"
+  - "!node_modules/node-llama-cpp/llama/gitRelease.bundle"
+  - "!node_modules/node-llama-cpp/templates/**"
 asarUnpack:
   - resources/**
+  # Bibliothèques natives : chargées depuis le disque, hors de l'archive asar.
+  - node_modules/node-llama-cpp/**
+  - node_modules/@node-llama-cpp/**
 win:
   icon: build/icon.png
   target:

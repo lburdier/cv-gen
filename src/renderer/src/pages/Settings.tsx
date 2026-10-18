@@ -1,5 +1,6 @@
 import { Check, FolderOpen, History, Info, KeyRound, Loader2, RefreshCw, ShieldCheck } from 'lucide-react'
 import { ToursSettings } from '../components/ToursSettings'
+import { LocalModels } from '../components/LocalModels'
 import { UpdatesSettings } from '../components/Updates'
 import { useEffect, useState } from 'react'
 import type { FreeModel, ModelId, Settings } from '../../../shared/types'
@@ -105,6 +106,7 @@ export default function SettingsPage() {
   const [testing, setTesting] = useState(false)
   const [name, setName] = useState(s.settings.userName)
   const or = s.settings.provider === 'openrouter'
+  const local = s.settings.provider === 'local'
   const hasKey = or ? s.settings.hasOpenRouterKey : s.settings.hasClaudeKey
   const providerName = or ? 'OpenRouter' : 'Claude'
 
@@ -117,7 +119,8 @@ export default function SettingsPage() {
   }
 
   const saveKey = async () => {
-    const settings = await window.cvgen.setApiKey(key, s.settings.provider)
+    if (local) return
+    const settings = await window.cvgen.setApiKey(key, s.settings.provider === 'openrouter' ? 'openrouter' : 'anthropic')
     useStore.setState({ settings })
     setKey('')
     if (!(or ? settings.hasOpenRouterKey : settings.hasClaudeKey)) return s.toast({ kind: 'info', title: 'Clé supprimée' })
@@ -139,21 +142,27 @@ export default function SettingsPage() {
         </div>
         <div className="stack">
           <div className="seg" style={{ width: 'fit-content' }}>
-            <button className={!or ? 'on' : ''} onClick={() => s.setSettings({ provider: 'anthropic' })}>
+            <button className={!or && !local ? 'on' : ''} onClick={() => s.setSettings({ provider: 'anthropic' })}>
               Claude
             </button>
             <button className={or ? 'on' : ''} onClick={() => s.setSettings({ provider: 'openrouter' })}>
               OpenRouter · gratuit
             </button>
+            <button className={local ? 'on' : ''} onClick={() => s.setSettings({ provider: 'local' })}>
+              Sur cet ordinateur
+            </button>
           </div>
           <p className="muted" style={{ margin: 0, fontSize: 13 }}>
-            {or
-              ? 'Modèles open source gratuits via OpenRouter : pratique pour démarrer, mais qualité variable et quotas limités (environ 20 requêtes par minute).'
-              : 'Meilleure qualité de rédaction et d’adaptation, facturé à l’usage par Anthropic.'}
+            {local
+              ? 'Un petit modèle installé sur l’ordinateur : gratuit, hors ligne, sans clé ni limite. Réponses plus simples qu’un grand modèle.'
+              : or
+                ? 'Modèles open source gratuits via OpenRouter : pratique pour démarrer, mais qualité variable et quotas limités (environ 50 requêtes par jour sans crédit).'
+                : 'Meilleure qualité de rédaction et d’adaptation, facturé à l’usage par Anthropic.'}
           </p>
         </div>
       </div>
 
+      {!local && (
       <div className="settings-grid">
         <div>
           <h3>Clé API {providerName}</h3>
@@ -210,13 +219,16 @@ export default function SettingsPage() {
           )}
         </div>
       </div>
+      )}
 
       <div className="settings-grid">
         <div>
           <h3>Modèle</h3>
-          <p className="desc">{or ? 'Modèles gratuits, liste mise à jour par OpenRouter.' : 'Utilisé pour toutes les fonctions IA.'}</p>
+          <p className="desc">{local ? 'Téléchargé une fois, puis utilisé hors ligne.' : or ? 'Modèles gratuits, liste mise à jour par OpenRouter.' : 'Utilisé pour toutes les fonctions IA.'}</p>
         </div>
-        {or ? (
+        {local ? (
+          <LocalModels />
+        ) : or ? (
           <FreeModels />
         ) : (
           <div className="stack" style={{ gap: 8 }}>
@@ -232,6 +244,16 @@ export default function SettingsPage() {
           </div>
         )}
       </div>
+
+      {!local && (
+        <div className="settings-grid" data-tour="local">
+          <div>
+            <h3>IA hors ligne</h3>
+            <p className="desc">Un petit modèle sur l’ordinateur, utilisé en secours quand {providerName} ne répond pas ou atteint sa limite.</p>
+          </div>
+          <LocalModels />
+        </div>
+      )}
 
       <div className="settings-grid">
         <div>

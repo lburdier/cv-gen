@@ -3,6 +3,7 @@ import { Mark } from './Shell'
 import { useEffect, useRef, useState } from 'react'
 import type { FreeModel, ModelId } from '../../../shared/types'
 import { CLAUDE_MODELS, freeModels, freeName } from '../lib/freeModels'
+import { useLocalModels } from './LocalModels'
 import { Markdown } from '../lib/markdown'
 import { useStore } from '../store'
 
@@ -21,8 +22,9 @@ function ModelPicker({ disabled }: { disabled: boolean }) {
       .catch(() => setError(true))
   }, [])
 
+  const locals = useLocalModels() ?? []
   const or = settings.provider === 'openrouter'
-  const value = or ? `or:${settings.orModel}` : `claude:${settings.model}`
+  const value = settings.provider === 'local' ? `local:${settings.localModel}` : or ? `or:${settings.orModel}` : `claude:${settings.model}`
   const free: FreeModel[] = list ?? []
   // Le modèle choisi reste dans la liste même s'il n'est plus proposé.
   const shown = or && !free.some((m) => m.id === settings.orModel) ? [{ id: settings.orModel, name: settings.orModel, context: 0, structured: false }, ...free] : free
@@ -36,7 +38,11 @@ function ModelPicker({ disabled }: { disabled: boolean }) {
       aria-label="Modèle de l’assistant"
       onChange={(e) => {
         const [kind, id] = [e.target.value.slice(0, e.target.value.indexOf(':')), e.target.value.slice(e.target.value.indexOf(':') + 1)]
-        void (kind === 'or' ? setSettings({ provider: 'openrouter', orModel: id }) : setSettings({ provider: 'anthropic', model: id as ModelId }))
+        void (kind === 'local'
+          ? setSettings({ provider: 'local', localModel: id })
+          : kind === 'or'
+            ? setSettings({ provider: 'openrouter', orModel: id })
+            : setSettings({ provider: 'anthropic', model: id as ModelId }))
       }}
     >
       <optgroup label={`OpenRouter · gratuit${settings.hasOpenRouterKey ? '' : ' (clé requise)'}`}>
@@ -47,6 +53,14 @@ function ModelPicker({ disabled }: { disabled: boolean }) {
           </option>
         ))}
         {!list && !error && <option disabled>Chargement des modèles…</option>}
+      </optgroup>
+      <optgroup label="Sur cet ordinateur · hors ligne, sans limite">
+        {locals.map((m) => (
+          <option key={m.id} value={`local:${m.id}`} disabled={!m.installed}>
+            {m.label} · {m.name}
+            {m.installed ? '' : m.downloading ? ` (téléchargement ${m.percent ?? 0} %)` : ' (à télécharger dans Paramètres)'}
+          </option>
+        ))}
       </optgroup>
       <optgroup label={`Claude${settings.hasClaudeKey ? '' : ' (clé requise)'}`}>
         {CLAUDE_MODELS.map((m) => (
@@ -72,7 +86,17 @@ export function Assistant() {
   const route = s.route
   const resume = route.name === 'editor' ? s.data.resumes.find((r) => r.id === route.id) : s.data.resumes[0]
   const offer = resume?.offerId ? s.data.offers.find((o) => o.id === resume.offerId) : undefined
-  const hasKey = s.settings.provider === 'openrouter' ? s.settings.hasOpenRouterKey : s.settings.hasClaudeKey
+  const local = s.settings.provider === 'local'
+  const hasKey = local ? s.settings.hasApiKey : s.settings.provider === 'openrouter' ? s.settings.hasOpenRouterKey : s.settings.hasClaudeKey
+  // Texte en cours d'écriture par un modèle local (affiché en direct).
+  const [partial, setPartial] = useState('')
+  useEffect(() => {
+    if (!loading) {
+      setPartial('')
+      return
+    }
+    return window.cvgen.ai.onPartial(setPartial)
+  }, [loading])
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -181,16 +205,21 @@ export function Assistant() {
             <RotateCcw size={14} /> Réessayer
           </button>
         )}
+        {loading && partial && (
+          <div className="msg assistant streaming">
+            <Markdown text={partial} />
+          </div>
+        )}
         {loading && (
           <div className="msg assistant row" style={{ gap: 8 }}>
-            <Loader2 size={14} className="spin" /> Réflexion…
+            <Loader2 size={14} className="spin" /> {partial ? 'Écriture…' : 'Réflexion…'}
             {elapsed >= 5 && <span className="muted">{elapsed} s</span>}
             <button className="btn btn-ghost btn-sm" style={{ marginLeft: 'auto' }} onClick={cancel}>
               Annuler
             </button>
           </div>
         )}
-        {loading && elapsed >= 20 && (
+        {loading && elapsed >= 20 && !partial && (
           <p className="muted chat-hint">Les modèles gratuits peuvent être en file d’attente. Si l’un ne répond pas, l’app passe automatiquement à un autre modèle gratuit.</p>
         )}
         <div ref={endRef} />
@@ -216,7 +245,9 @@ export function Assistant() {
         </div>
         {!hasKey && (
           <button className="link-muted chat-key" onClick={() => s.go({ name: 'settings' })}>
-            Clé {s.settings.provider === 'openrouter' ? 'OpenRouter' : 'Claude'} requise : l’ajouter dans Paramètres →
+            {local
+              ? 'Modèle local à télécharger : Paramètres →'
+              : `Clé ${s.settings.provider === 'openrouter' ? 'OpenRouter' : 'Claude'} requise : l’ajouter dans Paramètres${s.settings.hasLocalModel ? ' (en attendant, le modèle local répond)' : ', ou utiliser le modèle hors ligne'} →`}
           </button>
         )}
       </div>

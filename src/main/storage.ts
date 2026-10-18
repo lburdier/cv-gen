@@ -1,12 +1,14 @@
 import { app, safeStorage } from 'electron'
 import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, unlinkSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import type { AiProvider, AppData, ModelId, Settings } from '../shared/types'
+import type { AiProvider, AppData, KeyProvider, ModelId, Settings } from '../shared/types'
+import { isInstalled, anyInstalled } from './localLlm'
 
 interface StoredSettings {
   provider: AiProvider
   model: ModelId
   orModel: string
+  localModel: string
   theme: Settings['theme']
   userName: string
   apiKeyEnc?: string // clé chiffrée par Windows (DPAPI) via safeStorage
@@ -140,6 +142,7 @@ function readSettings(): StoredSettings {
     provider: 'anthropic',
     model: 'claude-opus-5-5',
     orModel: 'openrouter/free',
+    localModel: 'qwen3-0.6b',
     theme: 'light',
     userName: '',
     ...(readJson<StoredSettings>(settingsFile()) ?? {})
@@ -155,16 +158,18 @@ export function getSettings(): Settings {
     provider: s.provider,
     model: s.model,
     orModel: s.orModel,
+    localModel: s.localModel,
+    hasLocalModel: !!anyInstalled(s.localModel),
     theme: s.theme,
     userName: s.userName,
     hasClaudeKey,
     hasOpenRouterKey,
-    hasApiKey: s.provider === 'openrouter' ? hasOpenRouterKey : hasClaudeKey,
+    hasApiKey: s.provider === 'local' ? isInstalled(s.localModel) : s.provider === 'openrouter' ? hasOpenRouterKey : hasClaudeKey,
     encryptionAvailable: safeStorage.isEncryptionAvailable()
   }
 }
 
-export function setSettings(patch: Partial<Pick<StoredSettings, 'provider' | 'model' | 'orModel' | 'theme' | 'userName'>>): Settings {
+export function setSettings(patch: Partial<Pick<StoredSettings, 'provider' | 'model' | 'orModel' | 'localModel' | 'theme' | 'userName'>>): Settings {
   writeJson(settingsFile(), { ...readSettings(), ...patch })
   return getSettings()
 }
@@ -175,7 +180,7 @@ const KEY_FIELDS = {
 } as const
 
 /** Enregistre (ou supprime si vide) la clé d'un fournisseur. */
-export function setApiKey(key: string, provider: AiProvider = 'anthropic'): Settings {
+export function setApiKey(key: string, provider: KeyProvider = 'anthropic'): Settings {
   const s = readSettings()
   const f = KEY_FIELDS[provider] ?? KEY_FIELDS.anthropic
   delete s[f.enc]
@@ -189,7 +194,7 @@ export function setApiKey(key: string, provider: AiProvider = 'anthropic'): Sett
   return getSettings()
 }
 
-export function getApiKey(provider: AiProvider = 'anthropic'): string | null {
+export function getApiKey(provider: KeyProvider = 'anthropic'): string | null {
   const s = readSettings()
   const f = KEY_FIELDS[provider]
   const enc = s[f.enc]

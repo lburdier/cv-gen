@@ -49,7 +49,14 @@ Ensuite, l’app s’ouvre depuis l’icône **CV GEN** du Bureau ou du menu Dé
 
 ## 5. Activer l’IA (facultatif, peut être gratuit)
 
-Sans IA, l’app fonctionne entièrement : création, modèles, score ATS, exports PDF et Word. L’IA ajoute l’import intelligent, l’adaptation du CV à une offre, la réécriture et les lettres de motivation.
+Sans IA, l’app fonctionne entièrement : création, modèles, score ATS, import de CV, brouillon de lettre, exports PDF et Word. L’IA ajoute l’adaptation du CV à une offre, la réécriture, la rédaction des lettres et l’assistant.
+
+**Option hors ligne, sans compte : l’IA sur cet ordinateur**
+
+1. Dans **Paramètres › Intelligence artificielle**, choisissez **Sur cet ordinateur**.
+2. Cliquez sur **Télécharger** à côté de « Mini · Qwen3 0.6B » (397 Mo, une seule fois).
+
+Le modèle tourne sur votre PC : gratuit, sans clé, sans limite, rien n’est envoyé en ligne. Il répond aux questions dans l’assistant, mais il est trop petit pour rédiger des lettres ou analyser des offres. Installé, il sert aussi de secours automatique quand l’IA en ligne ne répond pas.
 
 **Option gratuite : OpenRouter**
 

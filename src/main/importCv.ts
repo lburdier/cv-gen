@@ -62,7 +62,7 @@ export async function importCv(name: string, bytes: Uint8Array, mode: 'auto' | '
   }
   const local = noDashDeep(parseResume(lines))
   const s = getSettings()
-  if (mode === 'local' || !s.hasApiKey) return { resume: local, method: 'local' }
+  if (mode === 'local' || !s.hasApiKey || s.provider === 'local') return { resume: local, method: 'local' }
   try {
     const ai = await importResumeAi({ pdf, text })
     return { resume: complete(ai, local), method: 'ai' }
