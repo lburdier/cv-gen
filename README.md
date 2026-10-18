@@ -4,6 +4,23 @@ Application Windows pour créer des CV lisibles par les ATS et les adapter à ch
 
 **[⬇ Télécharger pour Windows](https://github.com/lburdier/cv-gen/releases/latest)** · **[Guide d’installation](INSTALLATION.md)**
 
+![Accueil de CV GEN](docs/screenshots/01-accueil.jpg)
+
+## Aperçu
+
+| | |
+|---|---|
+| ![Éditeur : formulaire, aperçu en direct et score ATS](docs/screenshots/04-editeur.jpg) | ![Toile : édition directe façon Canva](docs/screenshots/05-toile.jpg) |
+| **Éditeur** : formulaire, aperçu en direct et score ATS détaillé | **Toile** : texte modifié sur place, sections déplaçables |
+| ![Studio de design : 500 modèles filtrables](docs/screenshots/03-studio.jpg) | ![Modèles d'origine, visuels et ATS](docs/screenshots/02-modeles.jpg) |
+| **Studio de design** : 500 modèles, filtres et aperçus Fille / Garçon | **Modèles d'origine** : visuels façon portfolio et ATS une colonne |
+| ![Explorateur par couleurs](docs/screenshots/06-couleurs.jpg) | ![Lettre de motivation et vérification](docs/screenshots/07-lettre.jpg) |
+| **Explorateur par couleurs** : tous les modèles recolorés en direct | **Lettres de motivation** : brouillon guidé ou IA, vérification |
+
+![Mes CV et leur score ATS](docs/screenshots/08-mes-cv.jpg)
+
+*Captures réalisées avec les profils d'exemple de l'app (personnes fictives, portraits Unsplash).*
+
 ## Fonctionnalités
 
 - **DA** inspirée de bradleyziffer.com et gabrielvaldivia.com : titres immenses en Inter Display, mots d'emphase en serif italique (Crimson Pro), beaucoup d'air, liens discrets, pilules détourées, grandes cartes arrondies et tableaux à filets fins. Noir et blanc, thème clair par défaut et sombre au choix. Palette de commandes `Ctrl K`, assistant IA `Ctrl J`, nouveau CV `Ctrl N`.

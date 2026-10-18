@@ -5,8 +5,8 @@ Les marques restent la propriété de leurs détenteurs respectifs ; elles serve
 à indiquer la maîtrise d'un outil. Les logiciels absents de ces bibliothèques utilisent une
 icône générée par CV GEN (initiales et couleurs de la marque).
 
-- Simple Icons — https://simpleicons.org — licence CC0 1.0 (version 16.35.0)
-- Devicon — https://devicon.dev — licence MIT (version 2.17.0)
+- Simple Icons, https://simpleicons.org, licence CC0 1.0 (version 16.35.0)
+- Devicon, https://devicon.dev, licence MIT (version 2.17.0)
 
 | Logiciel | Source | Identifiant |
 |---|---|---|

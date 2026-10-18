@@ -3,7 +3,7 @@ import { FIRST_PERSON, containsTerm, norm, startsWithAction, type AtsCheck, type
 
 /**
  * Score ATS d'un CV déposé (PDF ou DOCX) : on juge ce que lit réellement un logiciel de
- * recrutement — texte extractible, ordre de lecture, intitulés, coordonnées, contenu, mots-clés.
+ * recrutement, texte extractible, ordre de lecture, intitulés, coordonnées, contenu, mots-clés.
  */
 
 export type PdfCategory = 'read' | 'structure' | 'content' | 'keywords'
@@ -48,8 +48,8 @@ const HEADINGS: [SectionKey | 'contact', string[], string[]][] = [
 const EMAIL = /[\w.+-]+@[\w-]+(\.[\w-]+)+/
 const PHONE = /(\+33\s?|0)[1-9](?:[\s.-]?\d{2}){4}|\+\d{1,3}[\s().-]*\d[\d\s().-]{7,}\d/
 const LINKEDIN = /linkedin\.com\/in\/[\w-]+/i
-const DATE = /\b(0[1-9]|1[0-2])\/(19|20)\d{2}\b|\b(janv|f[ée]vr|mars|avr|mai|juin|juil|ao[uû]t|sept|oct|nov|d[ée]c|jan|feb|mar|apr|may|jun|jul|aug|sep|dec)[a-zé]*\.?\s+(19|20)\d{2}\b|\b(19|20)\d{2}\s*[–—-]\s*((19|20)\d{2}|pr[ée]sent|aujourd|auj|now|present|en cours)/gi
-const BULLET = /^\s*[•▪◦●■◆►▸‣∙·*–—-]\s*|^\s*[→✓✔]\s*/
+const DATE = /\b(0[1-9]|1[0-2])\/(19|20)\d{2}\b|\b(janv|f[ée]vr|mars|avr|mai|juin|juil|ao[uû]t|sept|oct|nov|d[ée]c|jan|feb|mar|apr|may|jun|jul|aug|sep|dec)[a-zé]*\.?\s+(19|20)\d{2}\b|\b(19|20)\d{2}\s*[–\u2014-]\s*((19|20)\d{2}|pr[ée]sent|aujourd|auj|now|present|en cours)/gi
+const BULLET = /^\s*[•▪◦●■◆►▸‣∙·*–\u2014-]\s*|^\s*[→✓✔]\s*/
 
 /** Intitulé de section : ligne courte qui correspond à un nom de section connu. */
 function headingOf(text: string): { key: SectionKey | 'contact'; weak: boolean } | null {

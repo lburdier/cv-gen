@@ -60,12 +60,12 @@ const PHONE = /(?:\+33\s?\(?0?\)?\s?|0)[1-9](?:[\s.-]?\d{2}){4}|\+\d{1,3}[\s().-
 const LINKEDIN = /(?:https?:\/\/)?(?:[a-z]{2,3}\.)?linkedin\.com\/in\/[\w%-]+\/?/i
 const GITHUB = /(?:https?:\/\/)?github\.com\/[\w-]+\/?/i
 const URL = /(?:https?:\/\/)?(?:www\.)?[a-z0-9][\w-]*(?:\.[\w-]+)*\.(?:com|fr|io|dev|net|org|me|art|design|studio|eu|co|app|site|portfolio|xyz|be|ch|ca)(?:\/[^\s|,;]*)?/i
-const BULLET = /^\s*(?:[•▪◦●■◆►▸‣∙·*–—✓✔→➜➤-]|\d{1,2}[.)])\s+/
+const BULLET = /^\s*(?:[•▪◦●■◆►▸‣∙·*–\u2014✓✔→➜➤-]|\d{1,2}[.)])\s+/
 /** Séparateurs forts : cellules d'une même ligne, barres, points médians. */
 const CELL = ' | '
 const STRONG = /\s* \| \s*|\s+[|·•]\s+|\s*\|\s*/
-/** Séparateurs faibles (tirets) : seulement pour « Poste — Entreprise ». */
-const DASH = /\s+[–—]\s+|\s+-\s+/
+/** Séparateurs faibles (tirets) : seulement pour « Poste - Entreprise » (tiret court, demi-cadratin ou cadratin). */
+const DASH = /\s+[–\u2014]\s+|\s+-\s+/
 
 const MONTHS: [RegExp, number][] = [
   [/^janv|^jan/, 1],
@@ -84,7 +84,7 @@ const MONTHS: [RegExp, number][] = [
 const MONTH_WORD = '(?:janv(?:ier)?|f[ée]vr?(?:ier)?|mars|avr(?:il)?|mai|juin|juil(?:let)?|ao[uû]t|sept(?:embre)?|oct(?:obre)?|nov(?:embre)?|d[ée]c(?:embre)?|jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sep(?:tember)?|october|november|dec(?:ember)?)\\.?'
 const ONE_DATE = `(?:(?:0?[1-9]|1[0-2])[/.-](?:19|20)\\d{2}|${MONTH_WORD}\\s+(?:19|20)\\d{2}|(?:19|20)\\d{2}[/.-](?:0[1-9]|1[0-2])|(?:19|20)\\d{2})`
 const NOW = "(?:pr[ée]sent|aujourd['’ʼ]hui|auj\\.?|actuel(?:lement)?|en cours|now|present|current|ce jour|à ce jour)"
-const RANGE = new RegExp(`(?:de(?:puis)?\\s+|from\\s+|since\\s+)?(?<![\\d,.])(${ONE_DATE})(?![\\d%])(?:\\s*(?:[–—-]|à|au|to|>|→)\\s*(${ONE_DATE}|${NOW}))?`, 'i')
+const RANGE = new RegExp(`(?:de(?:puis)?\\s+|from\\s+|since\\s+)?(?<![\\d,.])(${ONE_DATE})(?![\\d%])(?:\\s*(?:[–\u2014-]|à|au|to|>|→)\\s*(${ONE_DATE}|${NOW}))?`, 'i')
 const NOW_RE = new RegExp(NOW, 'i')
 
 /** « 03/2021 », « mars 2021 », « 2021-03 », « 2021 » → « 2021-03 » (mois 01 si seule l'année est connue). */
@@ -120,14 +120,14 @@ function findDates(text: string): { start: string; end: string; current: boolean
 const dated = (t: string) => {
   const d = findDates(t)
   // Une année isolée au milieu d'une phrase longue n'est pas une période.
-  return !!d && (t.length < 90 || /[–—-]|\b(?:0?[1-9]|1[0-2])\/\d{4}/.test(t))
+  return !!d && (t.length < 90 || /[–\u2014-]|\b(?:0?[1-9]|1[0-2])\/\d{4}/.test(t))
 }
 
 function clean(s: string): string {
   return s
     .replace(/\(\s*\)/g, '')
     .replace(/\s{2,}/g, ' ')
-    .replace(/^[\s|·•,;:–— -]+|[\s|·•,;:–— -]+$/g, '')
+    .replace(/^[\s|·•,;:–\u2014 -]+|[\s|·•,;:–\u2014 -]+$/g, '')
     .trim()
 }
 
@@ -469,7 +469,7 @@ function toExperience(e: Entry): Experience {
   const h = headInfo(e.head, true)
   const flat = h.lines.flat()
   let role = h.lines[0]?.[0] ?? ''
-  // « Poste — Entreprise » sur une ligne, sinon l'entreprise sur la ligne suivante.
+  // « Poste - Entreprise » (tous tirets) sur une ligne, sinon l'entreprise sur la ligne suivante.
   const second = h.lines[0]?.[1]
   let company = (second && !isLocation(second) ? second : '') || h.lines[1]?.[0] || ''
   let location = ''
@@ -484,7 +484,7 @@ function toExperience(e: Entry): Experience {
     const m = /^(.+?)\s+(?:chez|at|@|pour|for)\s+(.+)$/i.exec(role)
     if (m) [role, company] = [clean(m[1]), clean(m[2])]
   }
-  // Entreprise en premier (« ACME — Développeur ») : le poste contient un mot-métier.
+  // Entreprise en premier (« ACME - Développeur ») : le poste contient un mot-métier.
   if (company && JOB.test(company) && !JOB.test(role)) [role, company] = [company, role]
   const used = new Set([role, company, location])
   const extra = flat.filter((p) => !used.has(p) && p.length > 40)
@@ -504,7 +504,7 @@ function toEducation(e: Entry): Education {
     const i = parts.findIndex((p) => SCHOOL.test(p))
     if (i > 0) {
       school = clean(parts[i])
-      degree = clean(parts.slice(0, i).join(' — '))
+      degree = clean(parts.slice(0, i).join(', '))
     }
   }
   let location = flat.find((p) => p !== degree && p !== school && isLocation(p)) ?? ''
@@ -538,7 +538,7 @@ function toProject(e: Entry): Project {
 }
 
 function toCertifications(e: Entry): Certification[] {
-  // Une ligne par certification (« Nom — Organisme — 2023 ») ou en-tête + organisme sur la ligne suivante.
+  // Une ligne par certification (« Nom - Organisme - 2023 », tous tirets) ou en-tête + organisme sur la ligne suivante.
   if (e.head.length === 0) return e.bullets.map((b) => toCertification([b]))
   const h = headInfo(e.head, true)
   const date = h.start
@@ -589,7 +589,7 @@ function parseSkills(ls: ParseLine[]): SkillGroup[] {
 
 function splitItems(s: string): string[] {
   return s
-    .split(/\s*[,;|·•]\s*| \| |\s+\/\s+|\s+[–—-]\s+/)
+    .split(/\s*[,;|·•]\s*| \| |\s+\/\s+|\s+[–\u2014-]\s+/)
     .map((x) => clean(x.replace(/\.$/, '')))
     .filter((x) => x && x.length <= 60)
 }
@@ -604,7 +604,7 @@ function parseLanguages(ls: ParseLine[]): LanguageItem[] {
   for (const c of text.split(/\s*[,;|·•]\s*|\s+\/\s+/)) {
     const t = clean(c)
     if (!t) continue
-    const m = /^([\p{L}' -]{2,30}?)\s*(?:[:(–—-]\s*|\s+)(.+?)\)?$/u.exec(t)
+    const m = /^([\p{L}' -]{2,30}?)\s*(?:[:(–\u2014-]\s*|\s+)(.+?)\)?$/u.exec(t)
     if (m && LEVEL.test(m[2]) && !LEVEL.test(m[1])) out.push({ id: uid(), name: clean(m[1]), level: clean(m[2].replace(/\)$/, '')) })
     else if (LEVEL.test(t) && out.length && !out[out.length - 1].level) out[out.length - 1].level = t
     else if (/^[\p{L}' -]{2,30}$/u.test(t) && !LEVEL.test(t)) out.push({ id: uid(), name: t, level: '' })

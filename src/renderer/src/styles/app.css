@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CV GEN — design system
+   CV GEN : design system
    Titres immenses en Inter Display de graisse normale, mots d'emphase en serif
    italique (Crimson Pro), beaucoup d'air, liens discrets, pilules détourées,
    grandes cartes arrondies. Monochrome : l'accent est l'encre (noir / blanc).
@@ -2497,7 +2497,7 @@ ul.clean li {
 }
 
 /* ==========================================================================
-   Accueil — beaucoup d'air, titre immense, carrousel de cartes, filets fins
+   Accueil : beaucoup d'air, titre immense, carrousel de cartes, filets fins
    ========================================================================== */
 .home {
   max-width: 1240px;

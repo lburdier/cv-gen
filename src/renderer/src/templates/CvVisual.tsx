@@ -850,7 +850,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
   } else if (r.templateId === 'calque') {
     // Calque : look d'outil de design (cadre de sélection à poignées, surlignages, frise en pointillés).
     const roles = b.headline
-      .split(/\s+[·|•/—–-]\s+|\s*,\s*|\s+&\s+/)
+      .split(/\s+[·|•/\u2014–-]\s+|\s*,\s*|\s+&\s+/)
       .map((x) => x.trim())
       .filter(Boolean)
       .slice(0, 2)
@@ -993,7 +993,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
   } else if (r.templateId === 'pop') {
     // Pop : bleu électrique et rose, en-tête en trame de points, pastilles étoilées, frise à points.
     const parts = b.headline
-      .split(/\s+[·|•/—–-]\s+|\s*,\s*/)
+      .split(/\s+[·|•/\u2014–-]\s+|\s*,\s*/)
       .map((x) => x.trim())
       .filter(Boolean)
     const role = parts[0] ?? ''
