@@ -27,6 +27,7 @@ import { OpenRouterError, modelLabel, orCheckKey, orJson, orReply, orText, type 
 import { getApiKey, getSettings } from './storage'
 import { anyInstalled, isInstalled, localGenerate, modelById } from './localLlm'
 import { localLetter, localRevise } from './localLetter'
+import { isLoggedIn, PROFILE as LOGIN_PROFILE } from './anthropicLogin'
 
 export class AiError extends Error {}
 
@@ -52,6 +53,11 @@ function toOr(content: Anthropic.Beta.BetaContentBlockParam[] | string): OrMessa
 }
 
 function client(): Anthropic {
+  // Compte développeur Anthropic : le SDK lit le profil OAuth « cv-gen » et renouvelle le jeton lui-même.
+  if (getSettings().claudeAuth === 'account') {
+    if (!isLoggedIn()) throw new AiError('Vous n’êtes pas connecté à votre compte Anthropic. Connectez-vous dans Paramètres › Connexion à Claude.')
+    return new Anthropic({ profile: LOGIN_PROFILE, maxRetries: 2 })
+  }
   const key = getApiKey()
   if (!key) throw new AiError("Aucune clé API Claude configurée. Ajoutez-la dans Paramètres pour activer l'IA.")
   return new Anthropic({ apiKey: key, maxRetries: 2 })
@@ -72,7 +78,12 @@ function common(model: ModelId, effort: Effort) {
 function friendly(err: unknown): never {
   if (err instanceof AiError) throw err
   if (err instanceof OpenRouterError) throw new AiError(err.message)
-  if (err instanceof Anthropic.AuthenticationError) throw new AiError('Clé API invalide ou révoquée. Vérifiez-la dans Paramètres.')
+  const account = getSettings().claudeAuth === 'account'
+  if (err instanceof Anthropic.AuthenticationError)
+    throw new AiError(account ? 'Session Anthropic expirée ou révoquée : reconnectez-vous dans Paramètres › Connexion à Claude.' : 'Clé API invalide ou révoquée. Vérifiez-la dans Paramètres.')
+  // Échec de renouvellement du jeton OAuth (profil supprimé, session trop ancienne).
+  if (account && err instanceof Error && !(err instanceof Anthropic.APIError) && /credential|refresh|token|profile/i.test(err.message))
+    throw new AiError('Session Anthropic expirée : reconnectez-vous dans Paramètres › Connexion à Claude.')
   if (err instanceof Anthropic.PermissionDeniedError) throw new AiError("Cette clé API n'a pas accès au modèle choisi.")
   if (err instanceof Anthropic.RateLimitError) throw new AiError('Limite de requêtes atteinte. Réessayez dans un instant.')
   if (err instanceof Anthropic.BadRequestError) throw new AiError(`Requête refusée par l'API : ${err.message}`)

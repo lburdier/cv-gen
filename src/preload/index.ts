@@ -33,6 +33,12 @@ const api: CvGenApi = {
   printReady: (token) => ipcRenderer.send('print:ready', token),
   openDataFolder: call('shell:dataFolder'),
   openExternal: call('shell:external'),
+  anthropicLogin: {
+    state: call('login:state'),
+    login: call('login:start'),
+    cancel: call('login:cancel'),
+    logout: call('login:logout')
+  },
   local: {
     list: call('local:list'),
     download: call('local:download'),

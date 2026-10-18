@@ -8,6 +8,7 @@ import { extractPdf } from './pdfText'
 import { getStockImage, searchStock } from './stock'
 import { importCv } from './importCv'
 import { cancelDownload, downloadModel, localState, removeModel } from './localLlm'
+import { cancelLogin, login, loginState, logout } from './anthropicLogin'
 import { initUpdater } from './updater'
 import { readFileSync, statSync } from 'fs'
 import { dataDir, getSettings, listBackups, loadData, logError, readBackup, saveData, setApiKey, setSettings } from './storage'
@@ -109,6 +110,10 @@ function registerIpc() {
   handle('settings:get', () => getSettings())
   handle('settings:set', (patch: Partial<Settings>) => setSettings(patch))
   handle('settings:apiKey', (key: string, provider?: KeyProvider) => setApiKey(key, provider))
+  handle('login:state', () => loginState())
+  handle('login:start', () => login())
+  handle('login:cancel', () => cancelLogin())
+  handle('login:logout', () => logout())
   handle('local:list', () => localState())
   handle('local:download', (id: string) => downloadModel(id))
   handle('local:cancel', (id: string) => cancelDownload(id))

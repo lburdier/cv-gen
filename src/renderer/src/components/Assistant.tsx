@@ -62,7 +62,7 @@ function ModelPicker({ disabled }: { disabled: boolean }) {
           </option>
         ))}
       </optgroup>
-      <optgroup label={`Claude${settings.hasClaudeKey ? '' : ' (clé requise)'}`}>
+      <optgroup label={`Claude${settings.hasClaudeKey || (settings.claudeAuth === 'account' && settings.hasClaudeLogin) ? '' : ' (clé ou connexion requise)'}`}>
         {CLAUDE_MODELS.map((m) => (
           <option key={m.id} value={`claude:${m.id}`}>
             {m.name}
@@ -87,7 +87,7 @@ export function Assistant() {
   const resume = route.name === 'editor' ? s.data.resumes.find((r) => r.id === route.id) : s.data.resumes[0]
   const offer = resume?.offerId ? s.data.offers.find((o) => o.id === resume.offerId) : undefined
   const local = s.settings.provider === 'local'
-  const hasKey = local ? s.settings.hasApiKey : s.settings.provider === 'openrouter' ? s.settings.hasOpenRouterKey : s.settings.hasClaudeKey
+  const hasKey = local ? s.settings.hasApiKey : s.settings.provider === 'openrouter' ? s.settings.hasOpenRouterKey : s.settings.claudeAuth === 'account' ? s.settings.hasClaudeLogin : s.settings.hasClaudeKey
   // Texte en cours d'écriture par un modèle local (affiché en direct).
   const [partial, setPartial] = useState('')
   useEffect(() => {
