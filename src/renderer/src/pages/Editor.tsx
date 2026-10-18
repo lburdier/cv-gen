@@ -18,6 +18,7 @@ import { useStore } from '../store'
 import { CvPreview } from '../templates/CvPreview'
 import { usePreviewEditing } from '../components/usePreviewEditing'
 import { FONTS, getTemplate, isVisual } from '../templates/registry'
+import { Select } from '../components/Select'
 
 /** Couleurs secondaires proposées dans le menu Style (claires et vives : elles servent de fond). */
 const SECONDARY = ['#F0A6F7', '#F9A8D4', '#C6F432', '#FDE047', '#FACC15', '#5EEAD4', '#93C5FD', '#E4572E', '#111111']
@@ -266,13 +267,13 @@ export default function Editor({ id }: { id: string }) {
               <div className="stack" style={{ padding: 8, gap: 12, width: 250 }}>
                 <label className="field">
                   <span>Police</span>
-                  <select className="select" value={resume.font} onChange={(e) => up((r) => void (r.font = e.target.value))}>
+                  <Select className="select" value={resume.font} onChange={(e) => up((r) => void (r.font = e.target.value))}>
                     {FONTS.map((f) => (
                       <option key={f.id} value={f.id}>
                         {f.label}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </label>
                 {tpl.secondary && (
                   <div className="field">

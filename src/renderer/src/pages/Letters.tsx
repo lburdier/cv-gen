@@ -7,6 +7,7 @@ import { Dropdown, Empty, timeAgo } from '../components/ui'
 import { uid } from '../lib/sample'
 import { actions } from '../lib/actions'
 import { useStore } from '../store'
+import { Select } from '../components/Select'
 
 const REVISIONS: { label: string; instruction: string }[] = [
   { label: 'Raccourcir', instruction: 'Raccourcis la lettre d’environ un tiers en gardant les réalisations les plus fortes.' },
@@ -168,18 +169,18 @@ export default function Letters({ id }: { id?: string }) {
             <div className="letter-opts">
               <label className="field">
                 <span>CV</span>
-                <select className="select" value={resumeId} onChange={(e) => (setResumeId(e.target.value), set({ highlights: [] }))}>
+                <Select className="select" value={resumeId} onChange={(e) => (setResumeId(e.target.value), set({ highlights: [] }))}>
                   {resumes.length === 0 && <option value="">Aucun CV</option>}
                   {resumes.map((r) => (
                     <option key={r.id} value={r.id}>
                       {r.title}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
               <label className="field">
                 <span>Offre</span>
-                <select
+                <Select
                   className="select"
                   value={offerId}
                   onChange={(e) => {
@@ -195,24 +196,24 @@ export default function Letters({ id }: { id?: string }) {
                       {o.company ? ` · ${o.company}` : ''}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
               <label className="field">
                 <span>Ton</span>
-                <select className="select" value={opts.tone} onChange={(e) => set({ tone: e.target.value })}>
+                <Select className="select" value={opts.tone} onChange={(e) => set({ tone: e.target.value })}>
                   {LETTER_TONES.map((t) => (
                     <option key={t} value={t}>
                       {t}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
               <label className="field">
                 <span>Langue</span>
-                <select className="select" value={opts.lang} onChange={(e) => set({ lang: e.target.value as LetterOptions['lang'] })}>
+                <Select className="select" value={opts.lang} onChange={(e) => set({ lang: e.target.value as LetterOptions['lang'] })}>
                   <option value="fr">Français</option>
                   <option value="en">Anglais</option>
-                </select>
+                </Select>
               </label>
             </div>
 

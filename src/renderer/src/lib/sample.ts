@@ -197,7 +197,7 @@ export function isEmptyResume(r: Resume): boolean {
 
 export type PreviewGender = 'all' | 'f' | 'm'
 
-const FEMALE_NAMES = new Set(['Inès', 'Camille', 'Sarah', 'Léa', 'Sophie', 'Manon', 'Chloé', 'Élise', 'Clara', 'Nadia'])
+const FEMALE_NAMES = new Set(['Inès', 'Camille', 'Sarah', 'Léa', 'Sophie', 'Manon', 'Chloé', 'Élise', 'Clara', 'Nadia', 'Yasmine', 'Margaux', 'Laura', 'Karima', 'Julie', 'Alexandra', 'Emma'])
 export const genderOf = (r: Resume): 'f' | 'm' => (FEMALE_NAMES.has(r.basics.firstName) ? 'f' : 'm')
 
 const hash = (s: string) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7)
@@ -218,13 +218,98 @@ function creativeMale(base: Resume): Resume {
   return { ...r, basics: { ...r.basics, banner }, gallery }
 }
 
+// Chaque personne fictive a son équivalent de l'autre genre (prénom proche), pour proposer
+// tous les métiers en version « Fille » comme en version « Garçon ».
+const NAME_SWAP: Record<string, string> = {
+  Camille: 'Antoine',
+  Sarah: 'Samuel',
+  Léa: 'Léo',
+  Sophie: 'Simon',
+  Manon: 'Mathis',
+  Chloé: 'Clément',
+  Élise: 'Étienne',
+  Clara: 'Cyril',
+  Nadia: 'Nabil',
+  Yanis: 'Yasmine',
+  Maxime: 'Margaux',
+  Thomas: 'Laura',
+  Karim: 'Karima',
+  Julien: 'Julie',
+  Alexandre: 'Alexandra',
+  Hugo: 'Emma'
+}
+
+// Accords [féminin, masculin] : expressions d'abord, puis mots seuls (titres, résumés, postes).
+const AGREEMENTS: [string, string][] = [
+  ['Assistante administrative et commerciale', 'Assistant administratif et commercial'],
+  ['Assistante administrative', 'Assistant administratif'],
+  ['assistante commerciale', 'assistant commercial'],
+  ['Contrôleuse de gestion industrielle', 'Contrôleur de gestion industriel'],
+  ['Développeuse', 'Développeur'],
+  ['développeuse', 'développeur'],
+  ['Cheffe', 'Chef'],
+  ['cheffe', 'chef'],
+  ['Chargée', 'Chargé'],
+  ['chargée', 'chargé'],
+  ['Assistante', 'Assistant'],
+  ['assistante', 'assistant'],
+  ['Infirmière', 'Infirmier'],
+  ['Ingénieure', 'Ingénieur'],
+  ['Contrôleuse', 'Contrôleur'],
+  ['Étudiante', 'Étudiant'],
+  ['diplômée', 'diplômé'],
+  ['Spécialisée', 'Spécialisé'],
+  ['Habituée', 'Habitué'],
+  ['Attachée', 'Attaché'],
+  ['attachée', 'attaché'],
+  ['polyvalente', 'polyvalent'],
+  ['Organisée', 'Organisé'],
+  ['organisée', 'organisé'],
+  ['Motivée', 'Motivé'],
+  ['Passionnée', 'Passionné'],
+  ['passionnée', 'passionné'],
+  ['Créative', 'Créatif'],
+  ['Réactive', 'Réactif'],
+  ['Rigoureuse', 'Rigoureux'],
+  ['rigoureuse', 'rigoureux']
+]
+
+const plain = (w: string) => w.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+const word = (w: string) => new RegExp(`(?<!\\p{L})${w}(?!\\p{L})`, 'gu')
+
+/** Accorde un texte au genre voulu (titres de métiers, adjectifs du résumé). */
+export function agree(text: string, to: 'f' | 'm'): string {
+  return AGREEMENTS.reduce((t, [fem, masc]) => t.replace(word(to === 'm' ? fem : masc), to === 'm' ? masc : fem), text)
+}
+
+/** CV d'un preset métier avec une personne du genre voulu (même parcours, accords revus). */
+export function presetAs(presetId: string, gender: PreviewGender): Resume {
+  const r = presetResume(presetId)
+  if (gender === 'all' || genderOf(r) === gender) return r
+  if (r.basics.firstName === 'Inès') return creativeMale(r)
+  const from = r.basics.firstName
+  const to = NAME_SWAP[from]
+  if (!to) return r
+  const { photo, banner, ...basics } = r.basics
+  const json = JSON.stringify({ ...r, basics, gallery: [] })
+    .replace(word(from), to)
+    .replace(new RegExp(`(?<![a-z])${plain(from)}(?=[.-])`, 'g'), plain(to))
+  const out = JSON.parse(agree(json, gender)) as Resume
+  return { ...out, basics: { ...out.basics, photo, banner }, gallery: r.gallery }
+}
+
+/** Nom du métier affiché sur la carte d'un preset, accordé au choix « Fille / Garçon ». */
+export function presetName(presetId: string, name: string, gender: PreviewGender): string {
+  return gender === 'all' ? name : agree(name, gender)
+}
+
 /** Profil d'exemple d'un modèle selon le choix « Fille / Garçon » (« all » : profil habituel). */
 export function sampleFor(templateId: string, gender: PreviewGender): Resume {
   const base = sampleResume(templateId)
   const t = getTemplate(templateId)
   // Modèles du studio : un métier différent selon le modèle (du genre choisi, ou mixte).
   if (t.studio) {
-    const pool = PRESETS.map((p) => presetResume(p.id)).filter((r) => gender === 'all' || genderOf(r) === gender)
+    const pool = PRESETS.filter((p) => p.build).map((p) => presetAs(p.id, gender))
     const creative = gender === 'm' ? creativeMale(base) : base
     const all = [creative, ...pool]
     const pick = all[hash(templateId) % all.length]
@@ -232,7 +317,6 @@ export function sampleFor(templateId: string, gender: PreviewGender): Resume {
   }
   if (gender === 'all' || genderOf(base) === gender) return base
   if (isVisual(templateId)) return creativeMale(base)
-  const pool = PRESETS.map((p) => presetResume(p.id)).filter((r) => genderOf(r) === gender)
-  const pick = pool[hash(templateId) % pool.length]
-  return { ...pick, templateId: t.id, accent: t.accent, font: t.font }
+  const p = presetForTemplate(templateId) ?? getPreset('dev-fullstack')!
+  return { ...presetAs(p.id, gender), templateId: t.id, accent: t.accent, font: t.font }
 }

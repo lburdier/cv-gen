@@ -3,7 +3,7 @@ import type { CvImport } from '../../../shared/types'
 import { getPreset } from './presets'
 import { activeProfile, profileAs } from './profile'
 import { useStore } from '../store'
-import { isEmptyResume, presetResume } from './sample'
+import { isEmptyResume, presetAs } from './sample'
 import { getTemplate } from '../templates/registry'
 
 /** Actions globales partagées par la palette de commandes, le tableau de bord et les pages. */
@@ -12,7 +12,7 @@ export const actions = {
   newFromPreset(presetId: string) {
     const s = useStore.getState()
     const p = getPreset(presetId)
-    const r = s.createResume({ templateId: p?.templateId, from: presetResume(presetId) })
+    const r = s.createResume({ templateId: p?.templateId, from: presetAs(presetId, s.previewGender) })
     s.go({ name: 'editor', id: r.id })
     s.toast({ kind: 'success', title: `Preset « ${p?.name ?? 'métier'} » créé`, detail: 'Remplacez le contenu d’exemple par votre parcours.' })
   },

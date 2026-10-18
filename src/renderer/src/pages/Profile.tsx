@@ -8,7 +8,8 @@ import { applyProfileTo, hasProfile, profileAs, profileCompletion, type SyncScop
 import { blankResume, isEmptyResume } from '../lib/sample'
 import { actions } from '../lib/actions'
 import { useStore } from '../store'
-import { TEMPLATES } from '../templates/registry'
+import { CORE_TEMPLATES, STUDIO_TEMPLATES } from '../templates/registry'
+import { Select } from '../components/Select'
 
 const TABS = [
   { id: 'identity', label: 'Identité' },
@@ -81,7 +82,7 @@ export default function ProfilePage() {
           {mine.length > 0 && (
             <label className="pf-from">
               <Copy size={14} />
-              <select
+              <Select
                 className="select"
                 value=""
                 onChange={(e) => {
@@ -94,7 +95,7 @@ export default function ProfilePage() {
                     {r.title}
                   </option>
                 ))}
-              </select>
+              </Select>
             </label>
           )}
           <button className="btn btn-outline btn-sm" onClick={importCv} disabled={!s.settings.hasApiKey} title={s.settings.hasApiKey ? 'PDF, DOCX ou TXT lu par l’IA' : 'Clé API requise (Paramètres)'}>
@@ -131,14 +132,23 @@ export default function ProfilePage() {
         <aside className="pf-preview">
           <div className="row" style={{ justifyContent: 'space-between', gap: 10 }}>
             <div className="mono-label">aperçu en direct</div>
-            <select className="select pf-tpl" value={tpl} onChange={(e) => setTpl(e.target.value)}>
-              {TEMPLATES.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                  {t.visual ? ' · visuel' : ' · ATS'}
-                </option>
+            <Select className="select pf-tpl" value={tpl} onChange={(e) => setTpl(e.target.value)}>
+              {(
+                [
+                  ['Modèles ATS', CORE_TEMPLATES.filter((t) => !t.visual)],
+                  ['Modèles visuels', CORE_TEMPLATES.filter((t) => t.visual)],
+                  ['Studio de design', STUDIO_TEMPLATES]
+                ] as const
+              ).map(([label, list]) => (
+                <optgroup key={label} label={label}>
+                  {list.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.studio ? `${t.name} · ${t.studio.family}` : t.name}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
-            </select>
+            </Select>
           </div>
           {filled ? (
             <PaperThumb resume={preview} rounded />

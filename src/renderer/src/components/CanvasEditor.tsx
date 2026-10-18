@@ -41,6 +41,7 @@ import { ColorPicker } from './ColorPicker'
 import { TemplatePreview } from './TemplatePicker'
 import { autoTour } from './Tour'
 import { Dropdown, ScoreRing } from './ui'
+import { Select } from './Select'
 
 /**
  * Toile : édition directe du CV à la manière de Canva — texte modifiable sur place, blocs
@@ -446,7 +447,7 @@ export function CanvasEditor({ resume, onExit }: { resume: Resume; onExit: () =>
             <ArrowDown size={14} />
           </button>
           {variants.length > 1 && (
-            <select
+            <Select
               value={t[k]}
               onChange={(e) =>
                 up((r) => {
@@ -458,7 +459,7 @@ export function CanvasEditor({ resume, onExit }: { resume: Resume; onExit: () =>
               {variants.map((v) => (
                 <option key={v}>{v}</option>
               ))}
-            </select>
+            </Select>
           )}
           {(LIST_OF[k] || k === 'summary' || k === 'interests') && (
             <button onClick={() => addItem(k)}>
@@ -670,7 +671,7 @@ export function CanvasEditor({ resume, onExit }: { resume: Resume; onExit: () =>
                   <div className="mono-label" style={{ marginTop: 14 }}>
                     structure
                   </div>
-                  <select
+                  <Select
                     className="select"
                     value={studioTpl.id.replace(/^d-/, '').replace(/-[^-]+$/, '')}
                     onChange={(e) => {
@@ -684,7 +685,7 @@ export function CanvasEditor({ resume, onExit }: { resume: Resume; onExit: () =>
                         {x.name} · {x.family}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                   <div className="mono-label" style={{ marginTop: 14 }}>
                     design
                   </div>
@@ -726,13 +727,13 @@ export function CanvasEditor({ resume, onExit }: { resume: Resume; onExit: () =>
               <ColorPicker value={resume.accent} templateDefault={TEMPLATES.find((x) => x.id === resume.templateId)?.accent ?? '#111111'} onChange={(c) => up((r) => void (r.accent = c))} />
               <label className="field" style={{ marginTop: 14 }}>
                 <span>Police (standard)</span>
-                <select className="select" value={resume.font} onChange={(e) => up((r) => void (r.font = e.target.value))}>
+                <Select className="select" value={resume.font} onChange={(e) => up((r) => void (r.font = e.target.value))}>
                   {FONTS.map((f) => (
                     <option key={f.id} value={f.id}>
                       {f.label}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
               <label className="field">
                 <span>Taille du texte : {size.toFixed(2).replace(/\.?0+$/, '')} pt</span>

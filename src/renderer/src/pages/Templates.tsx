@@ -8,7 +8,7 @@ import { Modal } from '../components/ui'
 import { actions } from '../lib/actions'
 import { PRESETS, PRESET_SECTORS, type PresetDef } from '../lib/presets'
 import { hasProfile, useActiveProfile } from '../lib/profile'
-import { isEmptyResume, presetResume } from '../lib/sample'
+import { isEmptyResume, presetAs, presetName } from '../lib/sample'
 import { useStore } from '../store'
 import { CORE_TEMPLATES, STUDIO_TEMPLATES, TEMPLATES, TEMPLATE_TAGS, getTemplate, type TemplateDef } from '../templates/registry'
 
@@ -164,13 +164,16 @@ export default function Templates() {
           </h2>
           <p>Contenu réaliste rédigé selon les règles ATS (verbes d’action, résultats chiffrés, mots-clés du métier), modèle et couleur assortis. Remplacez les informations par les vôtres.</p>
         </div>
-        <div className="chips" style={{ marginBottom: 26 }}>
+        <div className="tpl-filters" style={{ marginBottom: 26 }}>
+        <div className="chips">
           {PRESET_SECTORS.map((sc) => (
             <button key={sc} className={`chip ${sector === sc ? 'active' : ''}`} onClick={() => setSector(sc)}>
               {sc}
               {sc !== 'Tous' && <span className="chip-count">{PRESETS.filter((p) => p.sector === sc).length}</span>}
             </button>
           ))}
+        </div>
+        <GenderToggle />
         </div>
         <div className="gallery lg">
           {presets.map((p) => {
@@ -183,7 +186,7 @@ export default function Templates() {
                 <div className="shot-meta">
                   <div className="shot-logo preset-dot" style={{ background: tpl.accent }} />
                   <div>
-                    <strong>{p.name}</strong>
+                    <strong>{presetName(p.id, p.name, s.previewGender)}</strong>
                     <span>{p.tagline}</span>
                     <span className="mono-tag" style={{ marginTop: 8, width: 'fit-content' }}>
                       {p.sector} · modèle {tpl.name}
@@ -289,7 +292,8 @@ export default function Templates() {
 function PresetModal({ preset: p, onClose }: { preset: PresetDef; onClose: () => void }) {
   const tpl = getTemplate(p.templateId)
   const profile = useActiveProfile()
-  const r = profile ?? presetResume(p.id)
+  const gender = useStore((st) => st.previewGender)
+  const r = profile ?? presetAs(p.id, gender)
   const skills = r.skills.reduce((n, g) => n + g.items.length, 0)
   const facts = [
     [profile ? 'Contenu' : 'Personne fictive', profile ? `Votre profil · ${r.basics.firstName} ${r.basics.lastName}` : `${r.basics.firstName} ${r.basics.lastName}`],
@@ -302,7 +306,7 @@ function PresetModal({ preset: p, onClose }: { preset: PresetDef; onClose: () =>
   return (
     <Modal
       size="xl"
-      title={`Preset ${p.name}`}
+      title={`Preset ${presetName(p.id, p.name, gender)}`}
       icon={<Mark size={16} />}
       onClose={onClose}
       footer={
@@ -316,7 +320,7 @@ function PresetModal({ preset: p, onClose }: { preset: PresetDef; onClose: () =>
               Avec l’exemple
             </button>
           )}
-          <button className="btn btn-ink" onClick={() => (onClose(), profile ? actions.newFromProfile(p.templateId, `CV · ${p.name}`) : actions.newFromPreset(p.id))}>
+          <button className="btn btn-ink" onClick={() => (onClose(), profile ? actions.newFromProfile(p.templateId, `CV · ${presetName(p.id, p.name, gender)}`) : actions.newFromPreset(p.id))}>
             <Sparkles size={15} /> {profile ? 'Créer avec mon profil' : 'Créer ce CV'}
           </button>
         </>

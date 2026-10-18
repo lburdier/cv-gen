@@ -8,6 +8,7 @@ import { scanFromText, scoreExtraction, type PdfCategory } from '../lib/atsPdf'
 import { getTemplate } from '../templates/registry'
 import { actions } from '../lib/actions'
 import { useStore } from '../store'
+import { Select } from '../components/Select'
 
 const CATS: [PdfCategory, string, string][] = [
   ['read', 'Lisibilité machine', 'Texte, encodage, colonnes, pages'],
@@ -159,7 +160,7 @@ export default function AtsScan() {
               </div>
               <label className="field">
                 <span>Comparer à une offre</span>
-                <select className="select" value={offerId} onChange={(e) => setOfferId(e.target.value)}>
+                <Select className="select" value={offerId} onChange={(e) => setOfferId(e.target.value)}>
                   <option value="">Sans offre (score général)</option>
                   {offers.map((o) => (
                     <option key={o.id} value={o.id}>
@@ -168,7 +169,7 @@ export default function AtsScan() {
                     </option>
                   ))}
                   <option value="paste">Coller le texte d’une offre…</option>
-                </select>
+                </Select>
               </label>
               {offerId === 'paste' && <textarea className="input" rows={6} value={pasted} onChange={(e) => setPasted(e.target.value)} placeholder="Collez ici l’annonce complète…" />}
               <div className="as-stats">
