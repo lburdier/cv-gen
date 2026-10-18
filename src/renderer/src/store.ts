@@ -138,7 +138,7 @@ export const useStore = create<State>((set, get) => {
           data: {
             ...data,
             resumes: data.resumes.map(normalizeResume),
-            letters: data.letters.map((l) => ({ ...l, title: noDash(l.title, ' · ') })),
+            letters: data.letters.map((l) => ({ ...l, title: noDash(l.title, ' · '), body: noDash(l.body) })),
             ...(data.profile ? { profile: normalizeResume(data.profile) } : {})
           },
           settings,

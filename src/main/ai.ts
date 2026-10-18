@@ -25,7 +25,8 @@ import type {
 } from '../shared/types'
 import { OpenRouterError, modelLabel, orCheckKey, orJson, orReply, orText, type OrMessage } from './openrouter'
 import { getApiKey, getSettings } from './storage'
-import { anyInstalled, localGenerate, modelById } from './localLlm'
+import { anyInstalled, isInstalled, localGenerate, modelById } from './localLlm'
+import { localLetter, localRevise } from './localLetter'
 
 export class AiError extends Error {}
 
@@ -325,7 +326,33 @@ const ANGLES: Record<LetterOptions['angle'], string> = {
   spontanee: "Angle : candidature spontanée. Propose une valeur concrète à l'entreprise sans faire référence à une offre."
 }
 
+/**
+ * Lettre ou retouche : modèle local choisi → brouillon guidé reformulé par le mini modèle ;
+ * fournisseur en ligne en échec (quota, réseau, clé) → même chose si un modèle local est installé.
+ */
+async function withLocalLetter(remote: () => Promise<string>, local: (id: string) => Promise<string>): Promise<string> {
+  const s = getSettings()
+  if (s.provider === 'local') {
+    if (!isInstalled(s.localModel)) throw new AiError('Le modèle local n’est pas installé. Téléchargez-le dans Paramètres › Intelligence artificielle.')
+    return noDash(await local(s.localModel))
+  }
+  try {
+    return await remote()
+  } catch (e) {
+    const fb = localFallback(e)
+    if (!fb) throw e
+    return noDash(await local(fb.id))
+  }
+}
+
 export async function coverLetter(resume: Resume, offer: Offer | undefined, o: LetterOptions): Promise<string> {
+  return withLocalLetter(
+    () => remoteCoverLetter(resume, offer, o),
+    (id) => localLetter(id, resume, offer, o)
+  )
+}
+
+async function remoteCoverLetter(resume: Resume, offer: Offer | undefined, o: LetterOptions): Promise<string> {
   const localScope = 'Le modèle local est trop petit pour écrire une lettre fiable : utilisez le « Brouillon guidé » (sans IA), ou choisissez Claude ou OpenRouter dans Paramètres.'
   const [min, max] = o.length === 'courte' ? [150, 230] : o.length === 'detaillee' ? [380, 480] : [250, 360]
   const highlights = o.highlights.length ? resume.experiences.filter((e) => o.highlights.includes(e.id)) : []
@@ -362,6 +389,13 @@ Langue : ${en ? 'anglais' : 'français'}.`,
 
 /** Retouche d'une lettre existante selon une consigne, sans ajouter de faits absents du CV. */
 export async function reviseLetter(body: string, instruction: string, resume: Resume, offer?: Offer, lang: Lang = 'fr'): Promise<string> {
+  return withLocalLetter(
+    () => remoteReviseLetter(body, instruction, resume, offer, lang),
+    (id) => localRevise(id, body, instruction, lang)
+  )
+}
+
+async function remoteReviseLetter(body: string, instruction: string, resume: Resume, offer?: Offer, lang: Lang = 'fr'): Promise<string> {
   return text({
     localScope: 'Le modèle local est trop petit pour écrire une lettre fiable : utilisez le « Brouillon guidé » (sans IA), ou choisissez Claude ou OpenRouter dans Paramètres.',
     effort: 'low',

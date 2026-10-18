@@ -56,7 +56,7 @@ Sans IA, l’app fonctionne entièrement : création, modèles, score ATS, impor
 1. Dans **Paramètres › Intelligence artificielle**, choisissez **Sur cet ordinateur**.
 2. Cliquez sur **Télécharger** à côté de « Mini · Qwen3 0.6B » (397 Mo, une seule fois).
 
-Le modèle tourne sur votre PC : gratuit, sans clé, sans limite, rien n’est envoyé en ligne. Il répond aux questions dans l’assistant, mais il est trop petit pour rédiger des lettres ou analyser des offres. Installé, il sert aussi de secours automatique quand l’IA en ligne ne répond pas.
+Le modèle tourne sur votre PC : gratuit, sans clé, sans limite, rien n’est envoyé en ligne. Il répond aux questions dans l’assistant et aide à rédiger les lettres : il part du brouillon guidé (vos vrais faits) et reformule chaque paragraphe, sans jamais changer un chiffre ni un nom. Il est trop petit pour analyser des offres ou adapter un CV. Installé, il sert aussi de secours automatique quand l’IA en ligne ne répond pas.
 
 **Option gratuite : OpenRouter**
 
