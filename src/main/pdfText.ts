@@ -288,13 +288,13 @@ class PdfDoc {
 
 const WIN_ANSI: Record<number, string> = {
   128: '€', 130: '‚', 131: 'ƒ', 132: '„', 133: '…', 134: '†', 135: '‡', 136: 'ˆ', 137: '‰', 138: 'Š', 139: '‹', 140: 'Œ', 142: 'Ž',
-  145: '‘', 146: '’', 147: '“', 148: '”', 149: '•', 150: '–', 151: '—', 152: '˜', 153: '™', 154: 'š', 155: '›', 156: 'œ', 158: 'ž', 159: 'Ÿ'
+  145: '‘', 146: '’', 147: '“', 148: '”', 149: '•', 150: '–', 151: '\u2014', 152: '˜', 153: '™', 154: 'š', 155: '›', 156: 'œ', 158: 'ž', 159: 'Ÿ'
 }
 const GLYPHS: Record<string, string> = {
   space: ' ', exclam: '!', quotedbl: '"', numbersign: '#', dollar: '$', percent: '%', ampersand: '&', quotesingle: "'", quoteright: '’', quoteleft: '‘',
   parenleft: '(', parenright: ')', asterisk: '*', plus: '+', comma: ',', hyphen: '-', period: '.', slash: '/', colon: ':', semicolon: ';', less: '<',
   equal: '=', greater: '>', question: '?', at: '@', bracketleft: '[', backslash: '\\', bracketright: ']', underscore: '_', bullet: '•', endash: '–',
-  emdash: '—', ellipsis: '…', quotedblleft: '“', quotedblright: '”', guillemotleft: '«', guillemotright: '»', eacute: 'é', egrave: 'è', ecircumflex: 'ê',
+  emdash: '\u2014', ellipsis: '…', quotedblleft: '“', quotedblright: '”', guillemotleft: '«', guillemotright: '»', eacute: 'é', egrave: 'è', ecircumflex: 'ê',
   edieresis: 'ë', agrave: 'à', acircumflex: 'â', ccedilla: 'ç', icircumflex: 'î', idieresis: 'ï', ocircumflex: 'ô', ugrave: 'ù', ucircumflex: 'û',
   udieresis: 'ü', Eacute: 'É', Egrave: 'È', Agrave: 'À', Ccedilla: 'Ç', oe: 'œ', OE: 'Œ', degree: '°', fi: 'fi', fl: 'fl', zero: '0', one: '1', two: '2',
   three: '3', four: '4', five: '5', six: '6', seven: '7', eight: '8', nine: '9', euro: '€', copyright: '©', registered: '®', trademark: '™'

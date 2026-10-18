@@ -44,8 +44,8 @@ import { Dropdown, ScoreRing } from './ui'
 import { Select } from './Select'
 
 /**
- * Toile : édition directe du CV à la manière de Canva — texte modifiable sur place, blocs
- * sélectionnables, barre d'outils, glisser-déposer, annuler/rétablir — avec des garde-fous
+ * Toile : édition directe du CV à la manière de Canva, texte modifiable sur place, blocs
+ * sélectionnables, barre d'outils, glisser-déposer, annuler/rétablir, avec des garde-fous
  * ATS : une colonne, texte réel, intitulés standards, polices sûres, taille minimale.
  */
 

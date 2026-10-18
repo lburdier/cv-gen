@@ -75,12 +75,12 @@ export const DEFAULT_ORDER: SectionKey[] = [
 const PRESENT: Record<Lang, string> = { fr: 'Présent', en: 'Present' }
 
 /** AAAA-MM → MM/AAAA, format le plus fiable pour les parseurs ATS. */
-/** Retire les tirets cadratins « — » (l'app n'en affiche aucun) : remplacés par le séparateur donné. */
+/** Retire les tirets cadratins (U+2014, l'app n'en affiche aucun) : remplacés par le séparateur donné. */
 export function noDash(s: string, sep = ', '): string {
-  if (!s.includes('—')) return s
+  if (!s.includes('\u2014')) return s
   return s
-    .replace(/^([ \t]*)—[ \t]*/gm, '$1- ') // en début de ligne : puce
-    .replace(/[ \t]*—[ \t]*/g, sep)
+    .replace(/^([ \t]*)\u2014[ \t]*/gm, '$1- ') // en début de ligne : puce
+    .replace(/[ \t]*\u2014[ \t]*/g, sep)
     .trim()
 }
 

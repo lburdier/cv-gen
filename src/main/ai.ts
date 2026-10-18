@@ -325,7 +325,7 @@ const LETTER_RULES = `Règles d'écriture :
 - Pas de formules creuses : « je me permets », « dynamique et motivé », « force de proposition », « vif intérêt », « n'hésitez pas », « nouveaux défis ».
 - Des faits plutôt que des adjectifs : chaque qualité est prouvée par une réalisation précise du CV (chiffres compris).
 - Varie les débuts de phrase : pas plus d'une phrase sur trois ne commence par « Je ».
-- N'utilise jamais le tiret cadratin (—) : virgules, deux-points ou phrases courtes.
+- N'utilise jamais le tiret cadratin (\u2014) : virgules, deux-points ou phrases courtes.
 - Si le genre de la personne n'est pas évident, choisis des tournures neutres (« Avec 5 ans d'expérience » plutôt que « Fort de »).
 - Texte brut, sans Markdown, sans objet ni en-tête (ils sont ajoutés par l'application).`
 

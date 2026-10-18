@@ -138,7 +138,7 @@ export function localAnalyze(text: string): OfferAnalysis {
 
   const bullets = lines.filter((l) => /^[-•*·▪●]/.test(l)).map((l) => l.replace(/^[-•*·▪●]\s*/, ''))
   return {
-    title: lines[0]?.replace(/\s*[—–-]\s*(CDI|CDD|Stage|Alternance|Freelance).*$/i, '').slice(0, 90) ?? '',
+    title: lines[0]?.replace(/\s*[\u2014–-]\s*(CDI|CDD|Stage|Alternance|Freelance).*$/i, '').slice(0, 90) ?? '',
     company: '',
     seniority: /senior|confirm|lead|\b[5-9]\s*ans/i.test(text) ? 'Confirmé / Senior' : /junior|débutant|stage|alternance/i.test(text) ? 'Junior' : '',
     location: /(Paris|Lyon|Marseille|Toulouse|Bordeaux|Lille|Nantes|Rennes|Strasbourg|Nice|Montpellier|Grenoble|remote|télétravail|hybride)/i.exec(text)?.[0] ?? '',
@@ -198,7 +198,7 @@ export function analyze(resume: Resume, offer?: Offer | null): AtsReport {
   const wordCount = text.split(/\s+/).filter(Boolean).length
   const bullets = resume.experiences.flatMap((e) => e.bullets.filter((x) => x.trim()))
 
-  // FORMAT — garanti par les modèles, vérifié par principe
+  // FORMAT, garanti par les modèles, vérifié par principe
   const visual = isVisual(resume.templateId)
   add(
     visual

@@ -53,7 +53,7 @@ export function blankResume(templateId = 'atelier'): Resume {
 /** Complète un CV enregistré avant l'ajout de nouveaux champs ou sections. */
 export function normalizeResume(r: Resume): Resume {
   const order = [...r.sectionOrder, ...DEFAULT_ORDER.filter((k) => !r.sectionOrder.includes(k))]
-  // Contenus créés par les anciennes versions (« CV — Data Analyst », « Artiste 3D — Court-métrage ») :
+  // Contenus créés par les anciennes versions, séparés par un tiret cadratin (« CV - Data Analyst ») :
   // plus aucun tiret cadratin, dans le titre (« · ») comme dans le contenu (« , »).
   return noDashDeep({ ...r, title: noDash(r.title, ' · '), links: r.links ?? [], gallery: r.gallery ?? [], sectionOrder: order })
 }

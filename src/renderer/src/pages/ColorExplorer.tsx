@@ -28,8 +28,8 @@ function normalizeHex(v: string): string | null {
 }
 
 /**
- * Explorer par couleurs (à la Multicolr) : on choisit une ou deux couleurs — librement,
- * via une harmonie ou depuis une image — et chaque modèle s'affiche avec ces couleurs.
+ * Explorer par couleurs (à la Multicolr) : on choisit une ou deux couleurs, librement,
+ * via une harmonie ou depuis une image, et chaque modèle s'affiche avec ces couleurs.
  */
 export default function ColorExplorer({ initialColors, resumeId }: { initialColors?: string[]; resumeId?: string }) {
   const s = useStore()

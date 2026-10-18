@@ -1,6 +1,6 @@
 /* ==========================================================================
    Modèles visuels « portfolio » : Vitrine, Studio, Folio.
-   Mises en page en colonnes avec images — une « version ATS » du même
+   Mises en page en colonnes avec images : une « version ATS » du même
    contenu est proposée à l'export.
    ========================================================================== */
 
@@ -292,7 +292,7 @@
 }
 
 /* ==========================================================================
-   VITRINE — en-tête scindé, colonne latérale, parcours en frise
+   VITRINE : en-tête scindé, colonne latérale, parcours en frise
    ========================================================================== */
 .vt-hero {
   display: grid;
@@ -424,7 +424,7 @@
 }
 
 /* ==========================================================================
-   STUDIO — affiche sombre, nom géant, bandeau d'accent, grille bento
+   STUDIO : affiche sombre, nom géant, bandeau d'accent, grille bento
    ========================================================================== */
 .st-hero {
   position: relative;
@@ -559,7 +559,7 @@
 }
 
 /* ==========================================================================
-   FOLIO — éditorial clair, portrait, étiquettes en marge
+   FOLIO : éditorial clair, portrait, étiquettes en marge
    ========================================================================== */
 .fo-hero {
   display: grid;
@@ -686,7 +686,7 @@
 }
 
 /* ==========================================================================
-   COLONNE — barre latérale teintée (photo, contact, outils), contenu à droite
+   COLONNE : barre latérale teintée (photo, contact, outils), contenu à droite
    ========================================================================== */
 .tpl-colonne.cv-visual {
   --v-page: #ffffff;
@@ -870,7 +870,7 @@
 }
 
 /* ==========================================================================
-   MANIFESTE — une phrase géante, pastilles, tableau à filets (DA de l'app)
+   MANIFESTE : une phrase géante, pastilles, tableau à filets (DA de l'app)
    ========================================================================== */
 .tpl-manifeste.cv-visual {
   --v-page: #ffffff;
@@ -1048,7 +1048,7 @@
 }
 
 /* ==========================================================================
-   AFFICHE — aplat de couleur, nom monumental, image en duotone
+   AFFICHE : aplat de couleur, nom monumental, image en duotone
    ========================================================================== */
 .tpl-affiche.cv-visual {
   --v-page: #ffffff;
@@ -1189,7 +1189,7 @@
 }
 
 /* ==========================================================================
-   MAGAZINE — titre de une, serif italique, lettrine, colonnes, mosaïque
+   MAGAZINE : titre de une, serif italique, lettrine, colonnes, mosaïque
    ========================================================================== */
 .tpl-magazine.cv-visual {
   --v-page: #f7f3ea;
@@ -1345,7 +1345,7 @@
 }
 
 /* ==========================================================================
-   BRUTAL — néo-brutalisme : bordures épaisses, ombres décalées, autocollants
+   BRUTAL : néo-brutalisme : bordures épaisses, ombres décalées, autocollants
    ========================================================================== */
 .tpl-brutal.cv-visual {
   --v-page: #fffdf4;
@@ -1521,7 +1521,7 @@
 }
 
 /* ==========================================================================
-   CALQUE — look d'outil de design : cadre de sélection à poignées autour de la
+   CALQUE : look d'outil de design : cadre de sélection à poignées autour de la
    photo, titres surlignés, frise en pointillés, flèches et anneaux de niveau
    ========================================================================== */
 .tpl-calque.cv-visual {
@@ -1834,7 +1834,7 @@
 }
 
 /* ==========================================================================
-   POP — bleu électrique et rose, en-tête en trame de points, pastilles étoilées
+   POP : bleu électrique et rose, en-tête en trame de points, pastilles étoilées
    ========================================================================== */
 .tpl-pop.cv-visual {
   --v-page: #ffffff;
