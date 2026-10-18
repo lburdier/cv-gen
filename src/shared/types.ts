@@ -338,7 +338,7 @@ export interface DesignSpec {
   photoPlace: 'header' | 'sidebar'
   /** Côté de la photo dans l'en-tête. */
   photoSide: 'left' | 'right'
-  headings: 'underline' | 'pill' | 'block' | 'caps' | 'highlight' | 'bar'
+  headings: 'underline' | 'pill' | 'block' | 'caps' | 'highlight' | 'bar' | 'rule' | 'rail'
   bodyFont: 'sans' | 'serif' | 'mono'
   displayFont: 'sans' | 'serif' | 'mono' | 'wide'
   nameCase: 'upper' | 'normal'
@@ -359,7 +359,9 @@ export interface DesignSpec {
   sidebarSections: SectionKey[]
   // ---- Décors (facultatifs : valeurs par défaut = rendu sobre d'origine) ----
   /** Motif de fond de l'en-tête rempli ou de la colonne latérale. */
-  decor?: 'none' | 'dots' | 'grid' | 'lines' | 'diagonal' | 'waves' | 'circles' | 'blobs' | 'confetti'
+  decor?: 'none' | 'dots' | 'grid' | 'lines' | 'waves' | 'circles' | 'blobs' | 'confetti'
+  /** Petites icônes devant les coordonnées. */
+  icons?: boolean
   /** Bord bas de l'en-tête en bandeau. */
   headerShape?: 'flat' | 'curve' | 'slant' | 'wave'
   /** Style du nom. */

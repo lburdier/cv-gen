@@ -119,7 +119,9 @@ export function DesignForm({ design: d, onChange }: { design: DesignSpec; onChan
             ['block', 'Bande'],
             ['caps', 'Capitales'],
             ['highlight', 'Surlignés'],
-            ['bar', 'Barre']
+            ['bar', 'Barre'],
+            ['rule', 'Filet'],
+            ['rail', 'Dans la marge']
           ]}
           onChange={(v) => set('headings', v)}
         />
@@ -209,7 +211,6 @@ export function DesignForm({ design: d, onChange }: { design: DesignSpec; onChan
             ['dots', 'Points'],
             ['grid', 'Quadrillage'],
             ['lines', 'Lignes'],
-            ['diagonal', 'Rayures'],
             ['waves', 'Vagues'],
             ['circles', 'Cercles'],
             ['blobs', 'Formes'],
@@ -266,6 +267,12 @@ export function DesignForm({ design: d, onChange }: { design: DesignSpec; onChan
           ]}
           onChange={(v) => set('entries', v)}
         />
+      </Row>
+      <Row label="Coordonnées">
+        <label className="check">
+          <input type="checkbox" checked={Boolean(d.icons)} onChange={(e) => set('icons', e.target.checked)} />
+          Petites icônes devant le téléphone, l’e-mail, la ville et les liens
+        </label>
       </Row>
       <Row label="Liseré de page">
         <Seg

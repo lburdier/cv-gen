@@ -52,8 +52,6 @@ function decorLayer(decor: DesignSpec['decor'], ink: string, accent: string): { 
       }
     case 'lines':
       return { image: `repeating-linear-gradient(0deg, ${mix(`${ink} 9%`, 'transparent')} 0 1px, transparent 1px 21px)` }
-    case 'diagonal':
-      return { image: `repeating-linear-gradient(135deg, ${mix(`${ink} 9%`, 'transparent')} 0 7px, transparent 7px 20px)` }
     case 'waves':
       return {
         image: svg(
@@ -127,6 +125,25 @@ function HeaderEdge({ shape, page }: { shape: DesignSpec['headerShape']; page: s
   )
 }
 
+const ICON_PATHS: Record<string, string> = {
+  phone: 'M5 3h3l2 5-2.5 1.5a11 11 0 0 0 5 5L14 12l5 2v3a2 2 0 0 1-2 2A15 15 0 0 1 3 5a2 2 0 0 1 2-2z',
+  email: 'M3 6h18v12H3z M3 7l9 6 9-6',
+  location: 'M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z M12 10.5a2 2 0 1 0 0-.01',
+  website: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z M3 12h18 M12 3c3 3.2 3 14.8 0 18 M12 3c-3 3.2-3 14.8 0 18',
+  linkedin: 'M4 4h16v16H4z M8 10v6 M8 7.5v.01 M12 16v-3.5a2 2 0 0 1 4 0V16 M12 10v6',
+  github: 'M9 19c-4 1.3-4-2-6-2.5 M15 21v-3.5c0-1 .1-1.5-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1-.3-3.4 1.3a11.6 11.6 0 0 0-6 0C6.8 2.8 5.8 3.1 5.8 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4.4 9.5c0 4.6 2.7 5.7 5.5 6-.6.5-.6 1.1-.5 2V21'
+}
+
+function ContactIcon({ kind }: { kind: string }) {
+  const d = ICON_PATHS[kind]
+  if (!d) return null
+  return (
+    <svg className="cm-ico" viewBox="0 0 24 24" aria-hidden>
+      <path d={d} />
+    </svg>
+  )
+}
+
 export function CvCustom({ resume: r }: { resume: Resume }) {
   const ph = usePlaceholders()
   const editable = useContext(EditableContext)
@@ -157,7 +174,7 @@ export function CvCustom({ resume: r }: { resume: Resume }) {
     '--cm-card': mix(`${primary} 7%`, page),
     '--cm-sidebar': sidebar,
     '--cm-on-sidebar': sideText,
-    '--cm-side-accent': readable(primary, sidebar, 2.4),
+    '--cm-side-accent': readable(primary, sidebar, 3.4),
     '--cm-header': headerBg,
     '--cm-on-header': headerText,
     '--cm-name-accent': readable(primary, headerBg, 2.2),
@@ -201,6 +218,7 @@ export function CvCustom({ resume: r }: { resume: Resume }) {
       <ul className={`cm-contact ${cls}`} {...E('tab:identity', 'Modifier les coordonnées')}>
         {contactFields.map((k) => (
           <li key={k}>
+            {d.icons && <ContactIcon kind={k} />}
             <T p={`basics.${k}`} v={canvas ? r.basics[k] : k === 'website' || k === 'linkedin' || k === 'github' ? stripProtocol(r.basics[k]) : r.basics[k]} ph={{ phone: 'Téléphone', email: 'E-mail', location: 'Ville', website: 'Site', linkedin: 'LinkedIn', github: 'GitHub' }[k]} />
           </li>
         ))}
@@ -503,7 +521,9 @@ export function CvCustom({ resume: r }: { resume: Resume }) {
     `cm-en-${d.entries}`,
     `cm-fr-${d.frame}`,
     `cm-${d.density}`,
-    `cm-corners-${d.corners}`
+    `cm-corners-${d.corners}`,
+    hasSide && sidebar.toLowerCase() === page.toLowerCase() ? 'cm-side-plain' : '',
+    d.icons ? 'cm-icons' : ''
   ].join(' ')
 
   return (

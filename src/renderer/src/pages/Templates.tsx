@@ -1,4 +1,5 @@
 import { ArrowRight, Check, ImagePlus, Palette, ShieldCheck, Sparkles, UserRound } from 'lucide-react'
+import { GenderToggle } from '../components/TemplatePicker'
 import { StudioGallery } from '../components/StudioGallery'
 import { useState } from 'react'
 import { TemplatePreview } from '../components/TemplatePicker'
@@ -23,12 +24,13 @@ const GUARANTEES = [
 export default function Templates() {
   const s = useStore()
   const [tag, setTag] = useState('Tous')
+  const [kind, setKind] = useState<'all' | 'ats' | 'visual'>('all')
   const profile = useStore((st) => (hasProfile(st.data) ? st.data.profile! : null))
   const profileOn = useStore((st) => st.data.profileMode !== false)
   const [open, setOpen] = useState<TemplateDef | null>(null)
   const [sector, setSector] = useState('Tous')
   const [preset, setPreset] = useState<PresetDef | null>(null)
-  const list = CORE_TEMPLATES.filter((t) => tag === 'Tous' || t.tags.includes(tag))
+  const list = CORE_TEMPLATES.filter((t) => (tag === 'Tous' || t.tags.includes(tag)) && (kind === 'all' || (kind === 'visual') === Boolean(t.visual)))
   const presets = PRESETS.filter((p) => sector === 'Tous' || p.sector === sector)
 
   const applyTo = (resumeId: string, t: TemplateDef) => {
@@ -100,6 +102,22 @@ export default function Templates() {
         )}
       </div>
 
+      <div className="tpl-filters">
+        <div className="seg">
+          {(
+            [
+              ['all', 'Tous les types'],
+              ['ats', 'ATS une colonne'],
+              ['visual', 'Visuels']
+            ] as const
+          ).map(([v, l]) => (
+            <button key={v} className={kind === v ? 'on' : ''} onClick={() => setKind(v)}>
+              {l}
+            </button>
+          ))}
+        </div>
+        <GenderToggle />
+      </div>
       <div className="chips" style={{ marginBottom: 26 }}>
         {TEMPLATE_TAGS.map((t) => (
           <button key={t} className={`chip ${tag === t ? 'active' : ''}`} onClick={() => setTag(t)}>
@@ -133,7 +151,7 @@ export default function Templates() {
           <h2>
             {STUDIO_TEMPLATES.length} modèles <em>à composer</em>.
           </h2>
-          <p>Vingt structures déclinées en dix palettes : bandeaux arrondis ou en biais, colonnes à motifs, titres en pastilles, cartes, liserés. Chacun se retouche entièrement, dans l’onglet Design ou directement sur la toile, et s’exporte aussi en version ATS.</p>
+          <p>Vingt structures inspirées des meilleurs CV réels, déclinées en dix palettes : colonnes latérales, bandeaux, mises en page éditoriales, titres à filet, icônes de contact. Chacun se retouche entièrement, dans l’onglet Design ou directement sur la toile, et s’exporte aussi en version ATS.</p>
         </div>
         <StudioGallery onPick={setOpen} />
       </section>

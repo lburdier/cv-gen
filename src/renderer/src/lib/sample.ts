@@ -1,7 +1,7 @@
 import { DEFAULT_ORDER, noDash, noDashDeep } from '../../../shared/format'
 import type { Resume } from '../../../shared/types'
 import { getTemplate, isVisual } from '../templates/registry'
-import { getPreset, presetForTemplate } from './presets'
+import { PRESETS, getPreset, presetForTemplate } from './presets'
 // Photos d'exemple Unsplash (licence Unsplash, voir assets/samples/CREDITS.md).
 import samplePhoto from '../assets/samples/photo.jpg'
 import sampleBanner from '../assets/samples/banner.jpg'
@@ -190,4 +190,49 @@ export function isEmptyResume(r: Resume): boolean {
     !(r.gallery ?? []).length &&
     !(r.links ?? []).length
   )
+}
+
+// ---------- Aperçus « Fille / Garçon » ----------
+// Les modèles conviennent à tout le monde : seul le profil d'exemple affiché change.
+
+export type PreviewGender = 'all' | 'f' | 'm'
+
+const FEMALE_NAMES = new Set(['Inès', 'Camille', 'Sarah', 'Léa', 'Sophie', 'Manon', 'Chloé', 'Élise', 'Clara', 'Nadia'])
+export const genderOf = (r: Resume): 'f' | 'm' => (FEMALE_NAMES.has(r.basics.firstName) ? 'f' : 'm')
+
+const hash = (s: string) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7)
+
+/** Version masculine du profil créatif (même parcours, sans photo). */
+function creativeMale(base: Resume): Resume {
+  const { photo: _photo, banner, ...basics } = base.basics
+  const gallery = base.gallery
+  const text = JSON.stringify({ ...base, basics, gallery: [] })
+    .replace(/Inès/g, 'Lucas')
+    .replace(/MOREAU|Moreau/g, (m) => (m === 'MOREAU' ? 'MARTIN' : 'Martin'))
+    .replace(/inesmoreau/gi, 'lucasmartin')
+    .replace(/ines\.moreau/gi, 'lucas.martin')
+    .replace(/ines\./gi, 'lucas.')
+    .replace(/développeuse/g, 'développeur')
+    .replace(/Passionnée/g, 'Passionné')
+  const r = JSON.parse(text) as Resume
+  return { ...r, basics: { ...r.basics, banner }, gallery }
+}
+
+/** Profil d'exemple d'un modèle selon le choix « Fille / Garçon » (« all » : profil habituel). */
+export function sampleFor(templateId: string, gender: PreviewGender): Resume {
+  const base = sampleResume(templateId)
+  const t = getTemplate(templateId)
+  // Modèles du studio : un métier différent selon le modèle (du genre choisi, ou mixte).
+  if (t.studio) {
+    const pool = PRESETS.map((p) => presetResume(p.id)).filter((r) => gender === 'all' || genderOf(r) === gender)
+    const creative = gender === 'm' ? creativeMale(base) : base
+    const all = [creative, ...pool]
+    const pick = all[hash(templateId) % all.length]
+    return { ...pick, templateId: t.id, accent: t.accent, font: t.font }
+  }
+  if (gender === 'all' || genderOf(base) === gender) return base
+  if (isVisual(templateId)) return creativeMale(base)
+  const pool = PRESETS.map((p) => presetResume(p.id)).filter((r) => genderOf(r) === gender)
+  const pick = pool[hash(templateId) % pool.length]
+  return { ...pick, templateId: t.id, accent: t.accent, font: t.font }
 }
