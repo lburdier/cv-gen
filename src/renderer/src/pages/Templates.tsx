@@ -1,4 +1,5 @@
 import { ArrowRight, Check, ImagePlus, Palette, ShieldCheck, Sparkles, UserRound } from 'lucide-react'
+import { StudioGallery } from '../components/StudioGallery'
 import { useState } from 'react'
 import { TemplatePreview } from '../components/TemplatePicker'
 import { Mark } from '../components/Shell'
@@ -8,7 +9,7 @@ import { PRESETS, PRESET_SECTORS, type PresetDef } from '../lib/presets'
 import { hasProfile, useActiveProfile } from '../lib/profile'
 import { isEmptyResume, presetResume } from '../lib/sample'
 import { useStore } from '../store'
-import { TEMPLATES, TEMPLATE_TAGS, getTemplate, type TemplateDef } from '../templates/registry'
+import { CORE_TEMPLATES, STUDIO_TEMPLATES, TEMPLATES, TEMPLATE_TAGS, getTemplate, type TemplateDef } from '../templates/registry'
 
 const GUARANTEES = [
   'Une seule colonne, ordre de lecture linéaire',
@@ -27,7 +28,7 @@ export default function Templates() {
   const [open, setOpen] = useState<TemplateDef | null>(null)
   const [sector, setSector] = useState('Tous')
   const [preset, setPreset] = useState<PresetDef | null>(null)
-  const list = TEMPLATES.filter((t) => tag === 'Tous' || t.tags.includes(tag))
+  const list = CORE_TEMPLATES.filter((t) => tag === 'Tous' || t.tags.includes(tag))
   const presets = PRESETS.filter((p) => sector === 'Tous' || p.sector === sector)
 
   const applyTo = (resumeId: string, t: TemplateDef) => {
@@ -125,6 +126,17 @@ export default function Templates() {
           </button>
         ))}
       </div>
+
+      <section className="studio-section" id="studio">
+        <div className="hero presets-head">
+          <div className="mono-label">studio de design</div>
+          <h2>
+            {STUDIO_TEMPLATES.length} modèles <em>à composer</em>.
+          </h2>
+          <p>Vingt structures déclinées en dix palettes : bandeaux arrondis ou en biais, colonnes à motifs, titres en pastilles, cartes, liserés. Chacun se retouche entièrement, dans l’onglet Design ou directement sur la toile, et s’exporte aussi en version ATS.</p>
+        </div>
+        <StudioGallery onPick={setOpen} />
+      </section>
 
       <section className="presets" id="presets">
         <div className="hero presets-head">

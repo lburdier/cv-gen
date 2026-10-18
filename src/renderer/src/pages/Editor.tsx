@@ -1,4 +1,5 @@
 import { ArrowLeft, ImagePlus, Check, ChevronDown, Copy, Download, Gauge, Minus, PanelRight, Plus, ScanText, Type, Trash2 } from 'lucide-react'
+import { designOf, isDesignTemplate, usesDesignEngine } from '../templates/designCatalog'
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import { resumeToText } from '../../../shared/format'
 import type { Resume } from '../../../shared/types'
@@ -6,7 +7,6 @@ import { AtsPanel } from '../components/AtsPanel'
 import { CanvasEditor } from '../components/CanvasEditor'
 import { ColorPicker } from '../components/ColorPicker'
 import { DesignForm } from '../components/DesignForm'
-import { normalizeDesign } from '../../../shared/design'
 import { EducationForm, ExperienceForm, ExtrasForm, IdentityForm, LayoutForm, SkillsForm, SummaryForm } from '../components/EditorForms'
 import { TailorModal } from '../components/TailorModal'
 import { TemplatePicker } from '../components/TemplatePicker'
@@ -147,7 +147,9 @@ export default function Editor({ id }: { id: string }) {
   const up = (fn: (r: Resume) => void) => s.updateResume(id, fn)
   const scale = zoom === 'fit' ? fitScale : zoom
   const tpl = getTemplate(resume.templateId)
-  const custom = resume.templateId === 'sur-mesure'
+  // « Sur mesure » et modèles du studio : onglet Design (tous les réglages du design).
+  const custom = usesDesignEngine(resume.templateId)
+  const studio = isDesignTemplate(resume.templateId)
   const tabs = TABS.filter((t) => t.id !== 'design' || custom)
 
   const copyText = async () => {
@@ -183,18 +185,30 @@ export default function Editor({ id }: { id: string }) {
             <div className="stack" style={{ gap: 14 }}>
               <div className="callout" style={{ fontSize: 13 }}>
                 <ImagePlus size={16} />
-                <span>
-                  Modèle « Sur mesure » : chaque réglage du design est modifiable ici.{' '}
-                  <a href="#" onClick={(e) => (e.preventDefault(), s.go({ name: 'from-image' }))}>
-                    Recréer depuis une autre image
-                  </a>
-                </span>
+                {studio ? (
+                  <span>
+                    Modèle du studio « {tpl.name} » : chaque réglage du design est modifiable ici, et sur la toile.{' '}
+                    {resume.designFor === resume.templateId && (
+                      <a href="#" onClick={(e) => (e.preventDefault(), up((r) => void ((r.design = undefined), (r.designFor = undefined))))}>
+                        Revenir au design du modèle
+                      </a>
+                    )}
+                  </span>
+                ) : (
+                  <span>
+                    Modèle « Sur mesure » : chaque réglage du design est modifiable ici.{' '}
+                    <a href="#" onClick={(e) => (e.preventDefault(), s.go({ name: 'from-image' }))}>
+                      Recréer depuis une autre image
+                    </a>
+                  </span>
+                )}
               </div>
               <DesignForm
-                design={normalizeDesign(resume.design)}
+                design={designOf(resume)}
                 onChange={(d) =>
                   up((r) => {
                     r.design = d
+                    r.designFor = r.templateId
                     r.accent = d.colors.primary
                     r.accent2 = d.colors.secondary
                   })

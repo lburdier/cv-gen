@@ -107,8 +107,10 @@ export interface Resume {
   accent: string
   /** Couleur secondaire (modèles à deux couleurs) ; sinon celle du modèle. */
   accent2?: string
-  /** Design du modèle « Sur mesure » (recréé depuis une image ou réglé à la main). */
+  /** Design du modèle « Sur mesure » ou d'un modèle du studio (recréé depuis une image ou réglé à la main). */
   design?: DesignSpec
+  /** Modèle du studio auquel se rapporte `design` (un autre modèle du studio reprend son propre design). */
+  designFor?: string
   font: string
   density: 'comfortable' | 'compact'
   lang: Lang
@@ -355,6 +357,19 @@ export interface DesignSpec {
   }
   /** Sections placées dans la colonne latérale. */
   sidebarSections: SectionKey[]
+  // ---- Décors (facultatifs : valeurs par défaut = rendu sobre d'origine) ----
+  /** Motif de fond de l'en-tête rempli ou de la colonne latérale. */
+  decor?: 'none' | 'dots' | 'grid' | 'lines' | 'diagonal' | 'waves' | 'circles' | 'blobs' | 'confetti'
+  /** Bord bas de l'en-tête en bandeau. */
+  headerShape?: 'flat' | 'curve' | 'slant' | 'wave'
+  /** Style du nom. */
+  nameStyle?: 'plain' | 'accent' | 'outline' | 'highlight' | 'gradient'
+  /** Puces des listes. */
+  bullets?: 'dot' | 'dash' | 'arrow' | 'square' | 'check'
+  /** Présentation des expériences et formations. */
+  entries?: 'plain' | 'cards' | 'rule'
+  /** Liseré de page. */
+  frame?: 'none' | 'top' | 'side' | 'border'
 }
 
 /** Résultat de l'analyse d'une image de CV. */

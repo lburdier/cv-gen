@@ -1,9 +1,11 @@
-import { Fragment, useContext, type CSSProperties, type ClipboardEvent, type ReactNode } from 'react'
+import { Fragment, useContext, type CSSProperties } from 'react'
 import { atsSections, contactParts, formatMonth, formatRange, sectionHasContent, sectionTitles, stripProtocol } from '../../../shared/format'
 import type { Resume, SectionKey } from '../../../shared/types'
 import { CanvasContext } from './canvasContext'
 import { onColor } from './color'
 import { CvCustom } from './CvCustom'
+import { usesDesignEngine } from './designCatalog'
+import { T } from './Editable'
 import { CvVisual } from './CvVisual'
 import { EditableContext, usePlaceholders } from './previewContext'
 import { FONTS, isVisual } from './registry'
@@ -15,7 +17,8 @@ import { FONTS, isVisual } from './registry'
  */
 export function Cv({ resume }: { resume: Resume }) {
   // Les modèles visuels ont leur propre mise en page (bandeau, colonnes, images).
-  if (resume.templateId === 'sur-mesure') return <CvCustom resume={resume} />
+  // « Sur mesure » et les 200 modèles du studio : moteur de design paramétrable.
+  if (usesDesignEngine(resume.templateId)) return <CvCustom resume={resume} />
   if (isVisual(resume.templateId)) return <CvVisual resume={resume} />
   return <CvAts resume={resume} />
 }
@@ -24,38 +27,6 @@ const MARGINS = {
   narrow: { '--cv-mx': '40px', '--cv-mx-print': '11mm' },
   normal: { '--cv-mx': '60px', '--cv-mx-print': '16mm' },
   wide: { '--cv-mx': '78px', '--cv-mx-print': '21mm' }
-}
-
-/** Collage en texte brut : la toile n'accepte ni mise en forme ni images (règle ATS). */
-function plainPaste(e: ClipboardEvent<HTMLElement>) {
-  e.preventDefault()
-  const text = e.clipboardData.getData('text/plain')
-  document.execCommand('insertText', false, text)
-}
-
-/**
- * Texte du CV : simple texte à l'export ; en mode toile, zone éditable liée à un champ.
- * La clé suit la valeur enregistrée : après validation, la zone repart du texte enregistré.
- */
-function T({ p, v, show, ph, multi }: { p: string; v: string; show?: ReactNode; ph?: string; multi?: boolean }) {
-  const c = useContext(CanvasContext)
-  if (!c) return <>{show ?? v}</>
-  return (
-    <span
-      key={v}
-      className={`cv-ed ${multi ? 'multi' : ''}`}
-      contentEditable
-      suppressContentEditableWarning
-      spellCheck
-      data-path={p}
-      data-ph={ph}
-      onBlur={(e) => c.commit(p, e.currentTarget.innerText)}
-      onKeyDown={(e) => c.key(p, e)}
-      onPaste={plainPaste}
-    >
-      {v}
-    </span>
-  )
 }
 
 function CvAts({ resume: r }: { resume: Resume }) {

@@ -1,8 +1,10 @@
 import { Check } from 'lucide-react'
+import { StudioGallery } from './StudioGallery'
+import { isDesignTemplate } from '../templates/designCatalog'
 import { useMemo, useState } from 'react'
 import { profileAs, useActiveProfile } from '../lib/profile'
 import { sampleResume } from '../lib/sample'
-import { TEMPLATES, TEMPLATE_TAGS, previewOf, type TemplateDef } from '../templates/registry'
+import { CORE_TEMPLATES, STUDIO_TEMPLATES, TEMPLATE_TAGS, previewOf, type TemplateDef } from '../templates/registry'
 import { PaperThumb } from './PaperThumb'
 import { Modal } from './ui'
 
@@ -29,9 +31,23 @@ function SamplePreview({ id, rounded }: { id: string; rounded?: boolean }) {
 /** Sélecteur visuel de modèle (éditeur) : filtres et grandes vignettes. */
 export function TemplatePicker({ current, onPick, onClose }: { current: string; onPick: (t: TemplateDef) => void; onClose: () => void }) {
   const [tag, setTag] = useState('Tous')
-  const list = TEMPLATES.filter((t) => tag === 'Tous' || t.tags.includes(tag))
+  // Deux catalogues : les modèles d'origine, et les 200 modèles du studio de design.
+  const [cat, setCat] = useState<'core' | 'studio'>(() => (isDesignTemplate(current) ? 'studio' : 'core'))
+  const list = CORE_TEMPLATES.filter((t) => tag === 'Tous' || t.tags.includes(tag))
   return (
     <Modal size="xl" title="Choisir un modèle" onClose={onClose}>
+      <div className="seg" style={{ marginBottom: 16, width: 'fit-content' }}>
+        <button className={cat === 'core' ? 'on' : ''} onClick={() => setCat('core')}>
+          Modèles ({CORE_TEMPLATES.length})
+        </button>
+        <button className={cat === 'studio' ? 'on' : ''} onClick={() => setCat('studio')}>
+          Studio de design ({STUDIO_TEMPLATES.length})
+        </button>
+      </div>
+      {cat === 'studio' ? (
+        <StudioGallery compact current={current} onPick={onPick} />
+      ) : (
+      <>
       <div className="chips" style={{ marginBottom: 18 }}>
         {TEMPLATE_TAGS.map((t) => (
           <button key={t} className={`chip ${tag === t ? 'active' : ''}`} onClick={() => setTag(t)}>
@@ -57,6 +73,8 @@ export function TemplatePicker({ current, onPick, onClose }: { current: string; 
           </button>
         ))}
       </div>
+      </>
+      )}
     </Modal>
   )
 }

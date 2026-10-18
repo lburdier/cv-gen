@@ -435,3 +435,178 @@
 .cm-photo-side-right.cm-header-split .cm-header .cm-contact.stack {
   text-align: left;
 }
+
+/* ==========================================================================
+   Studio de design : décors, formes d'en-tête, styles du nom, puces, cartes, liserés
+   ========================================================================== */
+.cv.cm {
+  position: relative;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.cm-header,
+.cm-side {
+  position: relative;
+}
+/* Couche décorative : derrière le contenu, jamais interactive. */
+.cm-decor,
+.cm-corner {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+.cm-decor {
+  inset: 0;
+  border-radius: inherit;
+}
+.cm-corner {
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 210px;
+  -webkit-mask-image: linear-gradient(225deg, #000 30%, transparent 85%);
+  mask-image: linear-gradient(225deg, #000 30%, transparent 85%);
+}
+.cm-header > *:not(.cm-decor):not(.cm-edge),
+.cm-side > *:not(.cm-decor),
+.cm-body,
+.cm > .cm-header {
+  position: relative;
+  z-index: 1;
+}
+
+/* Bord bas du bandeau (courbe, biais, vague) découpé dans la couleur de la page. */
+.cm-edge {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 34px;
+  z-index: 0;
+  pointer-events: none;
+}
+.cm-header-band:not(.cm-shape-flat) > .cm-header {
+  padding-bottom: 50px;
+}
+
+/* ---------- Style du nom ---------- */
+.cm-ns-plain .cm-name span {
+  color: inherit;
+}
+.cm-ns-outline .cm-name {
+  color: transparent;
+  -webkit-text-stroke: 1.4px var(--cm-on-header);
+}
+.cm-ns-outline .cm-name span {
+  color: var(--cm-name-accent);
+  -webkit-text-stroke: 0;
+}
+.cm-ns-highlight .cm-name span {
+  color: inherit;
+  padding: 0 6px;
+  background: linear-gradient(transparent 55%, var(--cm-mark) 55%);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.cm-ns-gradient .cm-name,
+.cm-ns-gradient .cm-name span {
+  background: linear-gradient(100deg, var(--cm-name-accent) 0%, var(--cm-name-accent-2) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.cm-ns-gradient .cm-name .cv-ed,
+.cm-ns-outline .cm-name .cv-ed {
+  -webkit-text-fill-color: currentColor;
+}
+
+/* ---------- Puces ---------- */
+.cm-bullets {
+  list-style: none;
+  padding-left: 15px !important;
+}
+.cm-bullets li {
+  position: relative;
+}
+.cm-bullets li::before {
+  position: absolute;
+  left: -13px;
+  color: var(--cm-primary);
+  font-weight: 700;
+}
+.cm-bl-dot .cm-bullets li::before {
+  content: '•';
+}
+.cm-bl-dash .cm-bullets li::before {
+  content: '–';
+}
+.cm-bl-arrow .cm-bullets li::before {
+  content: '›';
+  font-size: 1.15em;
+  line-height: 1;
+  top: 0.05em;
+}
+.cm-bl-square .cm-bullets li::before {
+  content: '';
+  top: 0.55em;
+  width: 5px;
+  height: 5px;
+  background: var(--cm-primary);
+}
+.cm-bl-check .cm-bullets li::before {
+  content: '✓';
+  font-size: 0.9em;
+}
+
+/* ---------- Expériences en cartes ou à filet ---------- */
+.cm-en-cards .cm-main .cm-entry {
+  padding: 9px 12px;
+  border-radius: calc(var(--cm-radius) * 0.75);
+  background: var(--cm-card);
+}
+.cm-en-cards .cm-main .cm-timeline .cm-entry::before {
+  left: -20.5px;
+  top: 13px;
+}
+.cm-en-rule .cm-main .cm-entry {
+  padding-left: 11px;
+  border-left: 2.5px solid var(--cm-primary);
+}
+
+/* ---------- Liserés de page ---------- */
+.cm-fr-top::before,
+.cm-fr-side::before {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  background: linear-gradient(90deg, var(--cm-primary), var(--cm-secondary));
+}
+.cm-fr-top::before {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 7px;
+}
+.cm-fr-side::before {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 8px;
+  background: linear-gradient(180deg, var(--cm-primary), var(--cm-secondary));
+}
+.cm-fr-border::after {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border: 1.2px solid var(--cm-line);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ---------- Toile : poignées et sélection dans le moteur de design ---------- */
+.cm .cm-entry,
+.cm .cm-sec,
+.cm .cm-skill,
+.cm .cm-langs li {
+  position: relative;
+}

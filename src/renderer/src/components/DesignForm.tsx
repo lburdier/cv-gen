@@ -201,6 +201,84 @@ export function DesignForm({ design: d, onChange }: { design: DesignSpec; onChan
           onChange={(v) => set('density', v)}
         />
       </Row>
+      <Row label="Décor (en-tête ou colonne)">
+        <Seg
+          value={d.decor ?? 'none'}
+          options={[
+            ['none', 'Aucun'],
+            ['dots', 'Points'],
+            ['grid', 'Quadrillage'],
+            ['lines', 'Lignes'],
+            ['diagonal', 'Rayures'],
+            ['waves', 'Vagues'],
+            ['circles', 'Cercles'],
+            ['blobs', 'Formes'],
+            ['confetti', 'Confettis']
+          ]}
+          onChange={(v) => set('decor', v)}
+        />
+      </Row>
+      {d.header === 'band' && (
+        <Row label="Bord du bandeau">
+          <Seg
+            value={d.headerShape ?? 'flat'}
+            options={[
+              ['flat', 'Droit'],
+              ['curve', 'Arrondi'],
+              ['slant', 'En biais'],
+              ['wave', 'Vague']
+            ]}
+            onChange={(v) => set('headerShape', v)}
+          />
+        </Row>
+      )}
+      <Row label="Style du nom">
+        <Seg
+          value={d.nameStyle ?? 'accent'}
+          options={[
+            ['accent', 'Nom en couleur'],
+            ['plain', 'Uni'],
+            ['highlight', 'Surligné'],
+            ['outline', 'Contour'],
+            ['gradient', 'Dégradé']
+          ]}
+          onChange={(v) => set('nameStyle', v)}
+        />
+      </Row>
+      <Row label="Puces et parcours">
+        <Seg
+          value={d.bullets ?? 'dot'}
+          options={[
+            ['dot', '•'],
+            ['dash', '–'],
+            ['arrow', '›'],
+            ['square', '■'],
+            ['check', '✓']
+          ]}
+          onChange={(v) => set('bullets', v)}
+        />
+        <Seg
+          value={d.entries ?? 'plain'}
+          options={[
+            ['plain', 'Expériences simples'],
+            ['cards', 'En cartes'],
+            ['rule', 'Avec filet']
+          ]}
+          onChange={(v) => set('entries', v)}
+        />
+      </Row>
+      <Row label="Liseré de page">
+        <Seg
+          value={d.frame ?? 'none'}
+          options={[
+            ['none', 'Aucun'],
+            ['top', 'En haut'],
+            ['side', 'Sur le côté'],
+            ['border', 'Cadre']
+          ]}
+          onChange={(v) => set('frame', v)}
+        />
+      </Row>
       <Row label="Couleurs">
         <div className="design-colors">
           {COLOR_LABELS.filter(([k]) => hasSide || k !== 'sidebar').map(([k, label]) => (
