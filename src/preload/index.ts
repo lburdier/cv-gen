@@ -15,6 +15,7 @@ const api: CvGenApi = {
   saveData: call('data:save'),
   saveDataSync: (d) => ipcRenderer.sendSync('data:saveSync', d),
   logError: (msg) => ipcRenderer.send('log:error', msg),
+  reload: () => ipcRenderer.send('app:reload'),
   listBackups: call('backups:list'),
   readBackup: call('backups:read'),
   stock: { search: call('stock:search'), get: call('stock:get') },

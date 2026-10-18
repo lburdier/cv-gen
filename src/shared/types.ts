@@ -432,6 +432,8 @@ export interface CvGenApi {
   saveData(data: AppData): Promise<void>
   saveDataSync(data: AppData): boolean
   logError(message: string): void
+  /** Recharge l'interface (sans quitter l'app). */
+  reload(): void
   listBackups(): Promise<{ name: string; at: number; resumes: number; offers: number; letters: number }[]>
   readBackup(name: string): Promise<AppData | null>
   /** Texte d'un PDF tel qu'un ATS le lit. */
