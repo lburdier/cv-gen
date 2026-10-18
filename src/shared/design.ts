@@ -27,7 +27,13 @@ export const DEFAULT_DESIGN: DesignSpec = {
     sidebar: '#F1F1FB',
     header: '#FFFFFF'
   },
-  sidebarSections: ['skills', 'languages', 'interests', 'certifications']
+  sidebarSections: ['skills', 'languages', 'interests', 'certifications'],
+  decor: 'none',
+  headerShape: 'flat',
+  nameStyle: 'accent',
+  bullets: 'dot',
+  entries: 'plain',
+  frame: 'none'
 }
 
 const SECTIONS: SectionKey[] = ['summary', 'experience', 'education', 'skills', 'projects', 'certifications', 'languages', 'interests', 'gallery']
@@ -75,6 +81,12 @@ export function normalizeDesign(input: unknown, base: DesignSpec = DEFAULT_DESIG
       sidebar: normalizeHexColor(c.sidebar, base.colors.sidebar),
       header: normalizeHexColor(c.header, base.colors.header)
     },
-    sidebarSections: side.length || Array.isArray(d.sidebarSections) ? side : base.sidebarSections
+    sidebarSections: side.length || Array.isArray(d.sidebarSections) ? side : base.sidebarSections,
+    decor: pick(d.decor, ['none', 'dots', 'grid', 'lines', 'diagonal', 'waves', 'circles', 'blobs', 'confetti'] as const, base.decor ?? 'none'),
+    headerShape: pick(d.headerShape, ['flat', 'curve', 'slant', 'wave'] as const, base.headerShape ?? 'flat'),
+    nameStyle: pick(d.nameStyle, ['plain', 'accent', 'outline', 'highlight', 'gradient'] as const, base.nameStyle ?? 'accent'),
+    bullets: pick(d.bullets, ['dot', 'dash', 'arrow', 'square', 'check'] as const, base.bullets ?? 'dot'),
+    entries: pick(d.entries, ['plain', 'cards', 'rule'] as const, base.entries ?? 'plain'),
+    frame: pick(d.frame, ['none', 'top', 'side', 'border'] as const, base.frame ?? 'none')
   }
 }

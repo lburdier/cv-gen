@@ -1,3 +1,4 @@
+import { DESIGN_TEMPLATES } from './designCatalog'
 export interface TemplateDef {
   id: string
   name: string
@@ -10,9 +11,12 @@ export interface TemplateDef {
   visual?: boolean
   /** Le modèle utilise une couleur secondaire (accent2). */
   secondary?: boolean
+  /** Studio de design : famille (structure), palette, couleur dominante, en-tête ou colonne foncés. */
+  studio?: { family: string; structure: string; palette: string; hue: string; dark: boolean }
 }
 
-export const TEMPLATES: TemplateDef[] = [
+/** Modèles d'origine (ATS une colonne et visuels faits main). */
+export const CORE_TEMPLATES: TemplateDef[] = [
   {
     id: 'vitrine',
     name: 'Vitrine',
@@ -266,6 +270,21 @@ export const TEMPLATES: TemplateDef[] = [
     tags: ['Minimal', 'Classique']
   }
 ]
+
+/** Studio de design : 200 modèles générés (20 structures × 10 palettes), rendus par le moteur de design. */
+export const STUDIO_TEMPLATES: TemplateDef[] = DESIGN_TEMPLATES.map((d) => ({
+  id: d.id,
+  name: d.name,
+  tagline: d.tagline,
+  accent: d.design.colors.primary,
+  font: 'inter',
+  tags: ['Studio', 'Créatif', 'Design'],
+  visual: true,
+  secondary: true,
+  studio: { family: d.family, structure: d.name.split(' ')[0], palette: d.palette, hue: d.hue, dark: d.dark }
+}))
+
+export const TEMPLATES: TemplateDef[] = [...CORE_TEMPLATES, ...STUDIO_TEMPLATES]
 
 export const TEMPLATE_TAGS = ['Tous', 'Créatif', 'Moderne', 'Minimal', 'Classique', 'Tech', 'Design', 'Dense']
 

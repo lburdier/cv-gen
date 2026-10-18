@@ -34,7 +34,9 @@ import { uid } from '../lib/sample'
 import { useStore } from '../store'
 import { CanvasContext, type CanvasApi } from '../templates/canvasContext'
 import { Cv } from '../templates/Cv'
-import { FONTS, TEMPLATES, isVisual } from '../templates/registry'
+import { FONTS, STUDIO_TEMPLATES, TEMPLATES, isVisual } from '../templates/registry'
+import { DESIGN_PALETTES, DESIGN_STRUCTURES, designOf, designTemplate, usesDesignEngine } from '../templates/designCatalog'
+import { DesignForm } from './DesignForm'
 import { ColorPicker } from './ColorPicker'
 import { TemplatePreview } from './TemplatePicker'
 import { autoTour } from './Tour'
@@ -48,6 +50,8 @@ import { Dropdown, ScoreRing } from './ui'
 
 const PAGE_ATS_PX = (269 / 25.4) * 96
 const PAD_ATS = 53
+/** Page A4 des modèles visuels (imprimés sans marge). */
+const PAGE_VISUAL_PX = 1123
 const LISTS = ['experiences', 'education', 'skills', 'projects', 'certifications', 'languages'] as const
 type ListKey = (typeof LISTS)[number]
 const LIST_OF: Partial<Record<SectionKey, ListKey>> = {
@@ -104,7 +108,11 @@ export function CanvasEditor({ resume, onExit }: { resume: Resume; onExit: () =>
   const drag = useRef<string | null>(null)
   const current = useRef(resume)
   current.current = resume
-  const visual = isVisual(resume.templateId)
+  // Moteur de design (studio, « Sur mesure ») : éditable sur la toile, design réglable en direct.
+  const designEngine = usesDesignEngine(resume.templateId)
+  const studioTpl = designTemplate(resume.templateId)
+  // Modèles visuels faits main (colonnes, images) : pas d'édition sur la toile.
+  const visual = isVisual(resume.templateId) && !designEngine
   const report = useMemo(() => analyze(resume), [resume])
 
   // ---------- Historique (annuler / rétablir) ----------
@@ -389,17 +397,18 @@ export function CanvasEditor({ resume, onExit }: { resume: Resume; onExit: () =>
   const titlesOk = Object.entries(resume.titles ?? {}).every(([k, v]) => !v || TITLE_VARIANTS[resume.lang][k as SectionKey]?.includes(v))
   const size = resume.style?.size ?? 10
   const rules: [boolean, string][] = [
-    [!visual, 'Une seule colonne, ordre de lecture linéaire'],
+    designEngine ? [true, 'Version ATS une colonne disponible à l’export'] : [!visual, 'Une seule colonne, ordre de lecture linéaire'],
     [true, 'Texte réel et sélectionnable (collage en texte brut)'],
     [titlesOk, 'Intitulés de sections standards'],
-    [SAFE_FONTS.includes(resume.font), 'Police standard'],
+    [designEngine || SAFE_FONTS.includes(resume.font), 'Police standard'],
     [size >= 9, 'Taille du texte ≥ 9 pt'],
     [true, 'Aucune image, icône ou tableau porteur d’information']
   ]
   const atsOk = rules.every(([ok]) => ok)
 
   const pageLines: number[] = []
-  if (!visual) for (let n = 1; PAD_ATS + n * PAGE_ATS_PX < paperH - 20; n++) pageLines.push(PAD_ATS + n * PAGE_ATS_PX)
+  if (designEngine) for (let n = 1; n * PAGE_VISUAL_PX < paperH - 20; n++) pageLines.push(n * PAGE_VISUAL_PX)
+  else if (!visual) for (let n = 1; PAD_ATS + n * PAGE_ATS_PX < paperH - 20; n++) pageLines.push(PAD_ATS + n * PAGE_ATS_PX)
   const pages = pageLines.length + 1
 
   // ---------- Barre d'outils de la sélection ----------
@@ -566,7 +575,7 @@ export function CanvasEditor({ resume, onExit }: { resume: Resume; onExit: () =>
             {pages} page{pages > 1 ? 's' : ''}
           </span>
           <span className={`ce-badge ${atsOk ? 'ok' : 'warn'}`} title="Garde-fous ATS">
-            <ShieldCheck size={14} /> {atsOk ? '100 % ATS' : 'À vérifier'}
+            <ShieldCheck size={14} /> {designEngine ? (atsOk ? 'Design · export ATS inclus' : 'À vérifier') : atsOk ? '100 % ATS' : 'À vérifier'}
           </span>
         </div>
         <Dropdown
@@ -579,7 +588,8 @@ export function CanvasEditor({ resume, onExit }: { resume: Resume; onExit: () =>
         >
           {(close) => (
             <>
-              <button onClick={() => (close(), actions.exportResume(id, 'pdf'))}>PDF</button>
+              <button onClick={() => (close(), actions.exportResume(id, 'pdf'))}>PDF{designEngine ? ' (design)' : ''}</button>
+              {designEngine && <button onClick={() => (close(), actions.exportResume(id, 'pdf', true))}>PDF version ATS</button>}
               <button onClick={() => (close(), actions.exportResume(id, 'docx'))}>Word (DOCX)</button>
               <button onClick={() => (close(), actions.exportResume(id, 'txt'))}>Texte brut</button>
             </>
@@ -638,7 +648,68 @@ export function CanvasEditor({ resume, onExit }: { resume: Resume; onExit: () =>
             </div>
           )}
 
-          {panel === 'style' && (
+          {panel === 'style' && designEngine && (
+            <div className="ce-section">
+              {studioTpl && (
+                <>
+                  <div className="mono-label">palette</div>
+                  <div className="ce-palettes">
+                    {DESIGN_PALETTES.map((p) => {
+                      const tid = studioTpl.id.replace(/-[^-]+$/, '-' + p.id)
+                      return (
+                        <button
+                          key={p.id}
+                          className={resume.templateId === tid ? 'on' : ''}
+                          title={p.name}
+                          style={{ background: `linear-gradient(135deg, ${p.primary} 55%, ${p.secondary} 55%)` }}
+                          onClick={() => up((r) => void ((r.templateId = tid), (r.accent = p.primary), (r.accent2 = undefined)))}
+                        />
+                      )
+                    })}
+                  </div>
+                  <div className="mono-label" style={{ marginTop: 14 }}>
+                    structure
+                  </div>
+                  <select
+                    className="select"
+                    value={studioTpl.id.replace(/^d-/, '').replace(/-[^-]+$/, '')}
+                    onChange={(e) => {
+                      const palette = studioTpl.id.split('-').pop()
+                      const tid = `d-${e.target.value}-${palette}`
+                      up((r) => void ((r.templateId = tid), (r.accent = designTemplate(tid)?.design.colors.primary ?? r.accent)))
+                    }}
+                  >
+                    {DESIGN_STRUCTURES.map((x) => (
+                      <option key={x.id} value={x.id}>
+                        {x.name} · {x.family}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="mono-label" style={{ marginTop: 14 }}>
+                    design
+                  </div>
+                </>
+              )}
+              <DesignForm
+                design={designOf(resume)}
+                onChange={(d) =>
+                  up((r) => {
+                    r.design = d
+                    r.designFor = r.templateId
+                    r.accent = d.colors.primary
+                    r.accent2 = d.colors.secondary
+                  })
+                }
+              />
+              {studioTpl && resume.designFor === resume.templateId && (
+                <button className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={() => up((r) => void ((r.design = undefined), (r.designFor = undefined)))}>
+                  Revenir au design du modèle
+                </button>
+              )}
+            </div>
+          )}
+
+          {panel === 'style' && !designEngine && (
             <div className="ce-section">
               <div className="mono-label">modèle (une colonne)</div>
               <div className="ce-templates">
@@ -746,9 +817,9 @@ export function CanvasEditor({ resume, onExit }: { resume: Resume; onExit: () =>
             <div className="ce-visual">
               <ShieldCheck size={26} />
               <strong>La toile garantit un CV 100 % ATS</strong>
-              <span>Ce modèle visuel utilise des colonnes et des images. Choisissez un modèle une colonne pour l’éditer sur la toile, ou revenez au formulaire.</span>
+              <span>Ce modèle visuel est composé à la main (colonnes, images). Choisissez un modèle une colonne ou un des 200 modèles du studio pour l’éditer sur la toile, ou revenez au formulaire.</span>
               <div className="ce-templates">
-                {atsTemplates.slice(0, 8).map((x) => (
+                {[...atsTemplates.slice(0, 4), ...STUDIO_TEMPLATES.filter((x) => x.id.endsWith('-indigo')).slice(0, 4)].map((x) => (
                   <button key={x.id} onClick={() => up((r) => void ((r.templateId = x.id), (r.accent = x.accent), (r.font = x.font)))}>
                     <TemplatePreview id={x.id} />
                     <span>{x.name}</span>

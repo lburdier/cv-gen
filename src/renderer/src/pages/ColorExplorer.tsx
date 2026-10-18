@@ -10,7 +10,7 @@ import { activeProfile } from '../lib/profile'
 import { isEmptyResume, sampleResume } from '../lib/sample'
 import { useStore } from '../store'
 import { contrast } from '../templates/color'
-import { TEMPLATES, type TemplateDef } from '../templates/registry'
+import { CORE_TEMPLATES, type TemplateDef } from '../templates/registry'
 
 type Mode = 'free' | 'harmonies' | 'image'
 type Filter = 'all' | 'visual' | 'ats' | 'duo'
@@ -56,11 +56,11 @@ export default function ColorExplorer({ initialColors, resumeId }: { initialColo
 
   const base = source === 'sample' ? null : source === 'profile' ? (s.data.profile ?? null) : (mine.find((r) => r.id === source) ?? null)
   // Exemples calculés une fois ; les rendus ne changent qu'avec les couleurs ou le contenu choisi.
-  const samples = useMemo(() => Object.fromEntries(TEMPLATES.map((t) => [t.id, sampleResume(t.id)])), [])
+  const samples = useMemo(() => Object.fromEntries(CORE_TEMPLATES.map((t) => [t.id, sampleResume(t.id)])), [])
   const renders = useMemo(
     () =>
       Object.fromEntries(
-        TEMPLATES.map((t): [string, Resume] => {
+        CORE_TEMPLATES.map((t): [string, Resume] => {
           const content = base ? { ...base, templateId: t.id } : samples[t.id]
           return [t.id, { ...content, accent: shown[0] ?? t.accent, accent2: shown[1] }]
         })
@@ -68,7 +68,7 @@ export default function ColorExplorer({ initialColors, resumeId }: { initialColo
     [base, samples, shown]
   )
 
-  let list = TEMPLATES.filter((t) => (filter === 'visual' ? t.visual : filter === 'ats' ? !t.visual : filter === 'duo' ? t.secondary : true))
+  let list = CORE_TEMPLATES.filter((t) => (filter === 'visual' ? t.visual : filter === 'ats' ? !t.visual : filter === 'duo' ? t.secondary : true))
   // Avec deux couleurs, les modèles qui exploitent la couleur secondaire passent en premier.
   if (shown.length === 2) list = [...list].sort((a, b) => Number(Boolean(b.secondary)) - Number(Boolean(a.secondary)))
   const lowContrast = shown[0] ? contrast(shown[0], '#ffffff') < 3 : false
