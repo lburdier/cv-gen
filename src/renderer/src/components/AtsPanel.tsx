@@ -6,6 +6,7 @@ import { scoreColor } from '../lib/ats'
 import { uid } from '../lib/sample'
 import { useStore } from '../store'
 import { ScoreRing } from './ui'
+import { Select } from './Select'
 
 const CAT_LABEL = { format: 'Format', content: 'Contenu', keywords: 'Mots-clés' }
 
@@ -75,7 +76,7 @@ export function AtsPanel({
         <div className="mono-label">
           offre ciblée
         </div>
-        <select
+        <Select
           className="select"
           value={resume.offerId ?? ''}
           onChange={(e) => s.updateResume(resume.id, (r) => void (r.offerId = e.target.value || undefined))}
@@ -87,7 +88,7 @@ export function AtsPanel({
               {o.company ? ` · ${o.company}` : ''}
             </option>
           ))}
-        </select>
+        </Select>
         {s.data.offers.length === 0 && (
           <button className="btn btn-soft btn-sm" onClick={() => s.go({ name: 'offers', id: 'new' })}>
             <Plus size={14} /> Ajouter une offre

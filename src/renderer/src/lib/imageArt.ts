@@ -3,7 +3,7 @@
  * couleurs du CV. Créations originales, donc libres de droits, légères et vectorielles.
  */
 
-export type ArtStyle = 'mesh' | 'aurora' | 'halftone' | 'grid' | 'topo' | 'bauhaus' | 'stripes' | 'waves' | 'grain' | 'iso' | 'rings' | 'blobs'
+export type ArtStyle = 'mesh' | 'aurora' | 'halftone' | 'grid' | 'topo' | 'bauhaus' | 'waves' | 'grain' | 'iso' | 'rings' | 'blobs'
 
 export const ART_STYLES: { id: ArtStyle; label: string }[] = [
   { id: 'mesh', label: 'Dégradé maillé' },
@@ -12,7 +12,6 @@ export const ART_STYLES: { id: ArtStyle; label: string }[] = [
   { id: 'grid', label: 'Grille lumineuse' },
   { id: 'topo', label: 'Topographie' },
   { id: 'bauhaus', label: 'Bauhaus' },
-  { id: 'stripes', label: 'Rayures' },
   { id: 'waves', label: 'Vagues' },
   { id: 'grain', label: 'Grain' },
   { id: 'iso', label: 'Isométrique' },
@@ -113,12 +112,6 @@ export function artSvg(style: ArtStyle, pal: ArtPalette, seed = 1, w = 1600, h =
         }
       body = shapes.join('')
       return wrap(w, h, '', body, pal.dark ? '#111114' : '#F3EFE6')
-    }
-    case 'stripes': {
-      const s = Math.round(h / (6 + r() * 6))
-      defs = `<pattern id="st" width="${s * 2}" height="${s * 2}" patternUnits="userSpaceOnUse" patternTransform="rotate(${30 + r() * 30})"><rect width="${s}" height="${s * 2}" fill="${A}"/><rect x="${s}" width="${s}" height="${s * 2}" fill="${mix(B, A, 0.25)}"/></pattern>`
-      body = `<rect width="${w}" height="${h}" fill="url(#st)"/>`
-      break
     }
     case 'waves': {
       const layers: string[] = []

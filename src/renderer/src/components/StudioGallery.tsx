@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Check, Search } from 'lucide-react'
 import { DESIGN_FAMILIES, DESIGN_PALETTES, designTemplate } from '../templates/designCatalog'
 import { STUDIO_TEMPLATES, type TemplateDef } from '../templates/registry'
-import { TemplatePreview } from './TemplatePicker'
+import { GenderToggle, TemplatePreview } from './TemplatePicker'
 
 const PAGE = 24
 const HUES = [...new Set(DESIGN_PALETTES.map((p) => p.hue))]
@@ -66,6 +66,7 @@ export function StudioGallery({ onPick, current, compact }: { onPick: (t: Templa
             </button>
           ))}
         </div>
+        {!compact && <GenderToggle />}
       </div>
       <div className="studio-filters">
         <Seg value={layout} onChange={(v) => reset(() => setLayout(v))} options={[['all', 'Toutes mises en page'], ['single', 'Une colonne'], ['side', 'Colonne latérale']]} />

@@ -11,6 +11,7 @@ import { isEmptyResume, sampleResume } from '../lib/sample'
 import { useStore } from '../store'
 import { contrast } from '../templates/color'
 import { CORE_TEMPLATES, type TemplateDef } from '../templates/registry'
+import { Select } from '../components/Select'
 
 type Mode = 'free' | 'harmonies' | 'image'
 type Filter = 'all' | 'visual' | 'ats' | 'duo'
@@ -256,7 +257,7 @@ export default function ColorExplorer({ initialColors, resumeId }: { initialColo
         </div>
         <label className="cx-source">
           <span>Contenu</span>
-          <select className="select" value={source} onChange={(e) => setSource(e.target.value)}>
+          <Select className="select" value={source} onChange={(e) => setSource(e.target.value)}>
             {s.data.profile && <option value="profile">Mon profil</option>}
             <option value="sample">Exemples des modèles</option>
             {mine.map((r) => (
@@ -264,7 +265,7 @@ export default function ColorExplorer({ initialColors, resumeId }: { initialColo
                 Mon CV : {r.title}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
       </div>
       {lowContrast && <div className="callout cx-warn">Couleur principale très claire : le texte coloré sera peu lisible sur fond blanc. Gardez-la plutôt en couleur secondaire.</div>}
@@ -367,13 +368,13 @@ function ApplyModal({ tpl, preview, base, mine, onClose }: { tpl: TemplateDef; p
           {mine.length > 0 ? (
             <label className="field">
               <span>Appliquer à</span>
-              <select className="select" value={target} onChange={(e) => setTarget(e.target.value)}>
+              <Select className="select" value={target} onChange={(e) => setTarget(e.target.value)}>
                 {mine.map((r) => (
                   <option key={r.id} value={r.id}>
                     {r.title}
                   </option>
                 ))}
-              </select>
+              </Select>
               <span className="muted" style={{ fontSize: 12.5 }}>
                 Le contenu du CV est conservé : seuls le modèle et les couleurs changent (annulable).
               </span>

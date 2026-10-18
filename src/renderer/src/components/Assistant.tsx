@@ -6,6 +6,7 @@ import { CLAUDE_MODELS, freeModels, freeName } from '../lib/freeModels'
 import { useLocalModels } from './LocalModels'
 import { Markdown } from '../lib/markdown'
 import { useStore } from '../store'
+import { Select } from './Select'
 
 const SUGGESTIONS = ['Comment améliorer mon profil ?', 'Explique mon score ATS', 'Quels mots-clés me manquent ?', 'Prépare-moi à l’entretien']
 
@@ -30,7 +31,7 @@ function ModelPicker({ disabled }: { disabled: boolean }) {
   const shown = or && !free.some((m) => m.id === settings.orModel) ? [{ id: settings.orModel, name: settings.orModel, context: 0, structured: false }, ...free] : free
 
   return (
-    <select
+    <Select
       className="select chat-model"
       value={value}
       disabled={disabled}
@@ -69,7 +70,7 @@ function ModelPicker({ disabled }: { disabled: boolean }) {
           </option>
         ))}
       </optgroup>
-    </select>
+    </Select>
   )
 }
 

@@ -1009,7 +1009,7 @@
   border-radius: 10px;
   background:
     radial-gradient(circle at 30% 35%, var(--cv-accent) 0 0.9em, transparent 0.95em),
-    repeating-linear-gradient(135deg, #ecebe7 0 2px, transparent 2px 7px);
+    color-mix(in srgb, var(--cv-accent) 9%, #f4f3f0);
 }
 
 /* ---------- Mono : en-tête en fenêtre de terminal ---------- */

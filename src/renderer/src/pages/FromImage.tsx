@@ -9,6 +9,7 @@ import { chooseImage } from '../lib/image'
 import { activeProfile } from '../lib/profile'
 import { isEmptyResume, sampleResume } from '../lib/sample'
 import { useStore } from '../store'
+import { Select } from '../components/Select'
 
 type Step = { id: string; label: string; state: 'wait' | 'run' | 'done' | 'skip' | 'error'; detail?: string }
 type Content = 'read' | 'sample' | string
@@ -147,7 +148,7 @@ export default function FromImage() {
       <div className="fi-options">
         <label className="field">
           <span>Contenu du CV généré</span>
-          <select className="select" value={content} onChange={(e) => setContent(e.target.value)}>
+          <Select className="select" value={content} onChange={(e) => setContent(e.target.value)}>
             <option value="read" disabled={!hasAi}>
               Lire le texte de l’image (IA){hasAi ? '' : ' (clé API requise)'}
             </option>
@@ -158,7 +159,7 @@ export default function FromImage() {
             ))}
             {s.data.profile && <option value="profile">Mon profil</option>}
             <option value="sample">Contenu d’exemple</option>
-          </select>
+          </Select>
         </label>
         <label className={`check fi-ai ${hasAi ? '' : 'off'}`} title={hasAi ? '' : 'Ajoutez une clé (gratuite avec OpenRouter) dans Paramètres'}>
           <input type="checkbox" checked={useAi && hasAi} disabled={!hasAi} onChange={(e) => setUseAi(e.target.checked)} />
