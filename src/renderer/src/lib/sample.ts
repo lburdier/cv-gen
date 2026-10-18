@@ -1,4 +1,4 @@
-import { DEFAULT_ORDER, noDash } from '../../../shared/format'
+import { DEFAULT_ORDER, noDash, noDashDeep } from '../../../shared/format'
 import type { Resume } from '../../../shared/types'
 import { getTemplate, isVisual } from '../templates/registry'
 import { getPreset, presetForTemplate } from './presets'
@@ -42,8 +42,9 @@ export function blankResume(templateId = 'atelier'): Resume {
 /** Complète un CV enregistré avant l'ajout de nouveaux champs ou sections. */
 export function normalizeResume(r: Resume): Resume {
   const order = [...r.sectionOrder, ...DEFAULT_ORDER.filter((k) => !r.sectionOrder.includes(k))]
-  // Titres créés par les anciennes versions (« CV — Data Analyst ») : sans tiret cadratin.
-  return { ...r, title: noDash(r.title, ' · '), links: r.links ?? [], gallery: r.gallery ?? [], sectionOrder: order }
+  // Contenus créés par les anciennes versions (« CV — Data Analyst », « Artiste 3D — Court-métrage ») :
+  // plus aucun tiret cadratin, dans le titre (« · ») comme dans le contenu (« , »).
+  return noDashDeep({ ...r, title: noDash(r.title, ' · '), links: r.links ?? [], gallery: r.gallery ?? [], sectionOrder: order })
 }
 
 /** Profil créatif pour les aperçus des modèles visuels (photo, bandeau et rendus Unsplash). */

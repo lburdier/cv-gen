@@ -41,8 +41,9 @@ export default function Letters({ id }: { id?: string }) {
 
   const resume = resumes.find((r) => r.id === resumeId)
   const offer = offerOf(offerId)
-  // Le mini modèle local ne rédige pas de lettres (trop peu fiable) : brouillon guidé à la place.
-  const hasAi = s.settings.hasApiKey && s.settings.provider !== 'local'
+  const hasAi = s.settings.hasApiKey
+  // Mini modèle local : il part du brouillon guidé et reformule chaque paragraphe sans changer les faits.
+  const localAi = s.settings.provider === 'local'
   const set = (patch: Partial<LetterOptions>) => setOpts((o) => ({ ...o, ...patch }))
 
   /** Enregistre le texte rédigé : nouvelle lettre, ou remplacement annulable de la lettre ouverte. */
@@ -74,7 +75,7 @@ export default function Letters({ id }: { id?: string }) {
 
   const generate = async () => {
     if (!resume) return
-    const body = await s.run('Rédaction de la lettre par l’IA…', () => window.cvgen.ai.coverLetter(resume, offer, opts))
+    const body = await s.run(localAi ? 'Rédaction avec l’IA locale (paragraphe par paragraphe)…' : 'Rédaction de la lettre par l’IA…', () => window.cvgen.ai.coverLetter(resume, offer, opts))
     if (body) store(body, current ? 'régénérée' : 'rédigée')
   }
 
@@ -281,8 +282,14 @@ export default function Letters({ id }: { id?: string }) {
               </button>
               <button className="btn btn-accent" onClick={generate} disabled={!resume || !hasAi || Boolean(s.busy)} title={hasAi ? '' : 'Clé API requise (Paramètres)'}>
                 <Sparkles size={15} /> {current ? 'Régénérer avec l’IA' : 'Rédiger avec l’IA'}
+                {localAi ? ' locale' : ''}
               </button>
             </div>
+            {localAi && hasAi && (
+              <p className="muted" style={{ fontSize: 12.5, margin: '10px 0 0' }}>
+                IA locale : elle part du brouillon guidé (vos vrais faits) et reformule chaque paragraphe ; une reformulation qui change un chiffre ou un nom est écartée.
+              </p>
+            )}
             {!hasAi && (
               <p className="muted" style={{ fontSize: 12.5, margin: '10px 0 0' }}>
                 Sans clé IA, le brouillon guidé reprend votre poste, vos réalisations et les mots-clés de l’offre.{' '}
