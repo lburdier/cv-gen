@@ -29,6 +29,9 @@ function overlay(dark: boolean) {
   return { color: dark ? DARK_BG : LIGHT_BG, symbolColor: dark ? '#F4F4F2' : '#0B0B0C', height: 60 }
 }
 
+// Tests automatisés : rendu hors écran, aucune fenêtre ne s'affiche ni ne prend le focus.
+const HEADLESS = process.env.CVGEN_HEADLESS === '1' || process.env.CVGEN_QUIET === '1'
+
 function createWindow() {
   const theme = getSettings().theme
   const dark = theme === 'dark' || (theme === 'system' && nativeTheme.shouldUseDarkColors)
@@ -47,10 +50,25 @@ function createWindow() {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
       contextIsolation: true,
-      spellcheck: true
+      spellcheck: true,
+      ...(HEADLESS ? { offscreen: true, backgroundThrottling: false } : {})
     }
   })
   const win = main
+  if (HEADLESS) {
+    win.setSkipTaskbar(true)
+    win.show = win.showInactive = win.focus = () => {}
+    // Sans fenêtre au premier plan, Chromium ne déclenche pas focus/blur : on émule une page active.
+    win.webContents.on('did-finish-load', () => {
+      const dbg = win.webContents.debugger
+      try {
+        if (!dbg.isAttached()) dbg.attach('1.3')
+        void dbg.sendCommand('Emulation.setFocusEmulationEnabled', { enabled: true }).catch(() => {})
+      } catch {
+        /* débogueur indisponible : sans conséquence hors tests */
+      }
+    })
+  }
   win.on('closed', () => {
     if (main === win) main = null
   })

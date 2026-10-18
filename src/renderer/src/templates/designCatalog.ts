@@ -4,7 +4,8 @@
 import { DEFAULT_DESIGN, normalizeDesign } from '../../../shared/design'
 import type { DesignSpec, Resume } from '../../../shared/types'
 
-type Tone = 'light' | 'tinted' | 'dark-side' | 'dark'
+/** « plain » : colonne latérale de la couleur de la page, séparée par un filet. */
+type Tone = 'light' | 'tinted' | 'plain' | 'dark-side' | 'dark'
 /** Couleur de l'en-tête : couleur principale, teinte claire, très foncée ou fond de page. */
 type HeaderFill = 'primary' | 'tint' | 'deep' | 'page'
 
@@ -40,84 +41,86 @@ export const DESIGN_PALETTES: Palette[] = [
   { id: 'ardoise', name: 'Ardoise', primary: '#334155', secondary: '#94A3B8', hue: 'Gris' }
 ]
 
+// Structures inspirées des CV de référence (agences de design, cabinets, éditeurs de modèles primés) :
+// hiérarchie typographique nette, beaucoup d'air, une couleur d'accent, séparateurs fins, décors rares.
 const STRUCTURES: Structure[] = [
   {
     id: 'atlas',
     name: 'Atlas',
     family: 'Colonne',
-    tagline: 'Colonne latérale teintée à motif de points, photo ronde, frise de parcours.',
+    tagline: 'Le grand classique moderne : colonne latérale teintée avec photo et coordonnées, titres à filet, parcours en frise.',
     tone: 'light',
     headerFill: 'page',
-    design: { layout: 'sidebar-left', sidebarWidth: 32, header: 'minimal', photo: 'circle', photoPlace: 'sidebar', headings: 'underline', decor: 'dots', skills: 'chips', timeline: true }
+    design: { layout: 'sidebar-left', sidebarWidth: 31, header: 'minimal', photo: 'circle', photoPlace: 'sidebar', headings: 'rule', decor: 'none', icons: true, skills: 'chips', timeline: true }
   },
   {
     id: 'horizon',
     name: 'Horizon',
     family: 'Bandeau',
-    tagline: 'Bandeau coloré à bord arrondi et vagues, nom centré, titres en pastilles.',
+    tagline: 'Bandeau de couleur au bord légèrement arrondi, photo et nom centrés, titres à filet.',
     tone: 'light',
     headerFill: 'primary',
-    design: { layout: 'single', header: 'band', headerShape: 'curve', headerAlign: 'center', photo: 'circle', photoPlace: 'header', headings: 'pill', displayFont: 'wide', decor: 'waves', skills: 'chips' }
+    design: { layout: 'single', header: 'band', headerShape: 'curve', headerAlign: 'center', photo: 'circle', photoPlace: 'header', headings: 'rule', displayFont: 'sans', decor: 'none', icons: true, skills: 'chips' }
   },
   {
     id: 'editorial',
     name: 'Éditorial',
     family: 'Éditorial',
-    tagline: 'Grand nom en serif, titres en capitales espacées, filet d’accent à gauche des postes.',
+    tagline: 'Mise en page de magazine : grand nom en serif, intitulés dans la marge de gauche, filets fins.',
     tone: 'light',
     headerFill: 'page',
-    design: { layout: 'single', header: 'minimal', photo: 'none', headings: 'caps', bodyFont: 'serif', displayFont: 'serif', nameSize: 'xl', nameStyle: 'plain', skills: 'list', timeline: false, entries: 'rule', bullets: 'dash' }
+    design: { layout: 'single', header: 'minimal', photo: 'none', headings: 'rail', bodyFont: 'serif', displayFont: 'serif', nameSize: 'xl', nameStyle: 'plain', skills: 'list', timeline: false, bullets: 'dash' }
   },
   {
     id: 'studio',
     name: 'Studio',
     family: 'Bandeau',
-    tagline: 'Bandeau en biais à rayures, photo à droite, colonne latérale, titres en blocs.',
-    tone: 'light',
+    tagline: 'En-tête très sombre pleine largeur avec photo, colonne de droite séparée par un filet.',
+    tone: 'plain',
     headerFill: 'deep',
-    design: { layout: 'sidebar-right', sidebarWidth: 30, header: 'band', headerShape: 'slant', photo: 'rounded', photoPlace: 'header', photoSide: 'right', headings: 'block', displayFont: 'wide', decor: 'diagonal', nameCase: 'upper' }
+    design: { layout: 'sidebar-right', sidebarWidth: 30, header: 'band', headerShape: 'flat', photo: 'rounded', photoPlace: 'header', photoSide: 'right', headings: 'rule', displayFont: 'wide', decor: 'none', nameCase: 'upper', icons: true }
   },
   {
     id: 'mono',
     name: 'Mono',
     family: 'Tech',
-    tagline: 'Typographie à chasse fixe, quadrillage discret, compétences en colonnes.',
+    tagline: 'Esprit développeur : titres à chasse fixe, liseré d’accent en haut, compétences en colonnes.',
     tone: 'light',
     headerFill: 'page',
-    design: { layout: 'single', header: 'split', photo: 'none', headings: 'bar', bodyFont: 'mono', displayFont: 'mono', skills: 'columns', corners: 'square', decor: 'grid', bullets: 'square', frame: 'top' }
+    design: { layout: 'single', header: 'split', photo: 'none', headings: 'rule', bodyFont: 'sans', displayFont: 'mono', skills: 'columns', corners: 'square', decor: 'none', bullets: 'square', frame: 'top' }
   },
   {
     id: 'galet',
     name: 'Galet',
     family: 'Doux',
-    tagline: 'Formes organiques, coins très arrondis, expériences en cartes, titres surlignés.',
+    tagline: 'Tons doux et coins arrondis : en-tête en carte, expériences en cartes, une forme discrète.',
     tone: 'tinted',
     headerFill: 'tint',
-    design: { layout: 'sidebar-left', sidebarWidth: 34, header: 'card', photo: 'circle', photoPlace: 'sidebar', headings: 'highlight', decor: 'blobs', entries: 'cards', skills: 'chips' }
+    design: { layout: 'sidebar-left', sidebarWidth: 32, header: 'card', photo: 'circle', photoPlace: 'sidebar', headings: 'highlight', decor: 'blobs', entries: 'cards', skills: 'chips', icons: true }
   },
   {
     id: 'signal',
     name: 'Signal',
     family: 'Audacieux',
-    tagline: 'Bandeau plein, nom en capitales géantes, titres en blocs et puces carrées.',
+    tagline: 'Bandeau plein et nom en capitales géantes, corps sobre à une colonne, puces carrées.',
     tone: 'light',
     headerFill: 'primary',
-    design: { layout: 'single', header: 'band', headerShape: 'flat', photo: 'none', headings: 'block', displayFont: 'wide', nameCase: 'upper', nameSize: 'xl', decor: 'lines', bullets: 'square', corners: 'square' }
+    design: { layout: 'single', header: 'band', headerShape: 'flat', photo: 'none', headings: 'rule', displayFont: 'wide', nameCase: 'upper', nameSize: 'xl', decor: 'none', bullets: 'square', corners: 'square' }
   },
   {
     id: 'prisme',
     name: 'Prisme',
     family: 'Colonne',
-    tagline: 'Colonne sombre à cercles concentriques, nom en dégradé, titres en pastilles.',
+    tagline: 'Colonne sombre en texte clair avec photo, cercles fins en tête de colonne, corps très lisible.',
     tone: 'dark-side',
     headerFill: 'page',
-    design: { layout: 'sidebar-left', sidebarWidth: 30, header: 'minimal', photo: 'circle', photoPlace: 'sidebar', headings: 'pill', decor: 'circles', nameStyle: 'gradient', skills: 'chips' }
+    design: { layout: 'sidebar-left', sidebarWidth: 31, header: 'minimal', photo: 'circle', photoPlace: 'sidebar', headings: 'rule', decor: 'circles', nameStyle: 'accent', skills: 'chips', icons: true }
   },
   {
     id: 'ligne',
     name: 'Ligne',
     family: 'Minimal',
-    tagline: 'Une colonne aérée, filets fins, puces en tirets : la sobriété d’un CV classique soigné.',
+    tagline: 'Le CV « à l’anglo-saxonne » : une colonne, filets fins, tirets, aucune fioriture.',
     tone: 'light',
     headerFill: 'page',
     design: { layout: 'single', header: 'minimal', photo: 'none', headings: 'underline', displayFont: 'serif', timeline: false, entries: 'rule', bullets: 'dash', skills: 'list', nameStyle: 'plain' }
@@ -126,100 +129,100 @@ const STRUCTURES: Structure[] = [
     id: 'canopee',
     name: 'Canopée',
     family: 'Colonne',
-    tagline: 'Colonne droite à vagues, titres en capitales, nom en serif, photo ronde.',
+    tagline: 'Colonne de droite teintée, nom en serif, titres en capitales espacées, photo ronde.',
     tone: 'tinted',
     headerFill: 'page',
-    design: { layout: 'sidebar-right', sidebarWidth: 34, header: 'minimal', photo: 'circle', photoPlace: 'sidebar', headings: 'caps', displayFont: 'serif', decor: 'waves', skills: 'chips' }
+    design: { layout: 'sidebar-right', sidebarWidth: 33, header: 'minimal', photo: 'circle', photoPlace: 'sidebar', headings: 'caps', displayFont: 'serif', decor: 'none', skills: 'chips', icons: true }
   },
   {
     id: 'neon',
     name: 'Néon',
     family: 'Tech',
-    tagline: 'Bandeau très sombre à vague et quadrillage, nom en contour, accents vifs.',
+    tagline: 'En-tête nuit avec trame de points, accent vif, titres à barre : pour les profils tech et créatifs.',
     tone: 'light',
     headerFill: 'deep',
-    design: { layout: 'single', header: 'band', headerShape: 'wave', photo: 'none', headings: 'bar', displayFont: 'mono', bodyFont: 'sans', decor: 'grid', nameStyle: 'outline', nameSize: 'xl', bullets: 'arrow' }
+    design: { layout: 'single', header: 'band', headerShape: 'flat', photo: 'none', headings: 'bar', displayFont: 'mono', bodyFont: 'sans', decor: 'dots', nameStyle: 'accent', nameSize: 'xl', bullets: 'arrow', icons: true }
   },
   {
     id: 'origami',
     name: 'Origami',
     family: 'Bandeau',
-    tagline: 'Bandeau en biais, photo carrée, colonne latérale et expériences en cartes.',
-    tone: 'light',
+    tagline: 'Bandeau coloré, photo carrée, colonne latérale séparée par un filet, expériences en cartes.',
+    tone: 'plain',
     headerFill: 'primary',
-    design: { layout: 'sidebar-left', sidebarWidth: 30, header: 'band', headerShape: 'slant', photo: 'square', photoPlace: 'header', headings: 'block', decor: 'diagonal', entries: 'cards', corners: 'square' }
+    design: { layout: 'sidebar-left', sidebarWidth: 30, header: 'band', headerShape: 'flat', photo: 'square', photoPlace: 'header', headings: 'rule', decor: 'none', entries: 'cards', corners: 'square', icons: true }
   },
   {
     id: 'boreal',
     name: 'Boréal',
     family: 'Doux',
-    tagline: 'Carte d’en-tête centrée avec photo, cercles décoratifs, puces fléchées.',
+    tagline: 'Carte d’en-tête centrée avec photo, titres en pastilles, puces fléchées.',
     tone: 'tinted',
     headerFill: 'tint',
-    design: { layout: 'single', header: 'card', headerAlign: 'center', photo: 'circle', photoPlace: 'header', headings: 'pill', decor: 'circles', bullets: 'arrow', skills: 'chips' }
+    design: { layout: 'single', header: 'card', headerAlign: 'center', photo: 'circle', photoPlace: 'header', headings: 'pill', decor: 'none', bullets: 'arrow', skills: 'chips', icons: true }
   },
   {
     id: 'archive',
     name: 'Archive',
     family: 'Éditorial',
-    tagline: 'Papier ligné, texte en serif, nom surligné, coordonnées en colonne à droite.',
+    tagline: 'Élégance de cabinet : serif, cadre fin, intitulés dans la marge, coordonnées à droite.',
     tone: 'light',
     headerFill: 'page',
-    design: { layout: 'single', header: 'split', photo: 'none', headings: 'caps', bodyFont: 'serif', displayFont: 'serif', decor: 'lines', nameStyle: 'highlight', skills: 'list', corners: 'square', frame: 'border' }
+    design: { layout: 'single', header: 'split', photo: 'none', headings: 'rail', bodyFont: 'serif', displayFont: 'serif', decor: 'none', nameStyle: 'plain', skills: 'list', corners: 'square', frame: 'border' }
   },
   {
     id: 'vague',
     name: 'Vague',
     family: 'Bandeau',
-    tagline: 'Grand bandeau à bord ondulé sur toute la largeur, colonne latérale, titres surlignés.',
+    tagline: 'Grand bandeau à bord arrondi sur toute la largeur, colonne latérale, titres surlignés.',
     tone: 'light',
     headerFill: 'primary',
-    design: { layout: 'sidebar-left', sidebarWidth: 33, header: 'band', headerShape: 'wave', photo: 'circle', photoPlace: 'header', headings: 'highlight', decor: 'waves', skills: 'chips' }
+    design: { layout: 'sidebar-left', sidebarWidth: 32, header: 'band', headerShape: 'curve', photo: 'circle', photoPlace: 'header', headings: 'highlight', decor: 'none', skills: 'chips', icons: true }
   },
   {
     id: 'pixel',
     name: 'Pixel',
     family: 'Tech',
-    tagline: 'Confettis carrés, police à chasse fixe pour les titres, puces carrées, coins nets.',
-    tone: 'light',
+    tagline: 'Colonne de droite à filet, titres à chasse fixe, compétences en colonnes, coins nets.',
+    tone: 'plain',
     headerFill: 'page',
-    design: { layout: 'sidebar-right', sidebarWidth: 28, header: 'minimal', photo: 'square', photoPlace: 'sidebar', headings: 'bar', displayFont: 'mono', decor: 'confetti', bullets: 'square', corners: 'square', skills: 'columns' }
+    design: { layout: 'sidebar-right', sidebarWidth: 29, header: 'minimal', photo: 'square', photoPlace: 'sidebar', headings: 'bar', displayFont: 'mono', decor: 'none', bullets: 'square', corners: 'square', skills: 'columns' }
   },
   {
     id: 'satin',
     name: 'Satin',
     family: 'Minimal',
-    tagline: 'Élégance centrée : grand nom en serif, filet fin, aucune fioriture.',
+    tagline: 'Élégance centrée : grand nom en serif, liseré fin en haut, aucune fioriture.',
     tone: 'light',
     headerFill: 'page',
-    design: { layout: 'single', header: 'minimal', headerAlign: 'center', photo: 'none', headings: 'underline', displayFont: 'serif', nameSize: 'xl', nameStyle: 'plain', timeline: false, skills: 'list', frame: 'top' }
+    design: { layout: 'single', header: 'minimal', headerAlign: 'center', photo: 'none', headings: 'rule', displayFont: 'serif', nameSize: 'xl', nameStyle: 'plain', timeline: false, skills: 'list', frame: 'top' }
   },
   {
     id: 'kinetique',
     name: 'Kinétique',
     family: 'Audacieux',
-    tagline: 'Bandeau en biais très sombre, nom en capitales, puces fléchées, liseré latéral.',
+    tagline: 'En-tête très sombre, nom en capitales, liseré de couleur sur le côté, puces fléchées.',
     tone: 'light',
     headerFill: 'deep',
-    design: { layout: 'single', header: 'band', headerShape: 'slant', photo: 'circle', photoPlace: 'header', photoSide: 'right', headings: 'block', displayFont: 'wide', nameCase: 'upper', decor: 'diagonal', bullets: 'arrow', frame: 'side' }
+    design: { layout: 'single', header: 'band', headerShape: 'flat', photo: 'circle', photoPlace: 'header', photoSide: 'right', headings: 'rule', displayFont: 'wide', nameCase: 'upper', decor: 'none', bullets: 'arrow', frame: 'side', icons: true }
   },
   {
     id: 'jardin',
     name: 'Jardin',
     family: 'Doux',
-    tagline: 'Colonne large à formes douces, en-tête en carte, pastilles et puces cochées.',
+    tagline: 'Colonne large aux formes douces, en-tête en carte, pastilles et puces cochées.',
     tone: 'tinted',
     headerFill: 'tint',
-    design: { layout: 'sidebar-left', sidebarWidth: 36, header: 'card', photo: 'circle', photoPlace: 'sidebar', headings: 'pill', decor: 'blobs', bullets: 'check', skills: 'chips' }
+    design: { layout: 'sidebar-left', sidebarWidth: 34, header: 'card', photo: 'circle', photoPlace: 'sidebar', headings: 'pill', decor: 'blobs', bullets: 'check', skills: 'chips', icons: true }
   },
   {
     id: 'contraste',
     name: 'Contraste',
     family: 'Audacieux',
-    tagline: 'Colonne droite très sombre à quadrillage, bandeau plein, nom surligné.',
+    tagline: 'Colonne de droite très sombre, bandeau plein, nom surligné : fort contraste, lecture immédiate.',
     tone: 'dark-side',
     headerFill: 'primary',
-    design: { layout: 'sidebar-right', sidebarWidth: 32, header: 'band', headerShape: 'flat', photo: 'rounded', photoPlace: 'sidebar', headings: 'bar', decor: 'grid', nameStyle: 'highlight', corners: 'square' }
+    design: { layout: 'sidebar-right', sidebarWidth: 31, header: 'band', headerShape: 'flat', photo: 'rounded', photoPlace: 'sidebar', headings: 'bar', decor: 'none', nameStyle: 'highlight', corners: 'square', icons: true }
   }
 ]
 
@@ -238,7 +241,7 @@ function colorsFor(s: Structure, p: Palette): DesignSpec['colors'] {
   const deep = mixHex(p.primary, '#0B0B10', 0.78)
   const page = s.tone === 'tinted' ? mixHex(p.secondary, '#FFFFFF', 0.86) : s.tone === 'dark' ? '#0F1115' : '#FFFFFF'
   const text = s.tone === 'dark' ? '#F4F4F2' : '#16181D'
-  const sidebar = s.tone === 'dark-side' ? deep : s.tone === 'tinted' ? mixHex(p.primary, '#FFFFFF', 0.86) : tint
+  const sidebar = s.tone === 'dark-side' ? deep : s.tone === 'tinted' ? mixHex(p.primary, '#FFFFFF', 0.86) : s.tone === 'plain' ? page : tint
   const header = s.headerFill === 'primary' ? p.primary : s.headerFill === 'deep' ? deep : s.headerFill === 'tint' ? tint : page
   return { primary: p.primary, secondary: p.secondary, page, text, sidebar, header }
 }

@@ -1,7 +1,7 @@
 import { noDash } from '../../shared/format'
 import { create } from 'zustand'
 import type { ActivityItem, AppData, ChatTurn, CoverLetter, Offer, Resume, Settings } from '../../shared/types'
-import { blankResume, normalizeResume, sampleResume, uid } from './lib/sample'
+import { blankResume, normalizeResume, sampleFor, uid, type PreviewGender } from './lib/sample'
 import { getTemplate } from './templates/registry'
 
 export type Route =
@@ -32,6 +32,9 @@ interface State {
   settings: Settings
   route: Route
   paletteOpen: boolean
+  /** Profil d'exemple des aperçus et des CV créés depuis l'exemple : mixte, fille ou garçon. */
+  previewGender: PreviewGender
+  setPreviewGender(g: PreviewGender): void
   assistantOpen: boolean
   chat: ChatTurn[]
   toasts: Toast[]
@@ -126,6 +129,7 @@ export const useStore = create<State>((set, get) => {
     settings: defaultSettings,
     route: { name: 'dashboard' },
     paletteOpen: false,
+    previewGender: readGender(),
     assistantOpen: false,
     chat: [],
     toasts: [],
@@ -169,7 +173,7 @@ export const useStore = create<State>((set, get) => {
     },
 
     createResume(opts = {}) {
-      const base = opts.sample ? sampleResume(opts.templateId) : blankResume(opts.templateId)
+      const base = opts.sample ? sampleFor(opts.templateId ?? 'atelier', get().previewGender) : blankResume(opts.templateId)
       const r: Resume = { ...base, ...opts.from, id: uid(), createdAt: Date.now(), updatedAt: Date.now() }
       setData((d) => ({ ...d, resumes: [r, ...d.resumes] }))
       get().log('create', `CV créé : ${r.title}`)
@@ -314,6 +318,15 @@ export const useStore = create<State>((set, get) => {
       }
     },
 
+    setPreviewGender(g) {
+      try {
+        localStorage.setItem('cvgen.previewGender', g)
+      } catch {
+        /* préférence non mémorisée */
+      }
+      set({ previewGender: g })
+    },
+
     setPalette(open) {
       set({ paletteOpen: open })
     },
@@ -340,5 +353,14 @@ function restoredRoute(): Route | null {
     return raw ? (JSON.parse(raw) as Route) : null
   } catch {
     return null
+  }
+}
+
+function readGender(): PreviewGender {
+  try {
+    const g = localStorage.getItem('cvgen.previewGender')
+    return g === 'f' || g === 'm' ? g : 'all'
+  } catch {
+    return 'all'
   }
 }

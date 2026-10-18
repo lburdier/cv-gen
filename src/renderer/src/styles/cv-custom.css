@@ -610,3 +610,87 @@
 .cm .cm-langs li {
   position: relative;
 }
+
+/* ---------- Finitions inspirées des CV de référence ---------- */
+/* Icônes de contact : petites, alignées, couleur d'accent atténuée. */
+.cm-icons .cm-contact li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cm-icons .cm-contact.inline li {
+  display: inline-flex;
+}
+.cm-ico {
+  flex-shrink: 0;
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.75;
+}
+.cm-align-center .cm-icons .cm-contact.inline,
+.cm-align-center.cm-icons .cm-contact.inline {
+  justify-content: center;
+}
+
+/* Colonne latérale de la couleur de la page, séparée par un filet. */
+.cm-side-plain .cm-side {
+  background: transparent;
+  border-right: 1px solid var(--cm-line);
+}
+.cm-side-plain.cm-sidebar-right .cm-side {
+  border-right: 0;
+  border-left: 1px solid var(--cm-line);
+}
+
+/* Titres « filet » : petites capitales espacées, suivies d'un filet fin jusqu'au bord. */
+.cm-h-rule .cm-h {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 8.4pt;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+.cm-h-rule .cm-h::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--cm-line);
+}
+
+/* Titres « marge » : l'intitulé dans une colonne étroite à gauche, le contenu à droite (style suisse). */
+.cm-h-rail .cm-main > .cm-sec {
+  display: grid;
+  grid-template-columns: 24% 1fr;
+  column-gap: 18px;
+  padding-top: 10px;
+  border-top: 1px solid var(--cm-line);
+}
+.cm-h-rail .cm-main > .cm-sec > .cm-h {
+  grid-column: 1;
+  font-size: 8pt;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  line-height: 1.5;
+}
+.cm-h-rail .cm-main > .cm-sec > :not(.cm-h):not(.cv-grip) {
+  grid-column: 2;
+}
+.cm-h-rail .cm-side .cm-h {
+  font-size: 8pt;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+/* Nom en capitales : un peu d'interlettrage, comme dans les mises en page soignées. */
+.cm-name-upper .cm-name {
+  letter-spacing: 0.02em;
+}
+.cm-name-upper.cm-display-wide .cm-name {
+  letter-spacing: 0.01em;
+}

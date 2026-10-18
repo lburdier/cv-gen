@@ -5157,3 +5157,17 @@ ul.clean li {
 .ce-panel .design-form .seg-wrap {
   flex-wrap: wrap;
 }
+
+.tpl-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.gender-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

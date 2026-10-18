@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Check, Search } from 'lucide-react'
-import { DESIGN_FAMILIES, DESIGN_PALETTES } from '../templates/designCatalog'
+import { DESIGN_FAMILIES, DESIGN_PALETTES, designTemplate } from '../templates/designCatalog'
 import { STUDIO_TEMPLATES, type TemplateDef } from '../templates/registry'
 import { TemplatePreview } from './TemplatePicker'
 
@@ -17,6 +17,9 @@ export function StudioGallery({ onPick, current, compact }: { onPick: (t: Templa
   const [hue, setHue] = useState('Toutes')
   const [tone, setTone] = useState<'all' | 'light' | 'dark'>('all')
   const [q, setQ] = useState('')
+  const [layout, setLayout] = useState<'all' | 'single' | 'side'>('all')
+  const [head, setHead] = useState<'all' | 'band' | 'card' | 'plain'>('all')
+  const [photo, setPhoto] = useState<'all' | 'yes' | 'no'>('all')
   const [shown, setShown] = useState(PAGE)
 
   const list = useMemo(() => {
@@ -26,9 +29,17 @@ export function StudioGallery({ onPick, current, compact }: { onPick: (t: Templa
         (family === 'Toutes' || t.studio!.family === family) &&
         (hue === 'Toutes' || t.studio!.hue === hue) &&
         (tone === 'all' || (tone === 'dark') === t.studio!.dark) &&
-        (!n || t.name.toLowerCase().includes(n) || t.tagline.toLowerCase().includes(n))
+        (!n || t.name.toLowerCase().includes(n) || t.tagline.toLowerCase().includes(n)) &&
+        matches(t.id)
     )
-  }, [family, hue, tone, q])
+    function matches(id: string) {
+      const d = designTemplate(id)!.design
+      if (layout !== 'all' && (layout === 'single') !== (d.layout === 'single')) return false
+      if (head !== 'all' && (head === 'band' ? d.header !== 'band' : head === 'card' ? d.header !== 'card' : d.header === 'band' || d.header === 'card')) return false
+      if (photo !== 'all' && (photo === 'yes') !== (d.photo !== 'none')) return false
+      return true
+    }
+  }, [family, hue, tone, q, layout, head, photo])
 
   const reset = (fn: () => void) => {
     fn()
@@ -40,7 +51,7 @@ export function StudioGallery({ onPick, current, compact }: { onPick: (t: Templa
       <div className="studio-filters">
         <label className="studio-search">
           <Search size={15} />
-          <input value={q} placeholder="Rechercher : Atlas, Corail, vagues…" onChange={(e) => reset(() => setQ(e.target.value))} aria-label="Rechercher un modèle du studio" />
+          <input value={q} placeholder="Rechercher : Atlas, Corail, Éditorial…" onChange={(e) => reset(() => setQ(e.target.value))} aria-label="Rechercher un modèle du studio" />
         </label>
         <div className="seg">
           {(
@@ -55,6 +66,11 @@ export function StudioGallery({ onPick, current, compact }: { onPick: (t: Templa
             </button>
           ))}
         </div>
+      </div>
+      <div className="studio-filters">
+        <Seg value={layout} onChange={(v) => reset(() => setLayout(v))} options={[['all', 'Toutes mises en page'], ['single', 'Une colonne'], ['side', 'Colonne latérale']]} />
+        <Seg value={head} onChange={(v) => reset(() => setHead(v))} options={[['all', 'Tous en-têtes'], ['band', 'Bandeau'], ['card', 'Carte'], ['plain', 'Sobre']]} />
+        <Seg value={photo} onChange={(v) => reset(() => setPhoto(v))} options={[['all', 'Photo ou non'], ['yes', 'Avec photo'], ['no', 'Sans photo']]} />
       </div>
       <div className="chips studio-chips">
         {['Toutes', ...DESIGN_FAMILIES].map((f) => (
@@ -116,6 +132,18 @@ export function StudioGallery({ onPick, current, compact }: { onPick: (t: Templa
           </button>
         </div>
       )}
+    </div>
+  )
+}
+
+function Seg<T extends string>({ value, options, onChange }: { value: T; options: [T, string][]; onChange: (v: T) => void }) {
+  return (
+    <div className="seg">
+      {options.map(([v, l]) => (
+        <button key={v} className={value === v ? 'on' : ''} onClick={() => onChange(v)}>
+          {l}
+        </button>
+      ))}
     </div>
   )
 }

@@ -33,7 +33,8 @@ export const DEFAULT_DESIGN: DesignSpec = {
   nameStyle: 'accent',
   bullets: 'dot',
   entries: 'plain',
-  frame: 'none'
+  frame: 'none',
+  icons: false
 }
 
 const SECTIONS: SectionKey[] = ['summary', 'experience', 'education', 'skills', 'projects', 'certifications', 'languages', 'interests', 'gallery']
@@ -64,7 +65,7 @@ export function normalizeDesign(input: unknown, base: DesignSpec = DEFAULT_DESIG
     photo: pick(d.photo, ['none', 'circle', 'rounded', 'square'] as const, base.photo),
     photoPlace: pick(d.photoPlace, ['header', 'sidebar'] as const, base.photoPlace),
     photoSide: pick(d.photoSide, ['left', 'right'] as const, base.photoSide ?? 'left'),
-    headings: pick(d.headings, ['underline', 'pill', 'block', 'caps', 'highlight', 'bar'] as const, base.headings),
+    headings: pick(d.headings, ['underline', 'pill', 'block', 'caps', 'highlight', 'bar', 'rule', 'rail'] as const, base.headings),
     bodyFont: pick(d.bodyFont, ['sans', 'serif', 'mono'] as const, base.bodyFont),
     displayFont: pick(d.displayFont, ['sans', 'serif', 'mono', 'wide'] as const, base.displayFont),
     nameCase: pick(d.nameCase, ['upper', 'normal'] as const, base.nameCase),
@@ -82,7 +83,9 @@ export function normalizeDesign(input: unknown, base: DesignSpec = DEFAULT_DESIG
       header: normalizeHexColor(c.header, base.colors.header)
     },
     sidebarSections: side.length || Array.isArray(d.sidebarSections) ? side : base.sidebarSections,
-    decor: pick(d.decor, ['none', 'dots', 'grid', 'lines', 'diagonal', 'waves', 'circles', 'blobs', 'confetti'] as const, base.decor ?? 'none'),
+    // (Les rayures « diagonal » des premières versions sont retirées : ramenées à « aucun ».)
+    decor: pick(d.decor, ['none', 'dots', 'grid', 'lines', 'waves', 'circles', 'blobs', 'confetti'] as const, base.decor === ('diagonal' as string) ? 'none' : (base.decor ?? 'none')),
+    icons: typeof d.icons === 'boolean' ? d.icons : (base.icons ?? false),
     headerShape: pick(d.headerShape, ['flat', 'curve', 'slant', 'wave'] as const, base.headerShape ?? 'flat'),
     nameStyle: pick(d.nameStyle, ['plain', 'accent', 'outline', 'highlight', 'gradient'] as const, base.nameStyle ?? 'accent'),
     bullets: pick(d.bullets, ['dot', 'dash', 'arrow', 'square', 'check'] as const, base.bullets ?? 'dot'),
