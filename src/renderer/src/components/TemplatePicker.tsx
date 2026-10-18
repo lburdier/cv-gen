@@ -35,7 +35,7 @@ function SamplePreview({ id, rounded }: { id: string; rounded?: boolean }) {
 /** Sélecteur visuel de modèle (éditeur) : filtres et grandes vignettes. */
 export function TemplatePicker({ current, onPick, onClose }: { current: string; onPick: (t: TemplateDef) => void; onClose: () => void }) {
   const [tag, setTag] = useState('Tous')
-  // Deux catalogues : les modèles d'origine, et les 200 modèles du studio de design.
+  // Deux catalogues : les modèles d'origine, et les modèles du studio de design.
   const [cat, setCat] = useState<'core' | 'studio'>(() => (isDesignTemplate(current) ? 'studio' : 'core'))
   const list = CORE_TEMPLATES.filter((t) => tag === 'Tous' || t.tags.includes(tag))
   return (

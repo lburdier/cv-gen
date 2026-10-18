@@ -818,7 +818,7 @@ export function CanvasEditor({ resume, onExit }: { resume: Resume; onExit: () =>
             <div className="ce-visual">
               <ShieldCheck size={26} />
               <strong>La toile garantit un CV 100 % ATS</strong>
-              <span>Ce modèle visuel est composé à la main (colonnes, images). Choisissez un modèle une colonne ou un des 200 modèles du studio pour l’éditer sur la toile, ou revenez au formulaire.</span>
+              <span>Ce modèle visuel est composé à la main (colonnes, images). Choisissez un modèle une colonne ou un modèle du studio de design pour l’éditer sur la toile, ou revenez au formulaire.</span>
               <div className="ce-templates">
                 {[...atsTemplates.slice(0, 4), ...STUDIO_TEMPLATES.filter((x) => x.id.endsWith('-indigo')).slice(0, 4)].map((x) => (
                   <button key={x.id} onClick={() => up((r) => void ((r.templateId = x.id), (r.accent = x.accent), (r.font = x.font)))}>

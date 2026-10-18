@@ -271,7 +271,7 @@ export const CORE_TEMPLATES: TemplateDef[] = [
   }
 ]
 
-/** Studio de design : 200 modèles générés (20 structures × 10 palettes), rendus par le moteur de design. */
+/** Studio de design : 500 modèles générés (50 structures × 10 palettes), rendus par le moteur de design. */
 export const STUDIO_TEMPLATES: TemplateDef[] = DESIGN_TEMPLATES.map((d) => ({
   id: d.id,
   name: d.name,
