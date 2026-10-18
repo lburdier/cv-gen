@@ -227,6 +227,16 @@ export interface LocalModel {
   size: number
 }
 
+/** Connexion avec un compte développeur Anthropic (outil ant, profil OAuth « cv-gen »). */
+export interface AnthropicLoginState {
+  /** Outil de connexion présent (livré par l'app ou installé sur le système). */
+  installed: boolean
+  loggedIn: boolean
+  busy: 'installing' | 'waiting' | null
+  /** Organisation, espace de travail… tels qu'affichés par l'outil. */
+  details: string[]
+}
+
 export interface LocalModelState extends LocalModel {
   installed: boolean
   downloading: boolean
@@ -250,6 +260,9 @@ export interface Settings {
   model: ModelId
   /** Modèle OpenRouter (par défaut le routeur gratuit « openrouter/free »). */
   orModel: string
+  /** Claude : clé API ou session du compte développeur Anthropic. */
+  claudeAuth: 'key' | 'account'
+  hasClaudeLogin: boolean
   /** Modèle local choisi (identifiant du catalogue). */
   localModel: string
   /** Un modèle local est installé (repli automatique possible). */
@@ -446,7 +459,14 @@ export interface CvGenApi {
   /** Texte brut d'un DOCX. */
   extractDocx(bytes: Uint8Array): Promise<string>
   getSettings(): Promise<Settings>
-  setSettings(patch: Partial<Pick<Settings, 'provider' | 'model' | 'orModel' | 'localModel' | 'theme' | 'userName'>>): Promise<Settings>
+  setSettings(patch: Partial<Pick<Settings, 'provider' | 'model' | 'orModel' | 'localModel' | 'claudeAuth' | 'theme' | 'userName'>>): Promise<Settings>
+  /** Compte développeur Anthropic : connexion dans le navigateur, état, déconnexion. */
+  anthropicLogin: {
+    state(): Promise<AnthropicLoginState>
+    login(): Promise<AnthropicLoginState>
+    cancel(): Promise<void>
+    logout(): Promise<AnthropicLoginState>
+  }
   setApiKey(key: string, provider?: KeyProvider): Promise<Settings>
   /** IA locale : catalogue, téléchargement du modèle, suppression. */
   local: {

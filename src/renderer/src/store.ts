@@ -86,6 +86,8 @@ const defaultSettings: Settings = {
   orModel: 'openrouter/free',
   localModel: 'qwen3-0.6b',
   hasLocalModel: false,
+  claudeAuth: 'key',
+  hasClaudeLogin: false,
   theme: 'light',
   userName: '',
   encryptionAvailable: true

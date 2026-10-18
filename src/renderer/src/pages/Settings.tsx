@@ -1,6 +1,7 @@
 import { Check, FolderOpen, History, Info, KeyRound, Loader2, RefreshCw, ShieldCheck } from 'lucide-react'
 import { ToursSettings } from '../components/ToursSettings'
 import { LocalModels } from '../components/LocalModels'
+import { AnthropicAccount } from '../components/AnthropicAccount'
 import { UpdatesSettings } from '../components/Updates'
 import { useEffect, useState } from 'react'
 import type { FreeModel, ModelId, Settings } from '../../../shared/types'
@@ -107,6 +108,8 @@ export default function SettingsPage() {
   const [name, setName] = useState(s.settings.userName)
   const or = s.settings.provider === 'openrouter'
   const local = s.settings.provider === 'local'
+  // Claude : clé API ou compte développeur Anthropic (connexion dans le navigateur).
+  const account = !or && s.settings.claudeAuth === 'account'
   const hasKey = or ? s.settings.hasOpenRouterKey : s.settings.hasClaudeKey
   const providerName = or ? 'OpenRouter' : 'Claude'
 
@@ -165,10 +168,31 @@ export default function SettingsPage() {
       {!local && (
       <div className="settings-grid">
         <div>
-          <h3>Clé API {providerName}</h3>
-          <p className="desc">{or ? 'Gratuite : créez un compte puis une clé, sans carte bancaire.' : 'Utilisée uniquement quand Claude est le fournisseur actif.'}</p>
+          <h3>{or ? 'Clé API OpenRouter' : 'Connexion à Claude'}</h3>
+          <p className="desc">{or ? 'Gratuite : créez un compte puis une clé, sans carte bancaire.' : 'Une clé API à coller, ou votre compte développeur Anthropic.'}</p>
         </div>
         <div className="stack">
+          {!or && (
+            <div className="seg" style={{ width: 'fit-content' }}>
+              <button className={!account ? 'on' : ''} onClick={() => s.setSettings({ claudeAuth: 'key' })}>
+                Clé API
+              </button>
+              <button className={account ? 'on' : ''} onClick={() => s.setSettings({ claudeAuth: 'account' })}>
+                Compte Anthropic
+              </button>
+            </div>
+          )}
+          {account ? (
+            <>
+              <AnthropicAccount />
+              {s.settings.hasClaudeLogin && (
+                <button className="btn btn-ghost btn-sm" style={{ alignSelf: 'flex-start' }} onClick={() => runTest(false)} disabled={testing}>
+                  {testing ? <Loader2 size={14} className="spin" /> : <Check size={14} />} Tester la connexion
+                </button>
+              )}
+            </>
+          ) : (
+          <>
           <div className="row">
             <span className={`tag ${hasKey ? 'ok' : 'warn'}`}>{hasKey ? 'Clé configurée' : 'Aucune clé'}</span>
             {hasKey && (
@@ -204,6 +228,8 @@ export default function SettingsPage() {
               .
             </span>
           </div>
+          </>
+          )}
           {or && (
             <div className="callout" style={{ fontSize: 13 }}>
               <Info size={16} />

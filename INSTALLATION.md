@@ -67,7 +67,12 @@ Le modèle tourne sur votre PC : gratuit, sans clé, sans limite, rien n’est e
 
 **Option payante, plus précise : Claude (Anthropic)**
 
-Créez une clé sur **https://console.anthropic.com**, puis choisissez **Claude** dans Paramètres et collez-la dans **Clé API**.
+Deux façons, toutes deux avec un compte développeur Claude Console (usage facturé sur les crédits API) :
+
+- **Se connecter** : dans Paramètres, choisissez **Claude**, puis **Compte Anthropic › Se connecter avec Anthropic**. La page de connexion s’ouvre dans le navigateur ; l’app télécharge au premier clic l’outil officiel d’Anthropic (13 Mo) et la session se renouvelle toute seule.
+- **Clé API** : créez une clé sur **https://platform.claude.com**, choisissez **Claude › Clé API** dans Paramètres et collez-la.
+
+Un abonnement Claude Pro ou Max ne peut pas être utilisé par une autre application que celles d’Anthropic.
 
 > La clé est chiffrée par Windows sur votre PC. Elle n’est envoyée qu’au fournisseur choisi. Ne la partagez avec personne.
 

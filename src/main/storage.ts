@@ -3,12 +3,14 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, renam
 import { join } from 'path'
 import type { AiProvider, AppData, KeyProvider, ModelId, Settings } from '../shared/types'
 import { isInstalled, anyInstalled } from './localLlm'
+import { isLoggedIn } from './anthropicLogin'
 
 interface StoredSettings {
   provider: AiProvider
   model: ModelId
   orModel: string
   localModel: string
+  claudeAuth: 'key' | 'account'
   theme: Settings['theme']
   userName: string
   apiKeyEnc?: string // clé chiffrée par Windows (DPAPI) via safeStorage
@@ -143,6 +145,7 @@ function readSettings(): StoredSettings {
     model: 'claude-opus-5-5',
     orModel: 'openrouter/free',
     localModel: 'qwen3-0.6b',
+    claudeAuth: 'key',
     theme: 'light',
     userName: '',
     ...(readJson<StoredSettings>(settingsFile()) ?? {})
@@ -159,17 +162,20 @@ export function getSettings(): Settings {
     model: s.model,
     orModel: s.orModel,
     localModel: s.localModel,
+    claudeAuth: s.claudeAuth,
+    hasClaudeLogin: isLoggedIn(),
     hasLocalModel: !!anyInstalled(s.localModel),
     theme: s.theme,
     userName: s.userName,
     hasClaudeKey,
     hasOpenRouterKey,
-    hasApiKey: s.provider === 'local' ? isInstalled(s.localModel) : s.provider === 'openrouter' ? hasOpenRouterKey : hasClaudeKey,
+    hasApiKey:
+      s.provider === 'local' ? isInstalled(s.localModel) : s.provider === 'openrouter' ? hasOpenRouterKey : s.claudeAuth === 'account' ? isLoggedIn() : hasClaudeKey,
     encryptionAvailable: safeStorage.isEncryptionAvailable()
   }
 }
 
-export function setSettings(patch: Partial<Pick<StoredSettings, 'provider' | 'model' | 'orModel' | 'localModel' | 'theme' | 'userName'>>): Settings {
+export function setSettings(patch: Partial<Pick<StoredSettings, 'provider' | 'model' | 'orModel' | 'localModel' | 'claudeAuth' | 'theme' | 'userName'>>): Settings {
   writeJson(settingsFile(), { ...readSettings(), ...patch })
   return getSettings()
 }
