@@ -273,11 +273,11 @@ export const CORE_TEMPLATES: TemplateDef[] = [
     font: 'arial',
     tags: ['Minimal', 'Classique']
   },
-  // ---------- Collection « Reproductions » : seize modèles recréés d’après des CV de référence ----------
+  // ---------- Collection « Inspirations » : seize modèles visuels à forte personnalité ----------
   {
     id: 'arche',
     name: 'Arche',
-    tagline: 'Colonne beige en arche avec grand portrait, nom en capitales fines, frise ponctuée d’étoiles et pastilles.',
+    tagline: 'Colonne en arche et portrait arrondi, nom en serif italique, frise ponctuée de losanges et étiquettes.',
     accent: '#1B1B1B',
     accent2: '#E8DFD1',
     font: 'inter',
@@ -289,8 +289,8 @@ export const CORE_TEMPLATES: TemplateDef[] = [
   },
   {
     id: 'chevron',
-    name: 'Chevron',
-    tagline: 'En-tête ardoise avec portrait rond, colonne crème coiffée d’un chevron, titres soulignés.',
+    name: 'Onglet',
+    tagline: 'En-tête ardoise et portrait arrondi, colonne crème à languette, titres à barre courte.',
     accent: '#383A40',
     accent2: '#ECE8E2',
     font: 'inter',
@@ -303,7 +303,7 @@ export const CORE_TEMPLATES: TemplateDef[] = [
   {
     id: 'petale',
     name: 'Pétale',
-    tagline: 'Grandes formes organiques roses, portrait rond, serif condensé et listes numérotées.',
+    tagline: 'Grands cercles roses et colonne en gélule, portrait rond, nom en serif, puces carrées.',
     accent: '#C9939A',
     accent2: '#EED6DA',
     font: 'inter',
@@ -316,7 +316,7 @@ export const CORE_TEMPLATES: TemplateDef[] = [
   {
     id: 'monochrome',
     name: 'Monochrome',
-    tagline: 'Cadre sombre, nom condensé géant et signature en script, blocs gris et pastilles.',
+    tagline: 'Cadre sombre, nom condensé géant et nom de famille détouré, filets fins et pastilles.',
     accent: '#2B2B2B',
     accent2: '#9E9E9E',
     font: 'inter',
@@ -329,7 +329,7 @@ export const CORE_TEMPLATES: TemplateDef[] = [
   {
     id: 'grille',
     name: 'Grille',
-    tagline: 'Fond noir, tableau à doubles filets, nom massif et photo noir et blanc.',
+    tagline: 'Fond noir et tableau à filets, nom massif, portrait noir et blanc à droite.',
     accent: '#FFFFFF',
     font: 'inter',
     tags: ['Créatif', 'Tech'],
@@ -340,9 +340,9 @@ export const CORE_TEMPLATES: TemplateDef[] = [
   {
     id: 'degrade',
     name: 'Dégradé',
-    tagline: 'Colonne anthracite, portrait en duotone, étiquettes et anneaux de compétences en dégradé rose-orangé.',
-    accent: '#FF4F9A',
-    accent2: '#FF8A4C',
+    tagline: 'Colonne anthracite, portrait arrondi en duotone, étiquettes en gélule et jauges en dégradé.',
+    accent: '#7C3AED',
+    accent2: '#06B6D4',
     font: 'inter',
     tags: ['Créatif', 'Design'],
     secondary: true,
@@ -353,7 +353,7 @@ export const CORE_TEMPLATES: TemplateDef[] = [
   {
     id: 'medaillon',
     name: 'Médaillon',
-    tagline: 'En-tête ardoise, portrait centré en médaillon, titres à icônes, frises et barres de niveau.',
+    tagline: 'En-tête ardoise, portrait arrondi à droite, titres à icônes, frises et barres de niveau.',
     accent: '#3D4C5C',
     font: 'inter',
     tags: ['Moderne', 'Classique'],
@@ -364,9 +364,9 @@ export const CORE_TEMPLATES: TemplateDef[] = [
   {
     id: 'dune',
     name: 'Dune',
-    tagline: 'Tons sable, arche mauve et grand portrait, nom fin, titres en pastilles et frise verticale.',
-    accent: '#6B3F2E',
-    accent2: '#C49A8B',
+    tagline: 'Tons sauge, arche ouverte et grand portrait, nom fin, titres soulignés et frise verticale.',
+    accent: '#3F5E4A',
+    accent2: '#A9BFA3',
     font: 'inter',
     tags: ['Créatif', 'Minimal'],
     secondary: true,
@@ -376,8 +376,8 @@ export const CORE_TEMPLATES: TemplateDef[] = [
   },
   {
     id: 'angles',
-    name: 'Angles',
-    tagline: 'Aplats en diagonale brun et beige, portrait rond, capitales espacées et barres de niveau.',
+    name: 'Aplats',
+    tagline: 'Bandeau clair, colonne grise et liserés, portrait rond, capitales espacées et barres de niveau.',
     accent: '#6D4A36',
     accent2: '#E8D9CB',
     font: 'inter',
@@ -390,7 +390,7 @@ export const CORE_TEMPLATES: TemplateDef[] = [
   {
     id: 'nocturne',
     name: 'Nocturne',
-    tagline: 'Colonne noire avec nom et portrait, monogrammes d’outils et barres segmentées bleues.',
+    tagline: 'Colonne noire avec nom et portrait rond, monogrammes en pastilles et niveaux en points.',
     accent: '#2F7FD8',
     font: 'inter',
     tags: ['Moderne', 'Tech'],
@@ -401,7 +401,7 @@ export const CORE_TEMPLATES: TemplateDef[] = [
   {
     id: 'pastel',
     name: 'Pastel',
-    tagline: 'Fond aux halos pastel, portrait cerclé de couleur, rangées datées et barres de langues.',
+    tagline: 'Halo pastel en angle, portrait en carré arrondi, titres en serif italique, rangées datées.',
     accent: '#B57EDC',
     accent2: '#F7C6D9',
     font: 'inter',
@@ -414,7 +414,7 @@ export const CORE_TEMPLATES: TemplateDef[] = [
   {
     id: 'cartel',
     name: 'Cartel',
-    tagline: 'Grand nom en serif, bandes grises à étiquettes verticales, années d’expérience et notes à points.',
+    tagline: 'Grand nom en serif, bandes grises à étiquettes filetées, années d’expérience et notes à points.',
     accent: '#111111',
     font: 'inter',
     tags: ['Minimal', 'Classique'],
@@ -425,7 +425,7 @@ export const CORE_TEMPLATES: TemplateDef[] = [
   {
     id: 'collage',
     name: 'Collage',
-    tagline: 'Plastique noir, carte d’identité, rubans de formation, papier ligné et mots manuscrits.',
+    tagline: 'Fond nuit, carte d’identité inclinée, fiches de formation, papier quadrillé et notes au feutre.',
     accent: '#2AA7B5',
     accent2: '#8E7CF0',
     font: 'inter',
@@ -437,10 +437,10 @@ export const CORE_TEMPLATES: TemplateDef[] = [
   },
   {
     id: 'sachet',
-    name: 'Sachet',
-    tagline: 'Sachet zippé translucide, carte d’identité, autocollants, papier kraft et feuillet fluo.',
-    accent: '#39E639',
-    accent2: '#D4F53C',
+    name: 'Dossier',
+    tagline: 'Chemise kraft à onglet, carte d’identité, tampon « Approuvé », note adhésive et étiquettes.',
+    accent: '#1D4ED8',
+    accent2: '#FFE873',
     font: 'inter',
     tags: ['Créatif', 'Design'],
     secondary: true,
@@ -451,8 +451,8 @@ export const CORE_TEMPLATES: TemplateDef[] = [
   {
     id: 'ecran',
     name: 'Écran',
-    tagline: 'Fond noir, nom massif et écho en contour rouge, portrait en duotone, cartes filaires.',
-    accent: '#E8372C',
+    tagline: 'Fond noir, nom massif souligné, portrait en duotone cadré, cartes filaires et tuiles d’outils.',
+    accent: '#F97316',
     font: 'inter',
     tags: ['Créatif', 'Tech'],
     isNew: true,
@@ -462,9 +462,9 @@ export const CORE_TEMPLATES: TemplateDef[] = [
   {
     id: 'tribune',
     name: 'Tribune',
-    tagline: 'Blocs noirs et liseré violet, serif Garamond, portrait noir et blanc, colonne sauge.',
-    accent: '#7B6FD8',
-    accent2: '#E3E7DA',
+    tagline: 'Blocs noirs à liseré, serif Garamond, portrait noir et blanc, colonne claire.',
+    accent: '#0F766E',
+    accent2: '#EEE9DF',
     font: 'inter',
     tags: ['Classique', 'Design'],
     secondary: true,
