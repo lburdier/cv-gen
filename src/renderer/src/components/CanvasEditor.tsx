@@ -32,6 +32,7 @@ import { analyze } from '../lib/ats'
 import { actions } from '../lib/actions'
 import { uid } from '../lib/sample'
 import { useStore } from '../store'
+import { cvZoom } from '../templates/onePage'
 import { CanvasContext, type CanvasApi } from '../templates/canvasContext'
 import { Cv } from '../templates/Cv'
 import { FONTS, STUDIO_TEMPLATES, TEMPLATES, isVisual } from '../templates/registry'
@@ -242,7 +243,8 @@ export function CanvasEditor({ resume, onExit }: { resume: Resume; onExit: () =>
   useEffect(() => {
     const cv = innerRef.current?.querySelector('.cv')
     if (!cv) return
-    const ro = new ResizeObserver(() => setPaperH((cv as HTMLElement).offsetHeight))
+    // Hauteur visible : un CV réduit pour tenir sur une page compte pour sa taille réduite.
+    const ro = new ResizeObserver(() => setPaperH(Math.round((cv as HTMLElement).offsetHeight * cvZoom(cv))))
     ro.observe(cv)
     return () => ro.disconnect()
   }, [resume.templateId])

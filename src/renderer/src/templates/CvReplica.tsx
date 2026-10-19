@@ -1,4 +1,4 @@
-import { useContext, useLayoutEffect, useRef, type CSSProperties, type ReactNode } from 'react'
+import { useContext, type CSSProperties, type ReactNode } from 'react'
 import { BookOpen, Camera, Coffee, Dumbbell, Film, Gamepad2, Globe, Mail, MapPin, Music, Palette, Phone, Plane, Sparkle, User, BarChart3, GraduationCap, Wrench, Send } from 'lucide-react'
 import { sectionTitles, stripProtocol, visibleSections } from '../../../shared/format'
 import type { Resume, SectionKey } from '../../../shared/types'
@@ -196,48 +196,7 @@ const LABELS = {
 
 // ---------- Rendu ----------
 
-/** Hauteur d'une page A4 à l'écran (794 × 1123 px). */
-const PAGE_H = 1123
-
-/**
- * Arrondit la hauteur du CV à un nombre entier de pages : colonnes, fonds et décors
- * descendent ainsi jusqu'en bas de la dernière page au lieu de s'arrêter au milieu.
- */
-function useWholePages() {
-  const ref = useRef<HTMLElement>(null)
-  useLayoutEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const fit = () => {
-      // Hauteur naturelle : on revient un instant à une page (sinon les colonnes
-      // étirées par flex ou grid gonfleraient la mesure à chaque passage).
-      el.style.setProperty('--rp-pages', '1')
-      const natural = el.offsetHeight
-      // Chaque page en plus reprend les marges intérieures des colonnes (≈ 120 px à l'impression).
-      // Tolérance de quelques pixels : un contenu d'une page tout juste ne crée pas de page blanche.
-      let pages = 1
-      while (natural + (pages - 1) * 120 > pages * PAGE_H + 2 && pages < 12) pages++
-      // Nombre de pages en variable CSS : la feuille de style en déduit la hauteur à l'écran
-      // et à l'impression (où les marges répétées des colonnes étirées sont déjà ajoutées).
-      el.style.setProperty('--rp-pages', String(pages))
-    }
-    // Export PDF : le fond du modèle (couleur de page, bande de la colonne latérale) couvre aussi
-    // la page entière, derrière le CV. Là où le contenu s'arrête, colonnes et fonds continuent
-    // jusqu'en bas de chaque page, quelle que soit la pagination.
-    if (el.closest('.print-root')) {
-      const bg = getComputedStyle(el).getPropertyValue('--rp-page-bg').trim()
-      if (bg) document.documentElement.style.setProperty('background', bg, 'important')
-    }
-    fit()
-    const ro = new ResizeObserver(fit)
-    for (const c of el.children) ro.observe(c)
-    return () => ro.disconnect()
-  })
-  return ref
-}
-
 export function CvReplica({ resume: r }: { resume: Resume }) {
-  const pageRef = useWholePages()
   const ph = usePlaceholders()
   const editable = useContext(EditableContext)
   const E = (edit: string, label: string) => (editable ? { 'data-edit': edit, 'data-edit-label': label } : {})
@@ -571,6 +530,9 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
           <svg className="rp-petal-bg" viewBox="0 0 794 1123" preserveAspectRatio="none" aria-hidden>
             <path className="soft" d="M0 58 C 92 44, 210 70, 296 24 C 330 8, 362 0, 420 0 L 420 0 C 404 92, 336 150, 330 252 C 324 350, 352 468, 302 560 C 252 650, 120 662, 40 612 C 18 598, 0 584, 0 574 Z" />
             <path className="deep" d="M410 0 C 366 74, 342 172, 392 252 C 452 348, 616 392, 794 330 L 794 0 Z" />
+          </svg>
+          {/* Forme du bas : ancrée au bas de la page, même quand le CV est réduit pour tenir sur une page. */}
+          <svg className="rp-petal-bg bottom" viewBox="0 830 794 293" preserveAspectRatio="none" aria-hidden>
             <path className="soft" d="M0 900 C 42 858, 124 830, 204 838 C 282 846, 298 924, 298 1000 C 298 1058, 304 1098, 310 1123 L 0 1123 Z" />
           </svg>
           <aside className="rp-side">
@@ -1928,7 +1890,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
   }
 
   return (
-    <article ref={pageRef} className={`cv cv-visual rp rp-${r.templateId}`} style={style} lang={r.lang}>
+    <article className={`cv cv-visual rp rp-${r.templateId}`} style={style} lang={r.lang}>
       {body}
     </article>
   )

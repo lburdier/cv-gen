@@ -8,6 +8,7 @@ import { usesDesignEngine } from './designCatalog'
 import { T } from './Editable'
 import { CvVisual } from './CvVisual'
 import { CvReplica, isReplica } from './CvReplica'
+import { useOnePage } from './onePage'
 import { EditableContext, usePlaceholders } from './previewContext'
 import { FONTS, isVisual } from './registry'
 
@@ -17,6 +18,16 @@ import { FONTS, isVisual } from './registry'
  * En mode « toile », chaque texte s'édite sur place ; le rendu exporté reste identique.
  */
 export function Cv({ resume }: { resume: Resume }) {
+  // Tous les modèles tiennent sur une seule page (réduction automatique si besoin).
+  const fit = useOnePage()
+  return (
+    <div className="cv-fit" ref={fit}>
+      <CvLayout resume={resume} />
+    </div>
+  )
+}
+
+function CvLayout({ resume }: { resume: Resume }) {
   // Les modèles visuels ont leur propre mise en page (bandeau, colonnes, images).
   // « Sur mesure » et les modèles du studio : moteur de design paramétrable.
   if (usesDesignEngine(resume.templateId)) return <CvCustom resume={resume} />
