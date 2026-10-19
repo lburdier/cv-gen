@@ -17,7 +17,20 @@ Dans la partie **Assets**, cliquez sur l’un des deux fichiers :
 | **`CV-GEN-Setup-x.y.z.exe`** (recommandé) | Installe l’app avec un raccourci sur le Bureau et dans le menu Démarrer, et se met à jour toute seule. |
 | `CV-GEN-x.y.z-portable.exe` | Aucune installation : l’app se lance directement, depuis une clé USB par exemple. Le démarrage est un peu plus lent. |
 
-Le fichier pèse environ 120 Mo. Si le navigateur affiche « Ce fichier n’est pas couramment téléchargé », ouvrez le menu **…** du téléchargement et choisissez **Conserver**.
+Le fichier pèse environ 120 Mo.
+
+### Le navigateur bloque le téléchargement ?
+
+Edge peut afficher : *« CV-GEN-Setup-x.y.z.exe n’est pas fréquemment téléchargé. Assurez-vous que vous faites confiance à … avant de l’ouvrir. »*
+
+Ce n’est **pas une erreur de l’app** : le navigateur prévient simplement que peu de gens ont déjà téléchargé ce fichier (l’app est indépendante et n’a pas de signature numérique payante). Pour le garder :
+
+- **Edge** : survolez le téléchargement, cliquez sur **…** puis **Conserver**. Si une seconde fenêtre s’ouvre, cliquez sur **Afficher plus** puis **Conserver quand même**.
+- **Chrome** : dans la liste des téléchargements, cliquez sur **Conserver** (ou ouvrez `chrome://downloads` et choisissez **Télécharger le fichier dangereux**).
+
+Le fichier se trouve ensuite dans le dossier **Téléchargements**. S’il porte un nom comme `CV-GEN-Setup-x.y.z (1).exe`, c’est qu’il a été téléchargé deux fois : n’importe lequel des deux fonctionne.
+
+> Déjà installée ? Inutile de retélécharger : l’app se met à jour toute seule (voir la partie 7).
 
 ## 2. Passer l’avertissement de Windows
 
