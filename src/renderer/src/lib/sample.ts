@@ -157,8 +157,17 @@ export function presetResume(presetId: string): Resume {
   }
 }
 
+/** Habille un CV d'exemple aux couleurs et à la police d'un modèle. */
+function withTemplate(r: Resume, templateId: string): Resume {
+  const t = getTemplate(templateId)
+  return { ...r, templateId: t.id, accent: t.accent, ...(t.accent2 ? { accent2: t.accent2 } : {}), font: t.font }
+}
+
 /** Exemple affiché pour un modèle : le preset métier qui lui est associé. */
 export function sampleResume(templateId = 'atelier'): Resume {
+  const tpl = getTemplate(templateId)
+  // Collection « Reproductions » : un métier et une personne du genre de l'original.
+  if (tpl.sample) return withTemplate(presetAs(tpl.sample.preset, tpl.sample.gender), templateId)
   if (isVisual(templateId)) return creativeSample(templateId)
   const p = presetForTemplate(templateId) ?? getPreset('dev-fullstack')!
   const t = getTemplate(templateId)
@@ -328,6 +337,7 @@ export function sampleFor(templateId: string, gender: PreviewGender): Resume {
     return { ...pick, templateId: t.id, accent: t.accent, font: t.font }
   }
   if (gender === 'all' || genderOf(base) === gender) return base
+  if (t.sample) return withTemplate(presetAs(t.sample.preset, gender), templateId)
   if (isVisual(templateId)) return creativeMale(base)
   const p = presetForTemplate(templateId) ?? getPreset('dev-fullstack')!
   return { ...presetAs(p.id, gender), templateId: t.id, accent: t.accent, font: t.font }
