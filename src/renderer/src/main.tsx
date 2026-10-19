@@ -9,7 +9,7 @@ import '@fontsource/ibm-plex-mono/400.css'
 import '@fontsource/ibm-plex-mono/500.css'
 import '@fontsource-variable/jetbrains-mono'
 import '@fontsource-variable/source-serif-4'
-// Polices de la collection « Reproductions » (licence OFL, embarquées).
+// Polices de la collection « Inspirations » (licence OFL, embarquées).
 import '@fontsource-variable/open-sans'
 import '@fontsource-variable/montserrat'
 import '@fontsource-variable/josefin-sans'

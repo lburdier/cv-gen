@@ -166,7 +166,7 @@ function withTemplate(r: Resume, templateId: string): Resume {
 /** Exemple affiché pour un modèle : le preset métier qui lui est associé. */
 export function sampleResume(templateId = 'atelier'): Resume {
   const tpl = getTemplate(templateId)
-  // Collection « Reproductions » : un métier et une personne du genre de l'original.
+  // Collection « Inspirations » : un métier et une personne d'exemple propres au modèle.
   if (tpl.sample) return withTemplate(presetAs(tpl.sample.preset, tpl.sample.gender), templateId)
   if (isVisual(templateId)) return creativeSample(templateId)
   const p = presetForTemplate(templateId) ?? getPreset('dev-fullstack')!

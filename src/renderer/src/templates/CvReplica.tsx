@@ -7,8 +7,8 @@ import { resolveIcon } from '../lib/iconBank'
 import { FONTS } from './registry'
 
 /**
- * Collection « Reproductions » : seize modèles visuels recréés d'après des CV de référence
- * (mises en page, formes, typographies et couleurs), alimentés par le contenu du CV.
+ * Collection « Inspirations » : seize modèles visuels à forte personnalité (mises en page,
+ * formes, typographies et couleurs propres), alimentés par le contenu du CV.
  * Chaque modèle a sa propre mise en page ; les blocs de données sont partagés.
  */
 
@@ -167,25 +167,7 @@ function QrMark({ seed, className }: { seed: string; className?: string }) {
 /** Étoile à quatre branches (modèle Arche). */
 const Spark = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 20 20" aria-hidden>
-    <path d="M10 0c.6 5.6 3.8 9 10 10-6.2 1-9.4 4.4-10 10-.6-5.6-3.8-9-10-10 6.2-1 9.4-4.4 10-10z" fill="currentColor" />
-  </svg>
-)
-
-/** Pastille souriante (modèles Collage et Sachet). */
-const Smiley = ({ className, outline }: { className?: string; outline?: boolean }) => (
-  <svg className={className} viewBox="0 0 100 100" aria-hidden>
-    {outline ? <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" strokeWidth="7" /> : <circle cx="50" cy="50" r="46" fill="url(#rp-holo)" />}
-    <defs>
-      <linearGradient id="rp-holo" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor="#8EF5D0" />
-        <stop offset="0.45" stopColor="#B8A6FF" />
-        <stop offset="0.75" stopColor="#7FD3FF" />
-        <stop offset="1" stopColor="#F9F871" />
-      </linearGradient>
-    </defs>
-    <ellipse cx="36" cy="40" rx="5" ry="10" fill={outline ? 'currentColor' : '#111'} />
-    <ellipse cx="64" cy="40" rx="5" ry="10" fill={outline ? 'currentColor' : '#111'} />
-    <path d="M26 60c8 14 40 14 48 0" fill="none" stroke={outline ? 'currentColor' : '#111'} strokeWidth="6" strokeLinecap="round" />
+    <rect x="5" y="5" width="10" height="10" transform="rotate(45 10 10)" fill="currentColor" />
   </svg>
 )
 
@@ -528,12 +510,12 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
       body = (
         <>
           <svg className="rp-petal-bg" viewBox="0 0 794 1123" preserveAspectRatio="none" aria-hidden>
-            <path className="soft" d="M0 58 C 92 44, 210 70, 296 24 C 330 8, 362 0, 420 0 L 420 0 C 404 92, 336 150, 330 252 C 324 350, 352 468, 302 560 C 252 650, 120 662, 40 612 C 18 598, 0 584, 0 574 Z" />
-            <path className="deep" d="M410 0 C 366 74, 342 172, 392 252 C 452 348, 616 392, 794 330 L 794 0 Z" />
+            <rect className="soft" x="22" y="40" width="318" height="590" rx="159" />
+            <circle className="deep" cx="650" cy="110" r="250" />
           </svg>
           {/* Forme du bas : ancrée au bas de la page, même quand le CV est réduit pour tenir sur une page. */}
           <svg className="rp-petal-bg bottom" viewBox="0 830 794 293" preserveAspectRatio="none" aria-hidden>
-            <path className="soft" d="M0 900 C 42 858, 124 830, 204 838 C 282 846, 298 924, 298 1000 C 298 1058, 304 1098, 310 1123 L 0 1123 Z" />
+            <circle className="soft" cx="150" cy="1090" r="220" />
           </svg>
           <aside className="rp-side">
             {photo('rp-petal-photo')}
@@ -629,7 +611,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
       body = (
         <div className="rp-mono-frame">
           <div className="rp-mono-top">
-            <span>( {L.resume.toUpperCase()} )</span>
+            <span>{L.resume.toUpperCase()} /</span>
             <i aria-hidden />
             <span>{shortHead.toUpperCase()}</span>
           </div>
@@ -640,7 +622,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
               <span className="rp-mono-block b2" aria-hidden />
               <span className="rp-mono-block b3" aria-hidden />
               <h1 style={fit(128, 318, 0.46, b.firstName)}>{b.firstName}</h1>
-              <p className="rp-mono-script" style={fit(84, 330, 0.42, b.lastName)}>{b.lastName}</p>
+              <p className="rp-mono-script" style={fit(60, 318, 0.5, b.lastName)}>{b.lastName}</p>
               {summary && (
                 <section {...sec('summary')}>
                   <h2>{t.summary}</h2>
@@ -708,15 +690,15 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
           </div>
           <footer className="rp-mono-foot" {...E('tab:identity', 'Modifier les coordonnées')}>
             <div>
-              <b>( {L.website.toUpperCase()} )</b>
+              <b>{L.website}</b>
               <span>{site}</span>
             </div>
             <div>
-              <b>( {L.phone.toUpperCase()} )</b>
+              <b>{L.phone}</b>
               <span>{b.phone}</span>
             </div>
             <div>
-              <b>( {L.address.toUpperCase()} )</b>
+              <b>{L.address}</b>
               <span>{b.location}</span>
             </div>
           </footer>
@@ -1123,12 +1105,10 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
       body = (
         <>
           <svg className="rp-ang-bg" viewBox="0 0 794 1123" preserveAspectRatio="none" aria-hidden>
-            <polygon className="grey" points="0,250 400,368 400,1123 0,1123" />
-            <polygon className="beige" points="452,0 794,0 794,356 399,172" />
-            <polygon className="deep" points="0,0 506,0 0,266" />
-            <polygon className="beige" points="0,930 400,1066 400,1123 0,1123" />
-            <polygon className="deep" points="0,1000 260,1123 0,1123" />
-            <polygon className="deep" points="400,1123 794,1012 794,1123" />
+            <rect className="beige" x="0" y="0" width="794" height="236" />
+            <rect className="grey" x="0" y="236" width="400" height="887" />
+            <rect className="deep" x="0" y="0" width="794" height="14" />
+            <rect className="deep" x="0" y="1103" width="794" height="20" />
           </svg>
           <div className="rp-ang-photo">{photo('')}</div>
           <header className="rp-ang-head" {...E('tab:identity', 'Modifier l’identité')}>
@@ -1532,17 +1512,20 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                 return <span key={s}>{icon ? <img src={icon} alt="" /> : mono(s)}</span>
               })}
             </div>
-            <Barcode seed={fullName} className="rp-col-barcode" />
-            <small>{String(Math.abs([...fullName].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7))).slice(0, 9)} - 5569</small>
+            <span className="rp-col-stamp" aria-hidden>
+              {r.lang === 'en' ? 'Portfolio' : 'Portfolio'}
+              <b>{new Date().getFullYear()}</b>
+            </span>
           </div>
-          <Smiley className="rp-col-smiley" />
+          <svg className="rp-col-smiley" viewBox="0 0 100 100" aria-hidden>
+            <path d="M50 4l12 30 32 2-25 20 9 31-28-18-28 18 9-31L6 36l32-2z" fill="var(--rp-sun, #ffd84d)" stroke="#111" strokeWidth="4" strokeLinejoin="round" />
+          </svg>
           {ribbons.length > 0 && (
             <div className="rp-col-ribbons" {...sec('education')}>
-              <span className="rp-col-arch" aria-hidden />
               <span className="rp-col-formtag">{t.education}</span>
               {ribbons.map((x, i) => (
-                <div className={`ribbon r${i}`} key={x.id}>
-                  <b style={fitLine(22, 540, 0.5, x.top)}>{x.top}</b>
+                <div className={`ribbon r${i}`} key={x.id} style={{ '--i': i } as CSSProperties}>
+                  <b>{x.top}</b>
                   <span>{x.bottom}</span>
                 </div>
               ))}
@@ -1589,7 +1572,6 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
               ))}
             </div>
             <div className="rp-bag-card" {...E('tab:identity', 'Modifier l’identité')}>
-              <Smiley className="rp-bag-hi" outline />
               <div className="rp-bag-photo">{photo('')}</div>
               <div className="rp-bag-id">
                 <h1 style={fit(44, 175, 0.62, b.firstName)}>
@@ -1623,7 +1605,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
               </div>
             </div>
             <div className="rp-bag-warn">
-              <b>WARNING</b>
+              <b>{r.lang === 'en' ? 'APPROVED' : 'APPROUVÉ'}</b>
               <p>{headline}</p>
             </div>
             <div className="rp-bag-strip" aria-hidden>
@@ -1732,26 +1714,12 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
               <span>{b.firstName}</span>
               <span>{b.lastName}</span>
             </h1>
-            <span className="echo" aria-hidden style={fit(60, 370, 0.84, b.firstName, b.lastName)}>
-              {b.lastName}
-            </span>
             {contactList('rp-scr-contact', 13, 3)}
           </header>
           <div className="rp-scr-photo">
             {photo('')}
-            <svg className="rp-scr-badge" viewBox="0 0 100 100" aria-hidden>
-              <defs>
-                <path id="rp-circle" d="M50 50 m-38 0 a38 38 0 1 1 76 0 a38 38 0 1 1 -76 0" />
-              </defs>
-              <text>
-                <textPath href="#rp-circle">/// {headline.toUpperCase().slice(0, 30)} ///</textPath>
-              </text>
-            </svg>
             <i className="bar" aria-hidden />
           </div>
-          <span className="rp-scr-vertical" aria-hidden style={fitLine(54, 330, 0.74, headline.split(/\s+/).slice(0, 2).join(' '))}>
-            {headline.split(/\s+/).slice(0, 2).join(' ')}
-          </span>
           <main className="rp-main">
             {edus.length + certs.length > 0 && (
               <section {...sec('education')}>
