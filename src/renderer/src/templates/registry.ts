@@ -13,6 +13,10 @@ export interface TemplateDef {
   secondary?: boolean
   /** Studio de design : famille (structure), palette, couleur dominante, en-tête ou colonne foncés. */
   studio?: { family: string; structure: string; palette: string; hue: string; dark: boolean }
+  /** Couleur secondaire d'origine du modèle (collection « Reproductions »). */
+  accent2?: string
+  /** Profil d'exemple affiché par défaut : preset métier et genre de la personne. */
+  sample?: { preset: string; gender: 'f' | 'm' }
 }
 
 /** Modèles d'origine (ATS une colonne et visuels faits main). */
@@ -268,6 +272,205 @@ export const CORE_TEMPLATES: TemplateDef[] = [
     accent: '#000000',
     font: 'arial',
     tags: ['Minimal', 'Classique']
+  },
+  // ---------- Collection « Reproductions » : seize modèles recréés d’après des CV de référence ----------
+  {
+    id: 'arche',
+    name: 'Arche',
+    tagline: 'Colonne beige en arche avec grand portrait, nom en capitales fines, frise ponctuée d’étoiles et pastilles.',
+    accent: '#1B1B1B',
+    accent2: '#E8DFD1',
+    font: 'inter',
+    tags: ['Créatif', 'Minimal'],
+    secondary: true,
+    isNew: true,
+    visual: true,
+    sample: { preset: 'communication', gender: 'f' }
+  },
+  {
+    id: 'chevron',
+    name: 'Chevron',
+    tagline: 'En-tête ardoise avec portrait rond, colonne crème coiffée d’un chevron, titres soulignés.',
+    accent: '#383A40',
+    accent2: '#ECE8E2',
+    font: 'inter',
+    tags: ['Moderne', 'Classique'],
+    secondary: true,
+    isNew: true,
+    visual: true,
+    sample: { preset: 'ux-designer', gender: 'm' }
+  },
+  {
+    id: 'petale',
+    name: 'Pétale',
+    tagline: 'Grandes formes organiques roses, portrait rond, serif condensé et listes numérotées.',
+    accent: '#C9939A',
+    accent2: '#EED6DA',
+    font: 'inter',
+    tags: ['Créatif', 'Design'],
+    secondary: true,
+    isNew: true,
+    visual: true,
+    sample: { preset: 'ux-designer', gender: 'f' }
+  },
+  {
+    id: 'monochrome',
+    name: 'Monochrome',
+    tagline: 'Cadre sombre, nom condensé géant et signature en script, blocs gris et pastilles.',
+    accent: '#2B2B2B',
+    accent2: '#9E9E9E',
+    font: 'inter',
+    tags: ['Créatif', 'Design'],
+    secondary: true,
+    isNew: true,
+    visual: true,
+    sample: { preset: 'recrutement-rh', gender: 'f' }
+  },
+  {
+    id: 'grille',
+    name: 'Grille',
+    tagline: 'Fond noir, tableau à doubles filets, nom massif et photo noir et blanc.',
+    accent: '#FFFFFF',
+    font: 'inter',
+    tags: ['Créatif', 'Tech'],
+    isNew: true,
+    visual: true,
+    sample: { preset: 'artiste-3d', gender: 'm' }
+  },
+  {
+    id: 'degrade',
+    name: 'Dégradé',
+    tagline: 'Colonne anthracite, portrait en duotone, étiquettes et anneaux de compétences en dégradé rose-orangé.',
+    accent: '#FF4F9A',
+    accent2: '#FF8A4C',
+    font: 'inter',
+    tags: ['Créatif', 'Design'],
+    secondary: true,
+    isNew: true,
+    visual: true,
+    sample: { preset: 'marketing-digital', gender: 'm' }
+  },
+  {
+    id: 'medaillon',
+    name: 'Médaillon',
+    tagline: 'En-tête ardoise, portrait centré en médaillon, titres à icônes, frises et barres de niveau.',
+    accent: '#3D4C5C',
+    font: 'inter',
+    tags: ['Moderne', 'Classique'],
+    isNew: true,
+    visual: true,
+    sample: { preset: 'devops', gender: 'm' }
+  },
+  {
+    id: 'dune',
+    name: 'Dune',
+    tagline: 'Tons sable, arche mauve et grand portrait, nom fin, titres en pastilles et frise verticale.',
+    accent: '#6B3F2E',
+    accent2: '#C49A8B',
+    font: 'inter',
+    tags: ['Créatif', 'Minimal'],
+    secondary: true,
+    isNew: true,
+    visual: true,
+    sample: { preset: 'architecte-interieur', gender: 'f' }
+  },
+  {
+    id: 'angles',
+    name: 'Angles',
+    tagline: 'Aplats en diagonale brun et beige, portrait rond, capitales espacées et barres de niveau.',
+    accent: '#6D4A36',
+    accent2: '#E8D9CB',
+    font: 'inter',
+    tags: ['Créatif', 'Moderne'],
+    secondary: true,
+    isNew: true,
+    visual: true,
+    sample: { preset: 'product-owner', gender: 'f' }
+  },
+  {
+    id: 'nocturne',
+    name: 'Nocturne',
+    tagline: 'Colonne noire avec nom et portrait, monogrammes d’outils et barres segmentées bleues.',
+    accent: '#2F7FD8',
+    font: 'inter',
+    tags: ['Moderne', 'Tech'],
+    isNew: true,
+    visual: true,
+    sample: { preset: 'controleur-gestion', gender: 'm' }
+  },
+  {
+    id: 'pastel',
+    name: 'Pastel',
+    tagline: 'Fond aux halos pastel, portrait cerclé de couleur, rangées datées et barres de langues.',
+    accent: '#B57EDC',
+    accent2: '#F7C6D9',
+    font: 'inter',
+    tags: ['Créatif', 'Minimal'],
+    secondary: true,
+    isNew: true,
+    visual: true,
+    sample: { preset: 'infirmiere', gender: 'f' }
+  },
+  {
+    id: 'cartel',
+    name: 'Cartel',
+    tagline: 'Grand nom en serif, bandes grises à étiquettes verticales, années d’expérience et notes à points.',
+    accent: '#111111',
+    font: 'inter',
+    tags: ['Minimal', 'Classique'],
+    isNew: true,
+    visual: true,
+    sample: { preset: 'data-analyst', gender: 'm' }
+  },
+  {
+    id: 'collage',
+    name: 'Collage',
+    tagline: 'Plastique noir, carte d’identité, rubans de formation, papier ligné et mots manuscrits.',
+    accent: '#2AA7B5',
+    accent2: '#8E7CF0',
+    font: 'inter',
+    tags: ['Créatif', 'Design'],
+    secondary: true,
+    isNew: true,
+    visual: true,
+    sample: { preset: 'artiste-3d', gender: 'f' }
+  },
+  {
+    id: 'sachet',
+    name: 'Sachet',
+    tagline: 'Sachet zippé translucide, carte d’identité, autocollants, papier kraft et feuillet fluo.',
+    accent: '#39E639',
+    accent2: '#D4F53C',
+    font: 'inter',
+    tags: ['Créatif', 'Design'],
+    secondary: true,
+    isNew: true,
+    visual: true,
+    sample: { preset: 'artiste-3d', gender: 'f' }
+  },
+  {
+    id: 'ecran',
+    name: 'Écran',
+    tagline: 'Fond noir, nom massif et écho en contour rouge, portrait en duotone, cartes filaires.',
+    accent: '#E8372C',
+    font: 'inter',
+    tags: ['Créatif', 'Tech'],
+    isNew: true,
+    visual: true,
+    sample: { preset: 'dev-fullstack', gender: 'm' }
+  },
+  {
+    id: 'tribune',
+    name: 'Tribune',
+    tagline: 'Blocs noirs et liseré violet, serif Garamond, portrait noir et blanc, colonne sauge.',
+    accent: '#7B6FD8',
+    accent2: '#E3E7DA',
+    font: 'inter',
+    tags: ['Classique', 'Design'],
+    secondary: true,
+    isNew: true,
+    visual: true,
+    sample: { preset: 'business-developer', gender: 'm' }
   }
 ]
 

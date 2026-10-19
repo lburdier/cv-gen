@@ -7,6 +7,7 @@ import { CvCustom } from './CvCustom'
 import { usesDesignEngine } from './designCatalog'
 import { T } from './Editable'
 import { CvVisual } from './CvVisual'
+import { CvReplica, isReplica } from './CvReplica'
 import { EditableContext, usePlaceholders } from './previewContext'
 import { FONTS, isVisual } from './registry'
 
@@ -19,6 +20,7 @@ export function Cv({ resume }: { resume: Resume }) {
   // Les modèles visuels ont leur propre mise en page (bandeau, colonnes, images).
   // « Sur mesure » et les modèles du studio : moteur de design paramétrable.
   if (usesDesignEngine(resume.templateId)) return <CvCustom resume={resume} />
+  if (isReplica(resume.templateId)) return <CvReplica resume={resume} />
   if (isVisual(resume.templateId)) return <CvVisual resume={resume} />
   return <CvAts resume={resume} />
 }

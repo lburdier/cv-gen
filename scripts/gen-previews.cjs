@@ -7,7 +7,8 @@ const path = require('path')
 const ROOT = path.join(__dirname, '..')
 const OUT = path.join(ROOT, 'src', 'renderer', 'src', 'assets', 'previews')
 const registry = fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'src', 'templates', 'registry.ts'), 'utf8')
-const block = registry.slice(registry.indexOf('export const TEMPLATES'), registry.indexOf('export const TEMPLATE_TAGS'))
+// Modèles d'origine et collection « Reproductions » (le studio est rendu en direct).
+const block = registry.slice(registry.indexOf('export const CORE_TEMPLATES'), registry.indexOf('export const STUDIO_TEMPLATES'))
 const ids = [...block.matchAll(/id: '([\w-]+)'/g)].map((m) => m[1])
 // `npm run previews -- vitrine studio` : seulement ces modèles.
 const only = process.argv.slice(2).filter((x) => ids.includes(x))
