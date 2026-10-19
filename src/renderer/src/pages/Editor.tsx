@@ -5,6 +5,7 @@ import { resumeToText } from '../../../shared/format'
 import type { Resume } from '../../../shared/types'
 import { AtsPanel } from '../components/AtsPanel'
 import { CanvasEditor } from '../components/CanvasEditor'
+import { cvZoom } from '../templates/onePage'
 import { ColorPicker } from '../components/ColorPicker'
 import { DesignForm } from '../components/DesignForm'
 import { EducationForm, ExperienceForm, ExtrasForm, IdentityForm, LayoutForm, SkillsForm, SummaryForm } from '../components/EditorForms'
@@ -86,13 +87,19 @@ export default function Editor({ id }: { id: string }) {
   const report = useMemo(() => (deferred ? analyze(deferred, offer) : null), [deferred, offer])
 
   // Zoom « ajusté » : la page A4 tient dans la largeur disponible.
+  // La zone d'aperçu est recréée au retour de la toile : on l'observe à nouveau (dépendance « mode »),
+  // et une mesure faite pendant qu'elle est masquée (largeur nulle) est ignorée.
   useEffect(() => {
     const el = scrollRef.current
     if (!el) return
-    const ro = new ResizeObserver(([e]) => setFitScale(Math.min(1.1, (e.contentRect.width - 48) / 794)))
+    const fit = (w: number) => {
+      if (w > 120) setFitScale(Math.min(1.1, (w - 48) / 794))
+    }
+    const ro = new ResizeObserver(([e]) => fit(e.contentRect.width))
     ro.observe(el)
+    fit(el.clientWidth)
     return () => ro.disconnect()
-  }, [showAts])
+  }, [showAts, mode])
 
   const visualTpl = resume ? isVisual(resume.templateId) : false
   const PAGE_PX = visualTpl ? PAGE_VISUAL_PX : PAGE_ATS_PX
@@ -106,6 +113,8 @@ export default function Editor({ id }: { id: string }) {
     const measure = () => {
       const el = paper.querySelector('.cv') as HTMLElement | null
       if (!el) return
+      // Réduit pour tenir sur une page : il en fait une, par construction.
+      if (cvZoom(el) < 1) return setPages(1)
       let contentH: number
       if (visualTpl) contentH = el.scrollHeight
       else {
@@ -120,7 +129,7 @@ export default function Editor({ id }: { id: string }) {
     if (cv) ro.observe(cv)
     measure()
     return () => ro.disconnect()
-  }, [visualTpl, PAGE_PX, resume?.templateId])
+  }, [visualTpl, PAGE_PX, resume?.templateId, mode])
 
   const fitOrZoom = zoom === 'fit' ? fitScale : zoom
   const edit = usePreviewEditing({

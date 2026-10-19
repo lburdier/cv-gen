@@ -3614,10 +3614,6 @@
   padding-top: 102px;
 }
 
-/* Hauteur en pages entières (variable --rp-pages posée par le composant). */
-.cv-visual.rp {
-  min-height: calc(var(--rp-pages, 1) * 1123px - 2px);
-}
 @media print {
   .cv-visual.rp {
     min-height: 1121px;
@@ -3671,4 +3667,42 @@
 .rp .rp-grid-row,
 .rp .rp-grid-top {
   break-inside: avoid;
+}
+
+/* Une seule page : les décors suivent la hauteur réelle de la page (même réduite). */
+.rp-petale .rp-side {
+  height: auto;
+  bottom: 0;
+}
+.rp-petal-bg.bottom {
+  top: auto;
+  bottom: 0;
+  height: 293px;
+}
+.rp-petal-coords {
+  top: auto;
+  bottom: 70px;
+}
+.rp-ang-bg {
+  height: 100%;
+}
+/* Largeur A4 fixe (la fenêtre d'export PDF est plus large que la page) : la mise en page
+   mesurée pour l'ajustement à une page est exactement celle qui sera imprimée. */
+.cv-visual.rp {
+  width: 794px;
+}
+/* Décors ancrés à la largeur réelle de la page (elle s'élargit quand le CV est réduit pour tenir sur une page). */
+.rp-petal-bg,
+.rp-petal-bg.bottom,
+.rp-ang-bg {
+  width: 100%;
+}
+.rp-dune-arch,
+.rp-dune-photo {
+  left: auto;
+  right: 46px;
+}
+.rp-scr-photo {
+  left: auto;
+  right: 52px;
 }

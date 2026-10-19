@@ -350,6 +350,20 @@
 }
 
 /* ---------- Mise en page écran / impression ---------- */
+/* Conteneur de l'ajustement à une page : sans boîte, il ne change pas la mise en page. */
+.cv-fit {
+  display: contents;
+}
+.cv-fit > .cv {
+  box-sizing: border-box;
+}
+/* Fenêtre d'export (plus large que la page) : le CV est mis en page à la largeur A4 exacte. */
+.print-root .cv {
+  width: 794px;
+  /* Les marges des sections restent dans le CV : la hauteur mesurée est celle qui s'imprime. */
+  display: flow-root;
+}
+
 .paper .cv,
 .paper-scale .cv {
   padding: 53px var(--cv-mx, 60px);

@@ -2900,7 +2900,7 @@ ul.clean li {
 .cv-ghost {
   position: relative;
 }
-.cv-ghost > .cv {
+.cv-ghost .cv {
   opacity: 0.32;
   filter: grayscale(0.3);
 }
