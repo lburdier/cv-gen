@@ -1,6 +1,6 @@
 import { app, BrowserWindow, dialog, ipcMain, nativeTheme, shell } from 'electron'
 import { basename, join } from 'path'
-import type { KeyProvider, AppData, DesignSpec, ChatTurn, CoverLetter, ExportFormat, Lang, LetterOptions, Offer, Resume, Settings } from '../shared/types'
+import type { FollowUpRequest, KeyProvider, AppData, DesignSpec, ChatTurn, CoverLetter, ExportFormat, Lang, LetterOptions, Offer, Resume, Settings } from '../shared/types'
 import * as ai from './ai'
 import { exportLetter, exportResume, getPrintJob, markReady } from './export'
 import { listFreeModels } from './openrouter'
@@ -150,7 +150,7 @@ function registerIpc() {
     await shell.openPath(dataDir())
   })
   handle('shell:external', async (url: string) => {
-    if (/^https?:\/\//.test(url)) await shell.openExternal(url)
+    if (/^(https?:\/\/|mailto:)/.test(url)) await shell.openExternal(url)
   })
 
   // IA : les erreurs sont renvoyées avec un message lisible (préfixe retiré côté interface).
@@ -160,6 +160,7 @@ function registerIpc() {
   handle('ai:writeSummary', (r: Resume, o?: Offer) => ai.writeSummary(r, o))
   handle('ai:coverLetter', (r: Resume, o: Offer | undefined, opts: LetterOptions) => ai.coverLetter(r, o, opts))
   handle('ai:reviseLetter', (body: string, instruction: string, r: Resume, o?: Offer, l?: Lang) => ai.reviseLetter(body, instruction, r, o, l))
+  handle('ai:followUp', (req: FollowUpRequest, r?: Resume) => ai.followUp(req, r))
   handle('ai:chat', (h: ChatTurn[], r?: Resume, o?: Offer) => ai.chat(h, r, o))
   handle('ai:analyzeCvImage', (dataUrl: string, withContent: boolean, hint?: DesignSpec) => ai.analyzeCvImage(dataUrl, withContent, hint))
   handle('stock:search', (q: string, page?: number, orientation?: 'wide' | 'any') => searchStock(q, page, orientation))

@@ -64,6 +64,7 @@ export function loadData(): AppData {
     resumes: arr(parsed?.resumes),
     offers: arr(parsed?.offers),
     letters: arr(parsed?.letters),
+    applications: arr(parsed?.applications),
     activity: arr(parsed?.activity),
     ...(parsed?.profile && typeof parsed.profile === 'object' ? { profile: parsed.profile } : {}),
     ...(typeof parsed?.profileMode === 'boolean' ? { profileMode: parsed.profileMode } : {})
@@ -123,7 +124,7 @@ export function readBackup(name: string): AppData | null {
   if (!BACKUP_NAME.test(name)) return null
   const d = readJson<AppData>(join(backupsDir(), name))
   if (!d) return null
-  return { version: 1, resumes: arr(d.resumes), offers: arr(d.offers), letters: arr(d.letters), activity: arr(d.activity) }
+  return { version: 1, resumes: arr(d.resumes), offers: arr(d.offers), letters: arr(d.letters), applications: arr(d.applications), activity: arr(d.activity) }
 }
 
 /** Journal d'erreurs dans le dossier de données, pour diagnostiquer les problèmes. */

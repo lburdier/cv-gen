@@ -230,11 +230,86 @@ export interface CoverLetter {
   options?: LetterOptions
 }
 
+/** Type de recherche : chaque type a ses propres champs (durée de stage, TJM de mission…). */
+export type AppKind = 'emploi' | 'stage' | 'alternance' | 'mission'
+/** Étapes du suivi (colonnes du kanban). */
+export type AppStatus = 'todo' | 'applied' | 'followup' | 'interview' | 'offer' | 'rejected'
+
+export interface AppContact {
+  id: string
+  name: string
+  role: string
+  email: string
+  phone: string
+}
+
+export interface AppEvent {
+  id: string
+  at: number
+  kind: 'status' | 'note' | 'followup' | 'interview' | 'create'
+  label: string
+  status?: AppStatus
+}
+
+/** Candidature suivie : une offre, un stage ou une mission, avec ses documents, relances et contacts. */
+export interface Application {
+  id: string
+  kind: AppKind
+  status: AppStatus
+  title: string
+  company: string
+  location: string
+  /** Contrat précis : CDI, CDD, Stage, Alternance, Freelance, Intérim… */
+  contract: string
+  source: string
+  url: string
+  /** 1 basse, 2 normale, 3 haute. */
+  priority: 1 | 2 | 3
+  /** Dates AAAA-MM-JJ ; entretien en AAAA-MM-JJTHH:MM. */
+  appliedAt?: string
+  followUpAt?: string
+  interviewAt?: string
+  offerId?: string
+  resumeId?: string
+  letterId?: string
+  /** Champs propres au type (durée, début, gratification, rythme, école, TJM, salaire…). */
+  details: Record<string, string>
+  contacts: AppContact[]
+  notes: string
+  /** Pourquoi ce poste, ce stage ou cette mission, avec les mots de la personne (repris dans les relances). */
+  motivation?: string
+  /** Dernier message de relance rédigé (brouillon conservé). */
+  followUpDraft?: string
+  events: AppEvent[]
+  createdAt: number
+  updatedAt: number
+}
+
+/** Message de relance à rédiger (e-mail ou message LinkedIn). */
+export interface FollowUpRequest {
+  channel: 'email' | 'linkedin'
+  /** Première relance (J+6 / J+7), seconde relance, ou remerciement après entretien. */
+  step: 'relance' | 'relance2' | 'apres-entretien'
+  kind: AppKind
+  title: string
+  company: string
+  contactName: string
+  appliedAt?: string
+  interviewAt?: string
+  motivation: string
+  lang: Lang
+  offerText?: string
+  /** Message écrit par la personne : l'IA le corrige sans le réécrire (mode recommandé). */
+  draft?: string
+}
+
 export interface AppData {
   version: 1
   resumes: Resume[]
   offers: Offer[]
   letters: CoverLetter[]
+  /** Suivi des candidatures. */
+  applications?: Application[]
   activity: ActivityItem[]
   /** Profil maître : vos infos saisies une fois, reprises par tous les modèles et presets. */
   profile?: Resume
@@ -568,6 +643,8 @@ export interface CvGenApi {
     coverLetter(resume: Resume, offer: Offer | undefined, options: LetterOptions): Promise<string>
     /** Retouche d'une lettre : raccourcir, plus percutant, plus formel, corriger, ou consigne libre. */
     reviseLetter(body: string, instruction: string, resume: Resume, offer?: Offer, lang?: Lang): Promise<string>
+    /** Message de relance d'une candidature, fondé sur la motivation de la personne et son CV. */
+    followUp(req: FollowUpRequest, resume?: Resume): Promise<string>
     analyzeCvImage(dataUrl: string, withContent: boolean, hint?: DesignSpec): Promise<CvImageAnalysis>
     chat(history: ChatTurn[], resume?: Resume, offer?: Offer): Promise<ChatReply>
     /** Texte partiel pendant qu'un modèle local écrit (affiché en direct dans l'assistant). */

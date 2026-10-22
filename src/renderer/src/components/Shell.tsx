@@ -20,6 +20,7 @@ const TABS: { label: string; route: Route; match: Route['name'][] }[] = [
   { label: 'Mes CV', route: { name: 'resumes' }, match: ['resumes', 'editor'] },
   { label: 'Modèles', route: { name: 'templates' }, match: ['templates', 'colors', 'from-image'] },
   { label: 'Offres', route: { name: 'offers' }, match: ['offers'] },
+  { label: 'Suivi', route: { name: 'tracker' }, match: ['tracker'] },
   { label: 'Lettres', route: { name: 'letters' }, match: ['letters'] },
   { label: 'Score ATS', route: { name: 'ats-scan' }, match: ['ats-scan'] }
 ]
@@ -31,6 +32,7 @@ export function Topnav() {
   const settings = useStore((s) => s.settings)
   const resumes = useStore((s) => s.data.resumes)
   const offers = useStore((s) => s.data.offers)
+  const applications = useStore((s) => s.data.applications)
   const assistantOpen = useStore((s) => s.assistantOpen)
   const setAssistant = useStore((s) => s.setAssistant)
   const setPalette = useStore((s) => s.setPalette)
@@ -45,7 +47,9 @@ export function Topnav() {
       .join('')
       .slice(0, 2)
       .toUpperCase() || 'CV'
-  const counts: Partial<Record<Route['name'], number>> = { resumes: resumes.length, offers: offers.length }
+  // Suivi : candidatures encore en cours (ni offre ni refus).
+  const active = (applications ?? []).filter((a) => a.status !== 'offer' && a.status !== 'rejected').length
+  const counts: Partial<Record<Route['name'], number>> = { resumes: resumes.length, offers: offers.length, tracker: active }
 
   return (
     <header className="topnav">
@@ -64,7 +68,7 @@ export function Topnav() {
           </button>
         ))}
         <button className={`tab ${assistantOpen ? 'on' : ''}`} onClick={() => setAssistant(!assistantOpen)}>
-          <b>06</b>Assistant
+          <b>{String(TABS.length + 1).padStart(2, '0')}</b>Assistant
         </button>
       </nav>
       <div className="grow" />

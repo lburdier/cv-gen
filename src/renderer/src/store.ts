@@ -1,6 +1,6 @@
 import { noDash } from '../../shared/format'
 import { create } from 'zustand'
-import type { ActivityItem, AppData, ChatTurn, CoverLetter, Offer, Resume, Settings } from '../../shared/types'
+import type { ActivityItem, AppData, Application, ChatTurn, CoverLetter, Offer, Resume, Settings } from '../../shared/types'
 import { blankResume, normalizeResume, sampleFor, uid, type PreviewGender } from './lib/sample'
 import { getTemplate } from './templates/registry'
 
@@ -14,6 +14,7 @@ export type Route =
   | { name: 'profile' }
   | { name: 'editor'; id: string }
   | { name: 'offers'; id?: string; tailor?: boolean }
+  | { name: 'tracker'; id?: string }
   | { name: 'letters'; id?: string }
   | { name: 'settings' }
 
@@ -53,6 +54,9 @@ interface State {
 
   saveOffer(offer: Offer): void
   deleteOffer(id: string): void
+
+  saveApplication(app: Application): void
+  deleteApplication(id: string): void
 
   saveLetter(letter: CoverLetter): void
   deleteLetter(id: string): void
@@ -145,6 +149,7 @@ export const useStore = create<State>((set, get) => {
             ...data,
             resumes: data.resumes.map(normalizeResume),
             letters: data.letters.map((l) => ({ ...l, title: noDash(l.title, ' · '), body: noDash(l.body) })),
+            applications: data.applications ?? [],
             ...(data.profile ? { profile: normalizeResume(data.profile) } : {})
           },
           settings,
@@ -194,7 +199,12 @@ export const useStore = create<State>((set, get) => {
     },
 
     deleteResume(id) {
-      setData((d) => ({ ...d, resumes: d.resumes.filter((r) => r.id !== id), letters: d.letters.filter((l) => l.resumeId !== id) }))
+      setData((d) => ({
+        ...d,
+        resumes: d.resumes.filter((r) => r.id !== id),
+        letters: d.letters.filter((l) => l.resumeId !== id),
+        applications: (d.applications ?? []).map((a) => (a.resumeId === id ? { ...a, resumeId: undefined } : a))
+      }))
     },
 
     duplicateResume(id, patch) {
@@ -216,8 +226,21 @@ export const useStore = create<State>((set, get) => {
       setData((d) => ({
         ...d,
         offers: d.offers.filter((o) => o.id !== id),
-        resumes: d.resumes.map((r) => (r.offerId === id ? { ...r, offerId: undefined } : r))
+        resumes: d.resumes.map((r) => (r.offerId === id ? { ...r, offerId: undefined } : r)),
+        applications: (d.applications ?? []).map((a) => (a.offerId === id ? { ...a, offerId: undefined } : a))
       }))
+    },
+
+    saveApplication(app) {
+      const next = { ...app, updatedAt: Date.now() }
+      setData((d) => {
+        const list = d.applications ?? []
+        return { ...d, applications: list.some((a) => a.id === app.id) ? list.map((a) => (a.id === app.id ? next : a)) : [next, ...list] }
+      })
+    },
+
+    deleteApplication(id) {
+      setData((d) => ({ ...d, applications: (d.applications ?? []).filter((a) => a.id !== id) }))
     },
 
     saveLetter(letter) {
@@ -228,7 +251,11 @@ export const useStore = create<State>((set, get) => {
     },
 
     deleteLetter(id) {
-      setData((d) => ({ ...d, letters: d.letters.filter((l) => l.id !== id) }))
+      setData((d) => ({
+        ...d,
+        letters: d.letters.filter((l) => l.id !== id),
+        applications: (d.applications ?? []).map((a) => (a.letterId === id ? { ...a, letterId: undefined } : a))
+      }))
     },
 
     withUndo(title, fn, detail) {

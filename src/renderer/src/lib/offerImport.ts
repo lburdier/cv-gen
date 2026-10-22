@@ -3,6 +3,7 @@ import { noDash } from '../../../shared/format'
 import { useStore } from '../store'
 import { localAnalyze } from './ats'
 import { uid } from './sample'
+import { fromOffer } from './tracker'
 
 /** Libellé lisible de la source d'une offre importée. */
 export function sourceLabel(source?: string) {
@@ -99,6 +100,10 @@ export function receiveOffers(d: BridgeDelivery) {
   const src = sourceLabel(d.offers[0]?.source)
   s.log('analyze', d.offers.length === 1 ? `Offre importée${src ? ` depuis ${src}` : ''} : ${d.offers[0].title}` : `${d.offers.length} offres importées${src ? ` depuis ${src}` : ''}`)
   if (d.apply && lastId) {
+    // « Appliquer » : la candidature rejoint le suivi (À postuler) si elle n'y est pas déjà.
+    const st = useStore.getState()
+    const offer = st.data.offers.find((o) => o.id === lastId)
+    if (offer && !(st.data.applications ?? []).some((a) => a.offerId === offer.id)) st.saveApplication(fromOffer(offer))
     s.go({ name: 'offers', id: lastId, tailor: true })
     return
   }
