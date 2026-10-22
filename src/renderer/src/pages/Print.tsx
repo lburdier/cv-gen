@@ -3,6 +3,7 @@ import { contactParts, fullName } from '../../../shared/format'
 import { placeDate } from '../../../shared/letter'
 import type { CoverLetter, Resume } from '../../../shared/types'
 import { Cv } from '../templates/Cv'
+import { linkifyCv } from '../templates/links'
 
 type Job = { kind: 'resume'; resume: Resume } | { kind: 'letter'; letter: CoverLetter; resume?: Resume }
 
@@ -21,6 +22,9 @@ export default function PrintPage({ token }: { token: string }) {
 
   useEffect(() => {
     if (!job) return
+    // Liens cliquables dans le PDF (portfolio, LinkedIn, e-mail…).
+    const cv = document.querySelector('.print-root .cv')
+    if (cv && job.kind === 'resume') linkifyCv(cv, job.resume)
     // On attend polices et images pour qu'elles soient intégrées au PDF.
     const images = [...document.images].map((img) => img.decode().catch(() => undefined))
     Promise.all([document.fonts.ready, ...images]).then(() => requestAnimationFrame(() => requestAnimationFrame(() => window.cvgen.printReady(token))))

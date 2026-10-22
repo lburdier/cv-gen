@@ -1,0 +1,46 @@
+/* ==========================================================================
+   Lecture en 6 secondes : règles communes à tous les modèles (ATS, visuels,
+   Inspirations, studio). Chargée en dernier : elle complète chaque modèle
+   sans changer son identité.
+   ========================================================================== */
+
+/* ---------- Ligne de candidature (sous le titre) : ce que l'on recherche, où l'on est mobile ---------- */
+.cv p.cv-pitch {
+  margin: 0.45em 0 0 !important;
+  padding: 0 !important;
+  font-size: 9pt !important;
+  line-height: 1.35 !important;
+  font-weight: 500 !important;
+  font-style: normal !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  text-align: inherit;
+  white-space: normal;
+  max-width: 100%;
+}
+.cv:not(.cv-visual) p.cv-pitch {
+  font-size: 1em !important;
+  margin-top: 0.4em !important;
+}
+.cv-pitch .cv-pitch-main {
+  font-weight: 700;
+}
+.cv-pitch .sep {
+  opacity: 0.5;
+  padding: 0 0.45em;
+}
+
+/* ---------- Principaux cours d'une formation ---------- */
+.cv .cv-courses,
+.cv .cm-courses {
+  margin-top: 0.15em;
+}
+
+/* ---------- Liens cliquables dans le PDF (portfolio, LinkedIn, e-mail) ---------- */
+.cv a.cv-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 0.06em;
+  text-underline-offset: 0.18em;
+  text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+}

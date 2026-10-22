@@ -1,0 +1,24 @@
+.cvgen-card-btn {
+  position: absolute;
+  top: 8px;
+  right: 44px;
+  z-index: 5;
+  font: 600 11px/1 Inter, 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: 0.01em;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #0b0b0c;
+  background: #fff;
+  color: #0b0b0c;
+  cursor: pointer;
+  opacity: 0.88;
+}
+.cvgen-card-btn:hover {
+  background: #0b0b0c;
+  color: #fff;
+  opacity: 1;
+}
+.cvgen-card-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

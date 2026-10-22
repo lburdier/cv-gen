@@ -227,9 +227,6 @@ export function VisualFields({ r, up }: { r: Resume; up: Up }) {
           <span className="mono-label">Astuce : vous pouvez aussi tirer la poignée en bas du bandeau dans l’aperçu.</span>
         </div>
       )}
-      <Field label="Mobilité">
-        <input className="input" value={b.mobility ?? ''} data-field="mobility" onChange={(e) => up((x) => void (x.basics.mobility = e.target.value))} placeholder="Lyon, Valence, télétravail" />
-      </Field>
       <div className="grid-2">
         <Field label="Bouton d’action">
           <input className="input" value={b.ctaLabel ?? ''} data-field="ctaLabel" onChange={(e) => up((x) => void (x.basics.ctaLabel = e.target.value))} placeholder="Réserver un échange" />

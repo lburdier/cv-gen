@@ -1,6 +1,7 @@
 import { Fragment, useContext, type CSSProperties, type ReactNode } from 'react'
-import { Link2, Mail, MapPin, Navigation, Phone, Sparkle } from 'lucide-react'
-import { sectionTitles, stripProtocol, visibleSections } from '../../../shared/format'
+import { Link2, Mail, MapPin, Phone, Sparkle } from 'lucide-react'
+import { eduDetails, sectionTitles, stripProtocol, visibleSections } from '../../../shared/format'
+import { Pitch } from './Pitch'
 import type { Resume, SectionKey, SkillGroup } from '../../../shared/types'
 import { EditableContext, usePlaceholders } from './previewContext'
 import { resolveIcon, type IconDesign } from '../lib/iconBank'
@@ -49,17 +50,6 @@ function onAccent(hex: string) {
 const endDot = (x: string) => (/[.!?…]$/.test(x.trim()) ? x.trim() : x.trim() + '.')
 
 /** Niveau de langue approximatif (0–100) pour les anneaux du modèle Calque. */
-function levelPercent(level: string) {
-  const l = level.toLowerCase()
-  if (/natif|maternelle|native|bilingue|bilingual|c2/.test(l)) return 100
-  if (/c1|courant|fluent|avancé|advanced/.test(l)) return 85
-  if (/b2/.test(l)) return 70
-  if (/b1|intermédiaire|intermediate/.test(l)) return 55
-  if (/a2|notions|basic|élémentaire/.test(l)) return 35
-  if (/a1|débutant|beginner/.test(l)) return 20
-  return 60
-}
-
 const LABELS = {
   fr: { phone: 'Téléphone', email: 'E-mail', location: 'Ville', mobility: 'Mobilité', gallery: 'Rendus', path: 'Parcours', contact: 'Contact', profile: 'Profil', more: 'En plus' },
   en: { phone: 'Phone', email: 'Email', location: 'City', mobility: 'Mobility', gallery: 'Selected work', path: 'Journey', contact: 'Contact', profile: 'Profile', more: 'More' }
@@ -95,8 +85,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
     [
       [L.phone, b.phone],
       [L.email, b.email],
-      [L.location, b.location],
-      [L.mobility, b.mobility ?? '']
+      [L.location, b.location]
     ] as const
   ).filter(([, v]) => v)
 
@@ -265,7 +254,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
             {[e.school, e.location].filter(Boolean).join(' · ')}
             {(e.start || e.end) && ` · ${years(e.start, e.end, false, r.lang)}`}
           </span>
-          {e.details.trim() && <em>{e.details.trim()}</em>}
+          {eduDetails(e, r.lang) && <em>{eduDetails(e, r.lang)}</em>}
         </div>
       ))
     : []
@@ -321,9 +310,10 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
           <h1 className="st-name" {...E('field:firstName', 'Modifier le nom')}>
             {b.firstName} <span>{b.lastName}</span>
           </h1>
+          <Pitch r={r} className="st-pitch" />
         </header>
         <div className="st-band">
-          {[b.location, b.mobility, ...links.slice(0, 2).map((l) => stripProtocol(l.url))].filter(Boolean).map((x, i) => (
+          {[b.location, ...links.slice(0, 2).map((l) => stripProtocol(l.url))].filter(Boolean).map((x, i) => (
             <Fragment key={i}>
               {i > 0 && <span className="sep">/</span>}
               <span>{x}</span>
@@ -432,6 +422,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
               {b.lastName}
               <span className="dot">.</span>
             </h1>
+            <Pitch r={r} className="fo-pitch" />
             <div className="fo-contact" {...E('tab:identity', 'Modifier les coordonnées')}>
               {info.map(([k, v], i) => (
                 <Fragment key={k}>
@@ -532,6 +523,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
             <h1 className="co-name" {...E('field:firstName', 'Modifier le nom')}>
               {b.firstName} <span>{b.lastName}</span>
             </h1>
+            <Pitch r={r} className="co-pitch" />
             {cta}
           </header>
           {b.banner && banner('co-banner', true)}
@@ -591,7 +583,6 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
             <span className="mf-who">{fullName}</span>
             <span className="mf-bar-right" {...E('tab:identity', 'Modifier les coordonnées')}>
               {b.location && <span className="mf-pill">{b.location}</span>}
-              {b.mobility && <span className="mf-pill mf-pill-ink">{b.mobility}</span>}
             </span>
           </div>
           <h1 className="mf-statement" {...E('field:headline', 'Modifier le titre')}>
@@ -604,6 +595,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
               </>
             )}
           </h1>
+          <Pitch r={r} className="mf-pitch" />
           <div className="mf-intro">
             {summary}
             <div className="mf-actions">
@@ -690,8 +682,9 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
             <br />
             {b.lastName}
           </h1>
+          <Pitch r={r} className="af-pitch" />
           <div className="af-band" {...E('tab:identity', 'Modifier les coordonnées')}>
-            {[b.phone, b.email, b.location, b.mobility].filter(Boolean).map((x, i) => (
+            {[b.phone, b.email, b.location].filter(Boolean).map((x, i) => (
               <Fragment key={i}>
                 {i > 0 && <span className="sep">✳</span>}
                 <span>{x}</span>
@@ -776,6 +769,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
               {b.headline}
             </p>
           )}
+          <Pitch r={r} className="mg-pitch" />
         </header>
         <div className="mg-lead">
           {photo('mg-photo')}
@@ -878,6 +872,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
                 ))}
               </div>
             )}
+            <Pitch r={r} className="cl-pitch" />
           </div>
           <div className="cl-frame">
             {photo('cl-photo')}
@@ -925,9 +920,9 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
                 <div className="cl-rings">
                   {r.languages.map((l) => (
                     <div className="cl-ring" key={l.id}>
-                      <span className="ring" style={{ '--p': levelPercent(l.level) } as CSSProperties} />
+                      <span className="ring">{/^[ABC][12]/.test(l.level) ? l.level.slice(0, 2) : l.name.slice(0, 2)}</span>
                       <strong>{l.name}</strong>
-                      <small>{l.level}</small>
+                      <small>{/^[ABC][12]/.test(l.level) ? l.level.slice(2).replace(/^[\s,]+/, '') : l.level}</small>
                     </div>
                   ))}
                 </div>
@@ -997,7 +992,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
       .map((x) => x.trim())
       .filter(Boolean)
     const role = parts[0] ?? ''
-    const quote = parts.slice(1).join(' · ') || b.mobility || ''
+    const quote = parts.slice(1).join(' · ')
     const head = (label: string, alt = false) => (
       <h2 className={`pop-h ${alt ? 'alt' : ''}`}>
         <span className="pop-pill">
@@ -1011,8 +1006,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
       [<Phone size={10} key="p" />, b.phone],
       [<Mail size={10} key="m" />, b.email],
       ...links.map((l): [ReactNode, string] => [<Link2 size={10} key={l.url} />, stripProtocol(l.url)]),
-      [<MapPin size={10} key="l" />, b.location],
-      [<Navigation size={10} key="n" />, b.mobility ?? '']
+      [<MapPin size={10} key="l" />, b.location]
     ].filter(([, v]) => v) as [ReactNode, string][]
     body = (
       <>
@@ -1028,6 +1022,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
                   {role}
                 </span>
               )}
+              <Pitch r={r} className="pop-pitch" />
             </div>
             {quote && <p className="pop-quote">« {quote} »</p>}
           </div>
@@ -1122,7 +1117,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
                       <p>
                         {[e.school, e.location].filter(Boolean).join(' ')} {years(e.start, e.end, false, r.lang)}
                       </p>
-                      {e.details.trim() && <p className="pop-when">{e.details.trim()}</p>}
+                      {eduDetails(e, r.lang) && <p className="pop-when">{eduDetails(e, r.lang)}</p>}
                     </div>
                   ))}
                   {certs}
@@ -1155,6 +1150,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
               <br />
               {b.lastName}
             </h1>
+            <Pitch r={r} className="br-pitch" />
           </div>
           <div className="br-photo-wrap">{photo('br-photo')}</div>
         </header>
@@ -1244,6 +1240,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
               <span>{b.lastName}</span>
             </h1>
             {b.headline && <p className="vt-headline" {...E('field:headline', 'Modifier le titre')}>{b.headline}</p>}
+            <Pitch r={r} className="vt-pitch" />
             {cta}
           </div>
           <div className="vt-visual" data-banner-size="">

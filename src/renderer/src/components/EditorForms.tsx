@@ -1,11 +1,12 @@
 import { ArrowDown, ArrowUp, ChevronDown, ChevronRight, Eye, EyeOff, Loader2, Plus, Sparkles, Trash2, Wand2 } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
-import { SECTION_TITLES } from '../../../shared/format'
+import { CEFR, CEFR_HINT, cefrLevel, experienceGaps, MIN_MISSIONS, SECTION_TITLES, SOFT_SKILLS, SUMMARY_MAX, SUMMARY_MIN } from '../../../shared/format'
 import type { BulletVariants, Offer, Resume, SectionKey } from '../../../shared/types'
 import { useStore } from '../store'
 import { uid } from '../lib/sample'
 import { isVisual } from '../templates/registry'
 import { AutoTextarea, Modal, TagsInput } from './ui'
+import { Select } from './Select'
 import { IconEditor, VisualFields } from './VisualForms'
 
 type Up = (fn: (r: Resume) => void) => void
@@ -85,6 +86,12 @@ export function IdentityForm({ r, up }: { r: Resume; up: Up }) {
   const b = r.basics
   type TextKey = Exclude<keyof Resume['basics'], 'bannerHeight'>
   const set = (k: TextKey) => (e: { target: { value: string } }) => up((x) => void (x.basics[k] = e.target.value))
+  // Suggestions de candidature : l'offre liée au CV, puis les formules courantes.
+  const offer = useStore((s) => s.data.offers.find((o) => o.id === r.offerId))
+  const targetIdeas = [
+    offer && (r.lang === 'en' ? `Applying for: ${offer.title}${offer.company ? ` at ${offer.company}` : ''}` : `Candidature : ${offer.title}${offer.company ? ` chez ${offer.company}` : ''}`),
+    ...(b.target?.trim() ? [] : r.lang === 'en' ? ['6-month internship from March', 'Work-study (2 years)', 'Full-time position'] : ['Stage de 6 mois dès mars', 'Alternance de 2 ans', 'CDI, disponible immédiatement'])
+  ].filter((t): t is string => Boolean(t) && t !== b.target)
   return (
     <>
       <SectionTitle>Identité & coordonnées</SectionTitle>
@@ -99,6 +106,18 @@ export function IdentityForm({ r, up }: { r: Resume; up: Up }) {
       <Field label="Titre du poste visé" hint={<span className="counter">Reprenez l’intitulé exact de l’offre</span>}>
         <input className="input" value={b.headline} data-field="headline" onChange={set('headline')} placeholder="Développeuse Full-Stack React / Node.js" />
       </Field>
+      <Field label="Ce que vous recherchez" hint={<span className="counter">Stage, alternance ou poste visé, durée et date : lu juste sous votre titre</span>}>
+        <input className="input" value={b.target ?? ''} data-field="target" onChange={set('target')} placeholder="Stage de 6 mois dès mars 2027" />
+      </Field>
+      {targetIdeas.length > 0 && (
+        <div className="chips">
+          {targetIdeas.map((t) => (
+            <button key={t} type="button" className="chip" onClick={() => up((x) => void (x.basics.target = t))}>
+              {t}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="grid-2">
         <Field label="E-mail">
           <input className="input" type="email" value={b.email} data-field="email" onChange={set('email')} placeholder="prenom.nom@email.fr" />
@@ -107,9 +126,14 @@ export function IdentityForm({ r, up }: { r: Resume; up: Up }) {
           <input className="input" value={b.phone} data-field="phone" onChange={set('phone')} placeholder="06 12 34 56 78" />
         </Field>
       </div>
-      <Field label="Ville">
-        <input className="input" value={b.location} data-field="location" onChange={set('location')} placeholder="Lyon, France" />
-      </Field>
+      <div className="grid-2">
+        <Field label="Ville">
+          <input className="input" value={b.location} data-field="location" onChange={set('location')} placeholder="Lyon, France" />
+        </Field>
+        <Field label="Mobilité">
+          <input className="input" value={b.mobility ?? ''} data-field="mobility" onChange={set('mobility')} placeholder="Lyon, Paris, télétravail" />
+        </Field>
+      </div>
       <Field label="LinkedIn">
         <input className="input" value={b.linkedin} data-field="linkedin" onChange={set('linkedin')} placeholder="linkedin.com/in/…" />
       </Field>
@@ -152,9 +176,11 @@ export function SummaryForm({ r, up, offer }: { r: Resume; up: Up; offer?: Offer
         value={r.basics.summary}
         data-field="summary"
         onChange={(e) => up((x) => void (x.basics.summary = e.target.value))}
-        placeholder="3 à 4 phrases : votre métier, vos années d’expérience, vos compétences clés et ce que vous apportez."
+        placeholder="Votre accroche en 3 à 4 lignes, pas plus : qui vous êtes, ce que vous savez faire, ce que vous apportez."
       />
-      <div className={`counter ${len >= 250 && len <= 750 ? 'ok' : len ? 'warn' : ''}`}>{len} / 350–550 caractères conseillés</div>
+      <div className={`counter ${len >= SUMMARY_MIN && len <= SUMMARY_MAX ? 'ok' : len ? 'warn' : ''}`}>
+        {len} / {SUMMARY_MAX} caractères max (3 à 4 lignes){len > SUMMARY_MAX ? ' : trop long, un recruteur lit un CV en 6 secondes' : ''}
+      </div>
       {offer && <div className="mono-label">L’IA s’appuiera sur l’offre « {offer.title} ».</div>}
     </>
   )
@@ -220,10 +246,11 @@ export function ExperienceForm({ r, up }: { r: Resume; up: Up }) {
   const hasKey = useStore((s) => s.settings.hasApiKey)
   const add = () => {
     const id = uid()
-    up((x) => void x.experiences.unshift({ id, role: '', company: '', location: '', start: '', end: '', current: false, bullets: [''] }))
+    up((x) => void x.experiences.unshift({ id, role: '', company: '', location: '', start: '', end: '', current: false, bullets: Array(MIN_MISSIONS).fill('') }))
     setOpen(id)
   }
   const target = improve && r.experiences.find((e) => e.id === improve.expId)
+  const gaps = experienceGaps
   return (
     <>
       <SectionTitle
@@ -240,7 +267,7 @@ export function ExperienceForm({ r, up }: { r: Resume; up: Up }) {
         <ItemCard
           key={e.id}
           title={e.role || 'Nouveau poste'}
-          subtitle={[e.company, e.start && `${e.start.slice(0, 4)}–${e.current ? 'auj.' : e.end.slice(0, 4)}`].filter(Boolean).join(' · ')}
+          subtitle={[e.company, e.start && `${e.start.slice(0, 4)}–${e.current ? 'auj.' : e.end.slice(0, 4)}`, gaps(e).length > 0 && `À compléter : ${gaps(e).join(', ')}`].filter(Boolean).join(' · ')}
           open={open === e.id}
           onToggle={() => setOpen(open === e.id ? null : e.id)}
           onUp={i > 0 ? () => up((x) => move(x.experiences, i, -1)) : undefined}
@@ -269,7 +296,7 @@ export function ExperienceForm({ r, up }: { r: Resume; up: Up }) {
           <label className="check">
             <input type="checkbox" checked={e.current} onChange={(ev) => up((x) => void (x.experiences[i].current = ev.target.checked))} /> Poste actuel
           </label>
-          <div className="label">Réalisations</div>
+          <div className="label">Missions et réalisations ({MIN_MISSIONS} minimum, détaillées)</div>
           {e.bullets.map((b, j) => {
             const words = b.trim() ? b.trim().split(/\s+/).length : 0
             return (
@@ -302,8 +329,9 @@ export function ExperienceForm({ r, up }: { r: Resume; up: Up }) {
             )
           })}
           <button className="btn btn-ghost btn-sm" style={{ alignSelf: 'flex-start' }} onClick={() => up((x) => void x.experiences[i].bullets.push(''))}>
-            <Plus size={14} /> Ajouter une réalisation
+            <Plus size={14} /> Ajouter une mission
           </button>
+          {gaps(e).length > 0 && <div className="bullet-hint warn">À compléter : {gaps(e).join(', ')}</div>}
         </ItemCard>
       ))}
       {improve && target && (
@@ -376,9 +404,17 @@ export function EducationForm({ r, up }: { r: Resume; up: Up }) {
               <input className="input" type="month" value={e.end} onChange={(ev) => up((x) => void (x.education[i].end = ev.target.value))} />
             </Field>
           </div>
-          <Field label="Détails (mention, projets, cours)">
+          <Field label="Détails (mention, spécialité)">
             <AutoTextarea className="textarea" style={{ minHeight: 60 }} value={e.details} onChange={(ev) => up((x) => void (x.education[i].details = ev.target.value))} />
           </Field>
+          <div className="field">
+            <span>{!e.end || e.end >= new Date().toISOString().slice(0, 7) ? 'Les 3 principaux cours de cette année (rassurent le recruteur)' : 'Les 3 principaux cours suivis'}</span>
+            <TagsInput
+              value={e.courses ?? []}
+              onChange={(v) => up((x) => void (x.education[i].courses = v.slice(0, 3)))}
+              placeholder={(e.courses ?? []).length >= 3 ? '3 cours maximum' : 'Développement web, Gestion de projet, UX design…'}
+            />
+          </div>
         </ItemCard>
       ))}
     </>
@@ -389,6 +425,17 @@ export function EducationForm({ r, up }: { r: Resume; up: Up }) {
 
 export function SkillsForm({ r, up }: { r: Resume; up: Up }) {
   const visual = isVisual(r.templateId)
+  // Groupe « Savoir-être » (ou « Soft skills ») : créé au premier clic sur un exemple.
+  const SOFT_NAME = r.lang === 'en' ? 'Soft skills' : 'Savoir-être'
+  const isSoft = (name: string) => /^(savoir[- ]?[êe]tre|soft skills?|qualit[ée]s)/i.test(name.trim())
+  const softIndex = r.skills.findIndex((g) => isSoft(g.name))
+  const toggleSoft = (q: string) =>
+    up((x) => {
+      let g = x.skills.find((y) => isSoft(y.name))
+      if (!g) x.skills.push((g = { id: uid(), name: SOFT_NAME, items: [] }))
+      g.items = g.items.includes(q) ? g.items.filter((y) => y !== q) : [...g.items, q]
+      if (!g.items.length) x.skills.splice(x.skills.indexOf(g), 1)
+    })
   return (
     <>
       <SectionTitle
@@ -402,6 +449,19 @@ export function SkillsForm({ r, up }: { r: Resume; up: Up }) {
       </SectionTitle>
       <div className="mono-label">Écrivez les compétences exactement comme dans les offres (ex. « React.js », « Gestion de projet »). Entrée ou virgule pour valider.</div>
       {r.skills.length === 0 && <div className="empty">Ajoutez un groupe : Langages, Outils, Méthodes, Savoir-être…</div>}
+      <div className="item-card" style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div className="label">Savoir-être : choisissez-en 3 à 5 (cliquez pour ajouter ou retirer)</div>
+        <div className="chips">
+          {SOFT_SKILLS[r.lang].map((q) => {
+            const on = r.skills[softIndex]?.items.includes(q) ?? false
+            return (
+              <button key={q} type="button" className={`chip ${on ? 'active' : ''}`} onClick={() => toggleSoft(q)}>
+                {q}
+              </button>
+            )
+          })}
+        </div>
+      </div>
       {r.skills.map((g, i) => (
         <div key={g.id} className="item-card" style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
           <div className="row">
@@ -510,15 +570,33 @@ export function ExtrasForm({ r, up }: { r: Resume; up: Up }) {
       >
         Langues
       </SectionTitle>
-      {r.languages.map((l, i) => (
-        <div key={l.id} className="row">
-          <input className="input" value={l.name} placeholder="Anglais" onChange={(ev) => up((x) => void (x.languages[i].name = ev.target.value))} />
-          <input className="input" value={l.level} placeholder="C1 / courant / TOEIC 900" onChange={(ev) => up((x) => void (x.languages[i].level = ev.target.value))} />
-          <button className="icon-btn sm" onClick={() => up((x) => void x.languages.splice(i, 1))}>
-            <Trash2 size={14} />
-          </button>
-        </div>
-      ))}
+      <div className="mono-label">Niveaux du cadre européen obligatoires (A1 à C2). Inutile d’indiquer {r.lang === 'en' ? 'English' : 'le français'} : le CV est rédigé dans cette langue.</div>
+      {r.languages.map((l, i) => {
+        // Niveau CECRL + certification facultative (« C1, TOEIC 945 »).
+        const level = cefrLevel(l.level, r.lang)
+        const code = (CEFR as readonly string[]).includes(level.slice(0, 2)) ? level.slice(0, 2) : /maternelle|native/i.test(level) ? 'native' : ''
+        const cert = code === 'native' ? '' : level.replace(code, '').replace(/^[\s,]+/, '')
+        const native = r.lang === 'en' ? 'Native' : 'Langue maternelle'
+        const setLevel = (c: string, ce: string) => up((x) => void (x.languages[i].level = c === 'native' ? native : [c, ce.trim()].filter(Boolean).join(', ')))
+        return (
+          <div key={l.id} className="row">
+            <input className="input" value={l.name} placeholder="Anglais" onChange={(ev) => up((x) => void (x.languages[i].name = ev.target.value))} />
+            <Select value={code} onChange={(ev) => setLevel(ev.target.value, cert)} aria-label="Niveau CECRL">
+              <option value="">Niveau…</option>
+              {CEFR.map((c) => (
+                <option key={c} value={c}>
+                  {c} · {CEFR_HINT[r.lang][c]}
+                </option>
+              ))}
+              <option value="native">{native}</option>
+            </Select>
+            <input className="input" value={cert} disabled={code === 'native'} placeholder="TOEIC 900 (facultatif)" onChange={(ev) => setLevel(code, ev.target.value)} />
+            <button className="icon-btn sm" onClick={() => up((x) => void x.languages.splice(i, 1))}>
+              <Trash2 size={14} />
+            </button>
+          </div>
+        )
+      })}
 
       <SectionTitle>Centres d’intérêt</SectionTitle>
       <input className="input" value={r.interests} placeholder="Facultatif : ce qui vous distingue" onChange={(ev) => up((x) => void (x.interests = ev.target.value))} />

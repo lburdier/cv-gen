@@ -13,7 +13,7 @@ export type Route =
   | { name: 'ats-scan' }
   | { name: 'profile' }
   | { name: 'editor'; id: string }
-  | { name: 'offers'; id?: string }
+  | { name: 'offers'; id?: string; tailor?: boolean }
   | { name: 'letters'; id?: string }
   | { name: 'settings' }
 

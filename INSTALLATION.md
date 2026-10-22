@@ -89,6 +89,22 @@ Un abonnement Claude Pro ou Max ne peut pas être utilisé par une autre applica
 
 > La clé est chiffrée par Windows sur votre PC. Elle n’est envoyée qu’au fournisseur choisi. Ne la partagez avec personne.
 
+## 5 bis. Importer des offres depuis LinkedIn (facultatif)
+
+L’extension **CV GEN · Offres** (Chrome ou Edge) trouve des offres sur LinkedIn et les envoie dans CV GEN, texte complet compris.
+
+1. Récupérez le dossier de l’extension : **Paramètres › Extension LinkedIn › Ouvrir le dossier** (ou dézippez `CV-GEN-extension-X.Y.Z.zip` depuis la page de la version).
+2. Ouvrez `chrome://extensions` (ou `edge://extensions`), activez le **mode développeur**, puis **Charger l’extension non empaquetée** et choisissez ce dossier.
+3. Épinglez l’icône CV GEN dans la barre du navigateur.
+
+Ensuite :
+
+- **Sur une offre LinkedIn**, un bouton CV GEN apparaît en bas à droite : **Importer** l’ajoute à vos offres, **Appliquer** l’ouvre dans CV GEN et adapte votre CV le plus proche (IA requise pour l’adaptation).
+- **Dans une liste de résultats**, chaque carte a un bouton **+ CV GEN**.
+- **L’icône de l’extension** permet de chercher des offres (poste, lieu, date, télétravail, contrat, niveau) et d’en importer plusieurs d’un coup, ou d’importer l’annonce d’un autre site.
+
+L’extension ne communique qu’avec CV GEN sur votre ordinateur. Si l’app est fermée, les offres sont gardées et envoyées dès son ouverture.
+
 ## 6. Où sont mes données ?
 
 Vos CV, offres et lettres restent **sur votre ordinateur**, dans `%APPDATA%\CV GEN`. Pour y accéder : **Paramètres › Données › Ouvrir le dossier des données**.

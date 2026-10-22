@@ -14,14 +14,15 @@ const exp = (role: string, company: string, location: string, start: string, end
   current: end === 'now',
   bullets
 })
-const edu = (degree: string, school: string, location: string, start: string, end: string, details = ''): Education => ({
+const edu = (degree: string, school: string, location: string, start: string, end: string, details = '', courses?: string[]): Education => ({
   id: id(),
   degree,
   school,
   location,
   start,
   end,
-  details
+  details,
+  ...(courses ? { courses } : {})
 })
 const sk = (name: string, items: string[]): SkillGroup => ({ id: id(), name, items })
 const lang = (name: string, level: string): LanguageItem => ({ id: id(), name, level })
@@ -88,6 +89,8 @@ export const PRESETS: PresetDef[] = [
         lastName: 'Laurent',
         headline: 'Développeuse Full-Stack React / Node.js',
         location: 'Lyon, France',
+        target: 'CDI Lead Developer, disponible sous 2 mois',
+        mobility: 'Lyon, Grenoble, télétravail',
         linkedin: 'linkedin.com/in/camille-laurent',
         github: 'github.com/camillelaurent',
         summary:
@@ -115,7 +118,7 @@ export const PRESETS: PresetDef[] = [
       ],
       projects: [proj('OpenBudget', 'github.com/camillelaurent/openbudget', 'Application open source de suivi budgétaire (React, Supabase), 1 200 étoiles GitHub.')],
       certifications: [cert('AWS Certified Developer – Associate', 'Amazon Web Services', '2023-05')],
-      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'C1, TOEIC 945')]
+      languages: [lang('Anglais', 'C1, TOEIC 945')]
     })
   },
   {
@@ -131,6 +134,8 @@ export const PRESETS: PresetDef[] = [
         lastName: 'Benali',
         headline: 'Data Analyst · SQL · Python · Power BI',
         location: 'Nantes, France',
+        target: 'CDI Data Analyst, disponible immédiatement',
+        mobility: 'Nantes, Rennes, télétravail partiel',
         linkedin: 'linkedin.com/in/yanis-benali',
         github: 'github.com/ybenali',
         summary:
@@ -150,7 +155,7 @@ export const PRESETS: PresetDef[] = [
         ])
       ],
       education: [
-        edu('Master Statistique et science des données', 'Université de Rennes', 'Rennes', '2019-09', '2021-06'),
+        edu('Master Statistique et science des données', 'Université de Rennes', 'Rennes', '2019-09', '2021-06', '', ['Machine learning', 'Séries temporelles', 'Data visualisation']),
         edu('Licence Mathématiques appliquées', 'Nantes Université', 'Nantes', '2016-09', '2019-06')
       ],
       skills: [
@@ -160,7 +165,7 @@ export const PRESETS: PresetDef[] = [
         sk('Savoir-être', ['Pédagogie', 'Esprit de synthèse', 'Curiosité'])
       ],
       certifications: [cert('Microsoft Certified : Power BI Data Analyst Associate', 'Microsoft', '2024-02')],
-      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'B2'), lang('Arabe', 'courant')],
+      languages: [lang('Anglais', 'B2'), lang('Arabe', 'C1')],
       interests: 'Course à pied (semi-marathon), datavisualisation open data, échecs.'
     })
   },
@@ -177,6 +182,8 @@ export const PRESETS: PresetDef[] = [
         lastName: 'Roux',
         headline: 'Ingénieur DevOps / SRE, Kubernetes · Terraform · AWS',
         location: 'Toulouse, France',
+        target: 'CDI SRE senior, préavis d’un mois',
+        mobility: 'Toulouse, full remote',
         linkedin: 'linkedin.com/in/maxime-roux',
         github: 'github.com/maximeroux',
         summary:
@@ -206,7 +213,7 @@ export const PRESETS: PresetDef[] = [
         cert('Certified Kubernetes Administrator (CKA)', 'CNCF', '2023-09'),
         cert('AWS Certified Solutions Architect – Associate', 'Amazon Web Services', '2022-11')
       ],
-      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'C1')]
+      languages: [lang('Anglais', 'C1')]
     })
   },
   {
@@ -222,6 +229,8 @@ export const PRESETS: PresetDef[] = [
         lastName: 'Kowalski',
         headline: 'Product Owner, SaaS B2B',
         location: 'Paris, France',
+        target: 'CDI Product Owner, disponible sous 3 mois',
+        mobility: 'Paris et Île-de-France',
         linkedin: 'linkedin.com/in/sarah-kowalski',
         summary:
           'Product owner avec 5 ans d’expérience sur des produits SaaS B2B. Relie besoins clients, enjeux business et contraintes techniques pour livrer des fonctionnalités utiles, mesurées et adoptées. Pratique de Scrum, de la discovery produit et du pilotage par les indicateurs.'
@@ -246,7 +255,7 @@ export const PRESETS: PresetDef[] = [
         sk('Outils', ['Jira', 'Confluence', 'Figma', 'Amplitude', 'Notion', 'SQL (bases)'])
       ],
       certifications: [cert('Professional Scrum Product Owner I (PSPO I)', 'Scrum.org', '2022-03')],
-      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'C1'), lang('Polonais', 'courant')],
+      languages: [lang('Anglais', 'C1'), lang('Polonais', 'C1')],
       interests: 'Escalade, podcasts produit, bénévolat en association d’aide au numérique.'
     })
   },
@@ -263,6 +272,8 @@ export const PRESETS: PresetDef[] = [
         lastName: 'Fontaine',
         headline: 'Cheffe de projet marketing digital',
         location: 'Bordeaux, France',
+        target: 'CDI cheffe de projet digital, dès janvier',
+        mobility: 'Bordeaux, Nouvelle-Aquitaine',
         linkedin: 'linkedin.com/in/lea-fontaine',
         website: 'leafontaine.fr',
         summary:
@@ -288,7 +299,7 @@ export const PRESETS: PresetDef[] = [
         sk('Contenus', ['Stratégie éditoriale', 'Canva', 'Figma', 'Brief créatif'])
       ],
       certifications: [cert('Google Ads, Search Certification', 'Google', '2024-04')],
-      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'C1'), lang('Espagnol', 'B1')],
+      languages: [lang('Anglais', 'C1'), lang('Espagnol', 'B1')],
       interests: 'Photographie argentique, vélo de randonnée, ateliers d’écriture.'
     })
   },
@@ -305,6 +316,8 @@ export const PRESETS: PresetDef[] = [
         lastName: 'Girard',
         headline: 'Business Developer B2B, Solutions logicielles',
         location: 'Lille, France',
+        target: 'CDI Business Developer grands comptes',
+        mobility: 'Hauts-de-France, Belgique',
         linkedin: 'linkedin.com/in/thomas-girard',
         summary:
           'Business developer avec 7 ans d’expérience dans la vente de solutions SaaS aux PME et ETI. Maîtrise du cycle de vente complet, de la prospection à la signature, avec une approche conseil centrée sur le retour sur investissement client. Dépasse ses objectifs depuis 5 années consécutives.'
@@ -328,7 +341,7 @@ export const PRESETS: PresetDef[] = [
         sk('Outils', ['Salesforce', 'HubSpot', 'LinkedIn Sales Navigator', 'Excel']),
         sk('Savoir-être', ['Écoute active', 'Persévérance', 'Sens du résultat'])
       ],
-      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'C1'), lang('Néerlandais', 'B1')],
+      languages: [lang('Anglais', 'C1'), lang('Néerlandais', 'B1')],
       interests: 'Rugby (club amateur), voyages, mentorat de jeunes entrepreneurs.'
     })
   },
@@ -345,6 +358,8 @@ export const PRESETS: PresetDef[] = [
         lastName: 'Mansouri',
         headline: 'Responsable logistique et supply chain',
         location: 'Lyon, France',
+        target: 'CDI responsable logistique, site industriel',
+        mobility: 'Auvergne-Rhône-Alpes',
         linkedin: 'linkedin.com/in/karim-mansouri',
         summary:
           'Responsable logistique avec 9 ans d’expérience en entrepôt et en transport, dont 5 en management d’équipe. Pilote les flux, la performance et la sécurité de sites jusqu’à 25 000 m², avec une approche d’amélioration continue (Lean, 5S) et une forte implication terrain.'
@@ -375,7 +390,7 @@ export const PRESETS: PresetDef[] = [
         sk('Amélioration continue', ['Lean', '5S', 'Indicateurs de performance', 'Sécurité (CACES)'])
       ],
       certifications: [cert('CACES R489 catégories 1, 3 et 5', 'AFTRAL', '2022-06')],
-      languages: [lang('Français', 'langue maternelle'), lang('Arabe', 'courant'), lang('Anglais', 'B1')]
+      languages: [lang('Arabe', 'C1'), lang('Anglais', 'B1')]
     })
   },
   {
@@ -391,6 +406,8 @@ export const PRESETS: PresetDef[] = [
         lastName: 'Morel',
         headline: 'Assistante administrative et commerciale',
         location: 'Dijon, France',
+        target: 'CDI ou CDD long, temps plein',
+        mobility: 'Dijon et 30 km autour',
         linkedin: 'linkedin.com/in/sophie-morel',
         summary:
           'Assistante administrative avec 8 ans d’expérience en PME. Organisée et polyvalente, gère l’accueil, la facturation, les plannings et le suivi des dossiers clients avec rigueur. Maîtrise des outils bureautiques et des logiciels de gestion, sens du service et discrétion.'
@@ -414,7 +431,7 @@ export const PRESETS: PresetDef[] = [
         sk('Logiciels', ['Word', 'Excel (tableaux croisés)', 'Outlook', 'Sage 100', 'Teams']),
         sk('Savoir-être', ['Organisation', 'Discrétion', 'Sens du service', 'Polyvalence'])
       ],
-      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'B1')],
+      languages: [lang('Anglais', 'B1')],
       interests: 'Chorale, randonnée, bénévolat à la bibliothèque municipale.'
     })
   },
@@ -431,6 +448,8 @@ export const PRESETS: PresetDef[] = [
         lastName: 'Rousseau',
         headline: 'Product Designer UX/UI',
         location: 'Paris, France',
+        target: 'CDI Product Designer, disponible sous un mois',
+        mobility: 'Paris, télétravail',
         website: 'manonrousseau.design',
         linkedin: 'linkedin.com/in/manon-rousseau',
         summary:
@@ -449,14 +468,14 @@ export const PRESETS: PresetDef[] = [
           'Produit maquettes, prototypes interactifs et spécifications pour les développeurs.'
         ])
       ],
-      education: [edu('Master Design d’interaction', 'Strate École de Design', 'Sèvres', '2017-09', '2019-06')],
+      education: [edu('Master Design d’interaction', 'Strate École de Design', 'Sèvres', '2017-09', '2019-06', '', ['Recherche utilisateur', 'Design systems', 'Prototypage'])],
       skills: [
         sk('Design', ['Recherche utilisateur', 'Architecture de l’information', 'Prototypage', 'Design system', 'UI design']),
         sk('Outils', ['Figma', 'FigJam', 'Maze', 'Adobe Illustrator', 'Protopie']),
         sk('Accessibilité', ['RGAA', 'WCAG 2.2', 'Tests avec lecteurs d’écran'])
       ],
       projects: [proj('Portfolio', 'manonrousseau.design', 'Études de cas détaillées : mobilité, santé, culture.')],
-      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'C1')],
+      languages: [lang('Anglais', 'C1')],
       interests: 'Céramique, typographie, festivals de design.'
     })
   },
@@ -473,6 +492,8 @@ export const PRESETS: PresetDef[] = [
         lastName: 'Bernard',
         headline: 'Chargée de communication et relations presse',
         location: 'Marseille, France',
+        target: 'CDI chargée de communication',
+        mobility: 'Marseille, Aix, Toulon',
         linkedin: 'linkedin.com/in/chloe-bernard',
         summary:
           'Chargée de communication avec 5 ans d’expérience dans la culture et les collectivités. Conçoit des plans de communication complets, rédige pour tous les supports et entretient un réseau solide de journalistes. Créative, rigoureuse et à l’aise dans l’organisation d’événements.'
@@ -496,7 +517,7 @@ export const PRESETS: PresetDef[] = [
         sk('Outils', ['Suite Adobe (InDesign, Photoshop)', 'Canva', 'Meta Business Suite', 'WordPress']),
         sk('Savoir-être', ['Aisance relationnelle', 'Créativité', 'Gestion des priorités'])
       ],
-      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'B2'), lang('Italien', 'B1')],
+      languages: [lang('Anglais', 'B2'), lang('Italien', 'B1')],
       interests: 'Théâtre amateur, photographie, podcasts culturels.'
     })
   },
@@ -513,6 +534,8 @@ export const PRESETS: PresetDef[] = [
         lastName: 'Garnier',
         headline: 'Architecte d’intérieur, Résidentiel et hôtellerie',
         location: 'Nice, France',
+        target: 'Missions en freelance ou CDI en agence',
+        mobility: 'Côte d’Azur, Monaco',
         website: 'elisegarnier.studio',
         linkedin: 'linkedin.com/in/elise-garnier',
         summary:
@@ -537,7 +560,7 @@ export const PRESETS: PresetDef[] = [
         sk('Logiciels', ['AutoCAD', 'SketchUp', 'Revit', 'Enscape', 'Photoshop']),
         sk('Chantier', ['Consultation des entreprises', 'Suivi de chantier', 'Budget', 'Planning'])
       ],
-      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'C1'), lang('Italien', 'B2')],
+      languages: [lang('Anglais', 'C1'), lang('Italien', 'B2')],
       interests: 'Design scandinave, céramique, voile.'
     })
   },
@@ -554,6 +577,8 @@ export const PRESETS: PresetDef[] = [
         lastName: 'Petit',
         headline: 'Infirmière diplômée d’État, Urgences et soins continus',
         location: 'Strasbourg, France',
+        target: 'CDI en service d’urgences',
+        mobility: 'Strasbourg, Eurométropole',
         summary:
           'Infirmière diplômée d’État avec 6 ans d’expérience en services d’urgences et de soins continus. Réactive et rigoureuse, assure la prise en charge globale des patients, la coordination avec les équipes médicales et l’encadrement des étudiants infirmiers.'
       }),
@@ -580,7 +605,7 @@ export const PRESETS: PresetDef[] = [
         sk('Savoir-être', ['Sang-froid', 'Empathie', 'Travail en équipe', 'Rigueur'])
       ],
       certifications: [cert('AFGSU niveau 2', 'CESU 67', '2024-03')],
-      languages: [lang('Français', 'langue maternelle'), lang('Allemand', 'B2'), lang('Anglais', 'B1')],
+      languages: [lang('Allemand', 'B2'), lang('Anglais', 'B1')],
       interests: 'Course en montagne, secourisme bénévole, lecture.'
     })
   },
@@ -597,6 +622,8 @@ export const PRESETS: PresetDef[] = [
         lastName: 'Haddad',
         headline: 'Chargée de recrutement et marque employeur',
         location: 'Lille, France',
+        target: 'CDI chargée de recrutement',
+        mobility: 'Lille, télétravail 2 jours par semaine',
         linkedin: 'linkedin.com/in/nadia-haddad',
         summary:
           'Chargée de recrutement avec 5 ans d’expérience en cabinet puis en entreprise. Gère l’ensemble du processus, de la définition du besoin à l’intégration, sur des profils variés (tech, commerce, fonctions support). Attachée à l’expérience candidat et à l’égalité des chances.'
@@ -620,7 +647,7 @@ export const PRESETS: PresetDef[] = [
         sk('Outils', ['Teamtailor', 'LinkedIn Recruiter', 'Welcome to the Jungle', 'Excel']),
         sk('Savoir-être', ['Écoute', 'Discernement', 'Organisation'])
       ],
-      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'C1'), lang('Arabe', 'courant')],
+      languages: [lang('Anglais', 'C1'), lang('Arabe', 'C1')],
       interests: 'Danse contemporaine, mentorat d’étudiants, cuisine du monde.'
     })
   },
@@ -637,6 +664,8 @@ export const PRESETS: PresetDef[] = [
         lastName: 'Marchand',
         headline: 'Contrôleur de gestion, Industrie',
         location: 'Clermont-Ferrand, France',
+        target: 'CDI contrôleur de gestion industriel',
+        mobility: 'Auvergne, Lyon',
         linkedin: 'linkedin.com/in/julien-marchand',
         summary:
           'Contrôleur de gestion avec 7 ans d’expérience en milieu industriel et en audit. Construit budgets, prévisions et reportings fiables, analyse les écarts et accompagne les opérationnels dans le pilotage de la performance. Esprit d’analyse, pédagogie et goût de l’automatisation.'
@@ -661,7 +690,7 @@ export const PRESETS: PresetDef[] = [
         sk('Savoir-être', ['Rigueur', 'Pédagogie', 'Esprit d’analyse'])
       ],
       certifications: [cert('Diplôme supérieur de comptabilité et de gestion (DSCG), UE 3', 'Ministère de l’Enseignement supérieur', '2019-11')],
-      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'B2')],
+      languages: [lang('Anglais', 'B2')],
       interests: 'Trail, histoire économique, trésorier d’un club de basket.'
     })
   },
@@ -678,6 +707,8 @@ export const PRESETS: PresetDef[] = [
         lastName: 'Dupuis',
         headline: 'Juriste en droit des affaires',
         location: 'Paris, France',
+        target: 'CDI juriste corporate',
+        mobility: 'Paris, La Défense',
         linkedin: 'linkedin.com/in/alexandre-dupuis',
         summary:
           'Juriste en droit des affaires avec 6 ans d’expérience en entreprise et en cabinet. Rédige et négocie les contrats commerciaux, sécurise la conformité (RGPD, Sapin II) et accompagne les directions opérationnelles au quotidien. Esprit pratique et sens de la négociation.'
@@ -704,7 +735,7 @@ export const PRESETS: PresetDef[] = [
         sk('Outils', ['Lexis 360', 'Dalloz', 'Doctrine', 'Gestion de contrats (CLM)']),
         sk('Savoir-être', ['Négociation', 'Rigueur rédactionnelle', 'Sens du conseil'])
       ],
-      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'C1, juridique'), lang('Allemand', 'B1')],
+      languages: [lang('Anglais', 'C1, juridique'), lang('Allemand', 'B1')],
       interests: 'Piano, histoire de l’art, course d’orientation.'
     })
   },
@@ -719,8 +750,10 @@ export const PRESETS: PresetDef[] = [
       basics: basics({
         firstName: 'Hugo',
         lastName: 'Lefèvre',
-        headline: 'Recherche alternance, Assistant chef de projet commercial (24 mois)',
+        headline: 'Étudiant en BUT Techniques de commercialisation',
         location: 'Rennes, France',
+        target: 'Alternance de 24 mois en assistant chef de projet commercial, dès janvier 2027',
+        mobility: 'Rennes, Nantes, Saint-Malo',
         linkedin: 'linkedin.com/in/hugo-lefevre',
         summary:
           'Étudiant en BUT Techniques de commercialisation, je recherche une alternance de 24 mois à partir de septembre 2026, rythme 3 semaines en entreprise / 1 semaine en formation. Motivé, organisé et à l’aise à l’oral, avec une première expérience en vente et en organisation d’événements.'
@@ -737,7 +770,7 @@ export const PRESETS: PresetDef[] = [
         ])
       ],
       education: [
-        edu('BUT Techniques de commercialisation', 'IUT de Rennes', 'Rennes', '2024-09', '2027-06', 'Parcours business développement et management de la relation client. Diplôme attendu en juin 2027.'),
+        edu('BUT Techniques de commercialisation', 'IUT de Rennes', 'Rennes', '2024-09', '2027-06', 'Parcours business développement et management de la relation client. Diplôme attendu en juin 2027.', ['Négociation commerciale', 'Marketing digital', 'Gestion de la relation client']),
         edu('Baccalauréat général, Mathématiques et SES', 'Lycée Chateaubriand', 'Rennes', '2021-09', '2024-07', 'Mention Assez bien.')
       ],
       skills: [
@@ -749,7 +782,7 @@ export const PRESETS: PresetDef[] = [
         proj('Organisation d’un tournoi de futsal caritatif', '', 'Projet tutoré à 5 : 200 participants, 3 200 € reversés à une association locale ; responsable des partenariats.')
       ],
       certifications: [cert('Projet Voltaire, niveau Affaires', 'Woonoz', '2025-05')],
-      languages: [lang('Français', 'langue maternelle'), lang('Anglais', 'B2'), lang('Espagnol', 'A2')],
+      languages: [lang('Anglais', 'B2'), lang('Espagnol', 'A2')],
       interests: 'Futsal en club, randonnée, montage vidéo.'
     })
   }

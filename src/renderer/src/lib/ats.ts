@@ -1,6 +1,6 @@
 // Analyse ATS locale (hors ligne) : structure, contenu et correspondance de mots-clés.
 // Les règles reprennent ce que vérifient les parseurs courants (Workday, Taleo, Greenhouse…).
-import { resumeToText } from '../../../shared/format'
+import { experienceGaps, MIN_MISSIONS, resumeToText, SUMMARY_MAX, SUMMARY_MIN } from '../../../shared/format'
 import type { Offer, OfferAnalysis, OfferKeyword, Resume } from '../../../shared/types'
 import { isVisual } from '../templates/registry'
 
@@ -276,10 +276,17 @@ export function analyze(resume: Resume, offer?: Offer | null): AtsReport {
   add({
     id: 'summary',
     category: 'content',
-    status: sl >= 250 && sl <= 750 ? 'pass' : sl === 0 ? 'fail' : 'warn',
+    status: sl >= SUMMARY_MIN && sl <= SUMMARY_MAX ? 'pass' : sl === 0 ? 'fail' : 'warn',
     weight: 2,
-    label: `Profil : ${sl} caractères`,
-    detail: sl === 0 ? 'Ajoutez 3 à 4 phrases de synthèse riches en mots-clés.' : sl < 250 ? 'Un peu court : visez 350 à 550 caractères.' : sl > 750 ? 'Trop long : 3 à 4 phrases suffisent.' : 'Bonne longueur.'
+    label: `Accroche : ${sl} caractères`,
+    detail:
+      sl === 0
+        ? 'Ajoutez une accroche de 3 à 4 lignes riche en mots-clés.'
+        : sl < SUMMARY_MIN
+          ? `Un peu courte : visez ${SUMMARY_MIN} à ${SUMMARY_MAX} caractères (3 à 4 lignes).`
+          : sl > SUMMARY_MAX
+            ? `Trop longue : 3 à 4 lignes maximum (${SUMMARY_MAX} caractères), le recruteur ne lira pas plus.`
+            : 'Bonne longueur : 3 à 4 lignes.'
   })
   add({
     id: 'experience',
@@ -289,14 +296,16 @@ export function analyze(resume: Resume, offer?: Offer | null): AtsReport {
     label: 'Expérience professionnelle',
     detail: resume.experiences.length ? `${resume.experiences.length} expérience(s) renseignée(s).` : 'Ajoutez au moins une expérience (stage, alternance, projet).'
   })
-  const thin = resume.experiences.filter((e) => e.bullets.filter((x) => x.trim()).length < 2).length
+  const incomplete = resume.experiences.map((e) => [e, experienceGaps(e)] as const).filter(([, g]) => g.length)
   add({
     id: 'bullets',
     category: 'content',
-    status: resume.experiences.length === 0 ? 'warn' : thin === 0 ? 'pass' : 'warn',
-    weight: 2,
-    label: 'Réalisations par poste',
-    detail: thin ? `${thin} poste(s) avec moins de 2 puces : visez 3 à 5 réalisations.` : 'Chaque poste détaille plusieurs réalisations.'
+    status: resume.experiences.length === 0 ? 'warn' : incomplete.length === 0 ? 'pass' : 'warn',
+    weight: 3,
+    label: 'Expériences complètes',
+    detail: incomplete.length
+      ? incomplete.map(([e, g]) => `${e.role || e.company || 'Poste sans titre'} : ${g.join(', ')}`).join(' ; ')
+      : `Chaque poste a son intitulé, son entreprise, sa ville, ses dates et au moins ${MIN_MISSIONS} missions détaillées.`
   })
   if (bullets.length) {
     const act = bullets.filter(startsWithAction).length / bullets.length

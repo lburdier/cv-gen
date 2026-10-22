@@ -191,6 +191,7 @@ export const TOURS: Tour[] = [
     steps: [
       { title: 'Les offres d’emploi', body: 'Collez une annonce : l’app en extrait les mots-clés qu’un ATS cherchera, puis compare vos CV.' },
       { sel: '.page-head .btn', text: 'Nouvelle offre', title: 'Nouvelle offre', body: 'Ouvre le formulaire pour coller une annonce.' },
+      { sel: '.page-head .btn', text: 'Extension LinkedIn', title: 'Depuis LinkedIn', body: 'Avec l’extension Chrome ou Edge, cherchez des offres sur LinkedIn et importez-les ici en un clic, texte complet compris.', optional: true },
       { sel: '.offer-list', title: 'Vos offres', body: 'Toutes les annonces enregistrées. Cliquez pour revoir leur analyse.', optional: true },
       { sel: '.panel', text: 'Nouvelle offre', title: 'Ajouter une offre', body: 'Intitulé, entreprise et texte de l’annonce. L’analyse fonctionne sans IA ; avec une clé, elle est plus fine.', optional: true },
       { sel: '.panel', text: 'Mots-clés', title: 'Les mots-clés', body: 'Classés par importance. En vert ceux présents dans votre CV, en rouge ceux qui manquent.', optional: true },

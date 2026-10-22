@@ -24,11 +24,14 @@ export interface Basics {
   linkedin: string
   github: string
   summary: string
+  /** Ce que la personne recherche (stage, alternance, poste, offre visée) : affiché sous le titre. */
+  target?: string
+  /** Zones où la personne est mobile : affichées avec la candidature, sur tous les modèles. */
+  mobility?: string
   // Champs des modèles visuels (facultatifs, ignorés par les modèles ATS).
   photo?: string // image en data URL
   banner?: string // image de bandeau en data URL
   bannerHeight?: number // hauteur du bandeau en px (sinon valeur du modèle)
-  mobility?: string
   ctaLabel?: string
   ctaUrl?: string
 }
@@ -52,6 +55,8 @@ export interface Education {
   start: string
   end: string
   details: string
+  /** Les 3 principaux cours de l'année en cours : rassurent le recruteur sur les compétences à venir. */
+  courses?: string[]
 }
 
 export interface SkillGroup {
@@ -162,6 +167,37 @@ export interface Offer {
   text: string
   createdAt: number
   analysis?: OfferAnalysis
+  /** Annonce d'origine (import depuis l'extension navigateur). */
+  url?: string
+  location?: string
+  /** Site d'où vient l'offre : 'linkedin', 'web' ou absent (collée à la main). */
+  source?: string
+}
+
+/** Offre envoyée par l'extension navigateur au pont local de l'app. */
+export interface IncomingOffer {
+  title: string
+  company: string
+  location?: string
+  url?: string
+  text: string
+  source?: string
+  /** Critères de l'annonce (niveau, contrat…) lus sur la page. */
+  criteria?: Record<string, string>
+}
+
+export interface BridgeDelivery {
+  offers: IncomingOffer[]
+  /** « Appliquer » : ouvrir l'offre et adapter le meilleur CV. */
+  apply: boolean
+}
+
+export interface BridgeStatus {
+  running: boolean
+  port?: number
+  error?: string
+  /** Dossier de l'extension à charger dans Chrome ou Edge. */
+  extensionDir: string
 }
 
 /** Réglages de rédaction d'une lettre (conservés pour la régénérer). */
@@ -506,6 +542,14 @@ export interface CvGenApi {
   cv: {
     pick(): Promise<{ name: string; bytes: Uint8Array } | null>
     import(name: string, bytes: Uint8Array, mode?: 'auto' | 'local'): Promise<CvImport>
+  }
+  /** Pont avec l'extension navigateur (offres LinkedIn). */
+  bridge: {
+    status(): Promise<BridgeStatus>
+    /** Offres arrivées avant que l'interface soit prête. */
+    pending(): Promise<BridgeDelivery[]>
+    onOffers(cb: (d: BridgeDelivery) => void): () => void
+    openExtensionFolder(): Promise<void>
   }
   updates: {
     status(): Promise<UpdateStatus>

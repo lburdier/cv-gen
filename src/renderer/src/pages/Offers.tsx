@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, FileText, Mail, Plus, RefreshCw, Sparkles, Target, Trash2 } from 'lucide-react'
+import { BriefcaseBusiness, ExternalLink, FileText, Mail, Plus, Puzzle, RefreshCw, Sparkles, Target, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import type { Offer, OfferKeyword } from '../../../shared/types'
 import { TailorModal } from '../components/TailorModal'
@@ -7,6 +7,8 @@ import { analyze, localAnalyze, matchKeywords } from '../lib/ats'
 import { SAMPLE_OFFER, uid } from '../lib/sample'
 import { actions } from '../lib/actions'
 import { useStore } from '../store'
+import { sourceLabel } from '../lib/offerImport'
+import { extensionFocus } from '../components/ExtensionSettings'
 
 const CAT: Record<OfferKeyword['category'], string> = {
   hard: 'Compétences',
@@ -77,7 +79,7 @@ function NewOffer({ onCreated }: { onCreated: (id: string) => void }) {
   )
 }
 
-function OfferDetail({ offer }: { offer: Offer }) {
+function OfferDetail({ offer, autoTailor }: { offer: Offer; autoTailor?: boolean }) {
   const s = useStore()
   const [selected, setSelected] = useState<string | null>(null)
   const [tailorId, setTailorId] = useState<string | null>(null)
@@ -93,6 +95,11 @@ function OfferDetail({ offer }: { offer: Offer }) {
   )
   useEffect(() => {
     setSelected(rows[0]?.r.id ?? null)
+    // « Appliquer » depuis l'extension : adaptation du CV le plus proche (IA requise).
+    if (autoTailor && rows[0]) {
+      if (s.settings.hasApiKey) setTailorId(rows[0].r.id)
+      else s.toast({ kind: 'info', title: 'Offre ouverte', detail: `${rows[0].r.title} est le CV le plus proche. Ajoutez une clé IA pour l’adapter automatiquement.` })
+    }
   }, [offer.id])
   const sel = rows.find((x) => x.r.id === selected)
   const tailorResume = s.data.resumes.find((r) => r.id === tailorId)
@@ -111,7 +118,7 @@ function OfferDetail({ offer }: { offer: Offer }) {
       <div className="row" style={{ alignItems: 'flex-start' }}>
         <div style={{ flex: 1 }}>
           <div className="mono-label">
-            offre · {timeAgo(offer.createdAt)}
+            offre{offer.source ? ` ${sourceLabel(offer.source)}` : ''} · {timeAgo(offer.createdAt)}
           </div>
           <input
             className="title-input"
@@ -127,6 +134,11 @@ function OfferDetail({ offer }: { offer: Offer }) {
             onChange={(e) => s.saveOffer({ ...offer, company: e.target.value })}
           />
         </div>
+        {offer.url && (
+          <button className="btn btn-soft btn-sm" onClick={() => window.cvgen.openExternal(offer.url!)} title={offer.url}>
+            <ExternalLink size={14} /> Annonce
+          </button>
+        )}
         <button className="btn btn-soft btn-sm" onClick={() => setShowText(!showText)}>
           {showText ? 'Masquer' : 'Voir'} le texte
         </button>
@@ -159,7 +171,7 @@ function OfferDetail({ offer }: { offer: Offer }) {
         </div>
         <div>
           <span>lieu</span>
-          <strong>{a.location || '-'}</strong>
+          <strong>{offer.location || a.location || '-'}</strong>
         </div>
         <div>
           <span>analyse</span>
@@ -303,7 +315,7 @@ function OfferDetail({ offer }: { offer: Offer }) {
   )
 }
 
-export default function Offers({ id }: { id?: string }) {
+export default function Offers({ id, tailor }: { id?: string; tailor?: boolean }) {
   const s = useStore()
   const offers = s.data.offers
   const current = id && id !== 'new' ? offers.find((o) => o.id === id) : undefined
@@ -316,6 +328,9 @@ export default function Offers({ id }: { id?: string }) {
           Offres & matching <span className="count">{offers.length} offres</span>
         </h1>
         <div className="actions">
+          <button className="btn btn-soft" onClick={() => ((extensionFocus.pending = true), s.go({ name: 'settings' }))} title="Importer des offres LinkedIn depuis le navigateur">
+            <Puzzle size={16} /> Extension LinkedIn
+          </button>
           <button className="btn btn-accent" onClick={() => s.go({ name: 'offers', id: 'new' })}>
             <Plus size={16} /> Nouvelle offre
           </button>
@@ -336,6 +351,7 @@ export default function Offers({ id }: { id?: string }) {
               <button className={`offer-item ${current?.id === o.id ? 'on' : ''}`} onClick={() => s.go({ name: 'offers', id: o.id })}>
               <strong>{o.title || 'Offre sans titre'}</strong>
               <span>
+                {o.source ? `${sourceLabel(o.source)} · ` : ''}
                 {o.company ? `${o.company} · ` : ''}
                 {o.analysis?.keywords.length ?? 0} mots-clés · {timeAgo(o.createdAt)}
               </span>
@@ -350,7 +366,7 @@ export default function Offers({ id }: { id?: string }) {
           {creating ? (
             <NewOffer onCreated={(oid) => s.go({ name: 'offers', id: oid })} />
           ) : current ? (
-            <OfferDetail key={current.id} offer={current} />
+            <OfferDetail key={current.id} offer={current} autoTailor={tailor} />
           ) : (
             <Empty icon={<Target size={26} />} title="Sélectionnez une offre">
               ou créez-en une nouvelle.

@@ -71,7 +71,8 @@ export function creativeSample(templateId = 'vitrine'): Resume {
       email: 'ines.moreau@email.fr',
       phone: '06 12 34 56 78',
       location: 'Valence (26)',
-      mobility: 'Lyon, Valence, remote',
+      target: 'Stage de 6 mois dès février 2027',
+      mobility: 'Lyon, Valence, télétravail',
       website: 'inesmoreau.fr',
       linkedin: 'linkedin.com/in/inesmoreau',
       github: '',
@@ -133,8 +134,7 @@ export function creativeSample(templateId = 'vitrine'): Resume {
       { id: uid(), image: render3, caption: 'Molécules, shading' }
     ],
     languages: [
-      { id: uid(), name: 'Français', level: 'natif' },
-      { id: uid(), name: 'Anglais', level: 'intermédiaire' }
+      { id: uid(), name: 'Anglais', level: 'B1' }
     ],
     interests: 'Dev perso, Cinéma, Jeux vidéo, Musculation'
   }
@@ -197,7 +197,7 @@ Profil recherché :
 /** Vrai si l'utilisateur n'a encore rien saisi dans ce CV. */
 export function isEmptyResume(r: Resume): boolean {
   const b = r.basics
-  const text = [b.firstName, b.lastName, b.headline, b.email, b.phone, b.location, b.summary, b.mobility ?? '', r.interests]
+  const text = [b.firstName, b.lastName, b.headline, b.email, b.phone, b.location, b.summary, b.target ?? '', b.mobility ?? '', r.interests]
   return (
     text.every((v) => !v.trim()) &&
     !b.photo &&

@@ -184,7 +184,7 @@ async function text(opts: { system: string; messages: Turn[]; effort: Effort; ma
 /** Repères donnés au mini modèle local (il en sait peu et invente facilement). */
 const LOCAL_PRIMER = `Repères fiables (utilise-les, n'invente rien d'autre) :
 - ATS (Applicant Tracking System) : logiciel de recrutement qui lit et trie les CV (Workday, Taleo, Greenhouse…). Il préfère une seule colonne, des intitulés standards (Expérience, Formation, Compétences), du vrai texte (pas d'image) et les mots-clés de l'offre.
-- Un bon CV : titre clair, profil de 2 à 3 phrases, expériences avec verbes d'action et résultats chiffrés, compétences regroupées, 1 page (2 au-delà de 10 ans d'expérience).
+- Un bon CV : titre clair, accroche de 3 à 4 lignes maximum, expériences avec verbes d'action et résultats chiffrés, compétences regroupées, 1 page (2 au-delà de 10 ans d'expérience).
 - CV GEN : « Mes CV » (éditeur formulaire ou toile), « Modèles » (modèles ATS et visuels, presets par métier), « Offres » (analyse d'une annonce et mots-clés), « Lettres » (brouillon guidé ou IA), « Score ATS » (tester un PDF), « Mon profil » (infos reprises partout).
 Réponds en français, en 6 phrases au maximum, avec des conseils concrets tirés du CV ci-dessous. Si tu ne sais pas, dis-le simplement.`
 
@@ -280,8 +280,8 @@ ${HONESTY}
 ${ATS_RULES}
 Consignes de sortie :
 - headline : titre de poste aligné sur l'intitulé de l'offre quand c'est cohérent avec le parcours.
-- summary : 3 à 4 phrases, 350 à 550 caractères, intégrant les mots-clés prioritaires réellement justifiés.
-- experiences : renvoie CHAQUE expérience avec son id d'origine, ses puces réécrites (3 à 6), les plus pertinentes pour l'offre en premier.
+- summary : accroche de 3 à 4 lignes au maximum (2 à 3 phrases, 200 à 400 caractères), intégrant les mots-clés prioritaires réellement justifiés.
+- experiences : renvoie CHAQUE expérience avec son id d'origine, ses puces réécrites (3 à 6, jamais moins de 3 missions détaillées : verbe d'action + action + résultat), les plus pertinentes pour l'offre en premier.
 - skills : groupes de compétences réorganisés (compétences de l'offre présentes dans le CV en premier). N'ajoute une compétence que si le CV la démontre.
 - addedKeywords : mots-clés de l'offre que tu as intégrés.
 - missingKeywords : mots-clés importants de l'offre absents du parcours (à acquérir ou à ajouter seulement si la personne les possède).
@@ -313,7 +313,7 @@ export async function writeSummary(resume: Resume, offer?: Offer): Promise<strin
   return text({
     effort: 'medium',
     maxTokens: 4000,
-    system: `Tu rédiges la section « Profil » d'un CV : 3 à 4 phrases, 350 à 550 caractères, sans « je », sans cliché vide.
+    system: `Tu rédiges l'accroche (section « Profil ») d'un CV : 3 à 4 lignes au maximum, soit 2 à 3 phrases et 200 à 400 caractères, sans « je », sans cliché vide. Un recruteur lit un CV en 6 secondes : dis qui est la personne, ce qu'elle sait faire et ce qu'elle recherche.
 ${HONESTY}
 ${ATS_RULES}
 Réponds uniquement par le paragraphe, sans guillemets ni titre. Langue : ${resume.lang === 'en' ? 'anglais' : 'français'}.`,

@@ -1,11 +1,12 @@
 import { Fragment, useContext, type CSSProperties } from 'react'
-import { atsSections, contactParts, formatMonth, formatRange, sectionHasContent, sectionTitles, stripProtocol } from '../../../shared/format'
+import { atsSections, contactParts, coursesText, displayResume, formatMonth, formatRange, sectionHasContent, sectionTitles, stripProtocol } from '../../../shared/format'
 import type { Resume, SectionKey } from '../../../shared/types'
 import { CanvasContext } from './canvasContext'
 import { onColor } from './color'
 import { CvCustom } from './CvCustom'
 import { usesDesignEngine } from './designCatalog'
 import { T } from './Editable'
+import { Pitch } from './Pitch'
 import { CvVisual } from './CvVisual'
 import { CvReplica, isReplica } from './CvReplica'
 import { useOnePage } from './onePage'
@@ -20,9 +21,11 @@ import { FONTS, isVisual } from './registry'
 export function Cv({ resume }: { resume: Resume }) {
   // Tous les modèles tiennent sur une seule page (réduction automatique si besoin).
   const fit = useOnePage()
+  // Langues : sans la langue du CV, niveaux CECRL (la toile garde les données brutes pour l'édition).
+  const canvas = useContext(CanvasContext)
   return (
     <div className="cv-fit" ref={fit}>
-      <CvLayout resume={resume} />
+      <CvLayout resume={canvas ? resume : displayResume(resume)} />
     </div>
   )
 }
@@ -144,6 +147,7 @@ function CvAts({ resume: r }: { resume: Resume }) {
                 <T p={`education.${i}.details`} v={canvas ? e.details : e.details.trim()} ph="Mention, spécialité (facultatif)" multi />
               </p>
             )}
+            {coursesText(e, r.lang) && <p className="cv-detail cv-courses">{coursesText(e, r.lang)}</p>}
           </div>
         ))
       case 'skills':
@@ -277,6 +281,7 @@ function CvAts({ resume: r }: { resume: Resume }) {
               <T p="basics.headline" v={b.headline} show={ph.headline(b.headline)} ph="Titre du poste visé (reprenez l’intitulé de l’offre)" />
             </p>
           )}
+          <Pitch r={r} />
         </div>
         {canvas ? (
           <p className="cv-contact">
