@@ -1000,3 +1000,18 @@ input.tk-date.today {
 .tk-export-menu small {
   white-space: nowrap;
 }
+/* Champ École avec le logo de l'établissement */
+.tk-school {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tk-school .input {
+  flex: 1;
+  min-width: 0;
+}
+.tk-school .co-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+}
