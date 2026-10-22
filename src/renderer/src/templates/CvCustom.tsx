@@ -343,7 +343,7 @@ export function CvCustom({ resume: r }: { resume: Resume }) {
                   {g.items.map((x, j) => (
                     <Fragment key={j}>
                       {j > 0 && ' · '}
-                      <SkillIcon src={groupIcon(g, x)} />
+                      <SkillIcon src={groupIcon(g, x, true)} />
                       <T p={`skills.${i}.items.${j}`} v={x} ph="Compétence" />
                     </Fragment>
                   ))}
@@ -359,7 +359,7 @@ export function CvCustom({ resume: r }: { resume: Resume }) {
                     <div className="cm-chips">
                       {g.items.map((x, j) => (
                         <span className="cm-chip" key={j}>
-                          <SkillIcon src={groupIcon(g, x)} />
+                          <SkillIcon src={groupIcon(g, x, true)} />
                           <T p={`skills.${i}.items.${j}`} v={x} ph="Compétence" />
                         </span>
                       ))}
@@ -367,8 +367,8 @@ export function CvCustom({ resume: r }: { resume: Resume }) {
                   ) : (
                     <ul className={`cm-cols ${inSide ? 'one' : ''}`}>
                       {g.items.map((x, j) => (
-                        <li key={j} className={groupIcon(g, x) ? 'has-ico' : undefined}>
-                          <SkillIcon src={groupIcon(g, x)} />
+                        <li key={j} className={groupIcon(g, x, true) ? 'has-ico' : undefined}>
+                          <SkillIcon src={groupIcon(g, x, true)} />
                           <T p={`skills.${i}.items.${j}`} v={x} ph="Compétence" />
                         </li>
                       ))}
