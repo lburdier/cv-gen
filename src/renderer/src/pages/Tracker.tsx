@@ -4,7 +4,7 @@ import type { AppKind, AppStatus, Application, FollowUpRequest } from '../../../
 import { AutoTextarea, Dropdown, Empty, ScorePill, timeAgo } from '../components/ui'
 import { getTemplate } from '../templates/registry'
 import { CompanyLogo } from '../components/CompanyLogo'
-import { findCompany } from '../../../shared/companies'
+import { findCompany, findSchool, knownNames } from '../../../shared/companies'
 import { analyze, localAnalyze, matchKeywords } from '../lib/ats'
 import { guidedFollowUp, splitSubject } from '../lib/followUpDraft'
 import {
@@ -348,7 +348,7 @@ function TableView({ apps, open, onCreate }: { apps: Application[]; open: (id: s
         return (
           <div className="tk-company">
             <CompanyLogo company={a.company} website={a.website} emails={a.contacts.map((c) => c.email)} />
-            <Cell value={a.company} onChange={(v) => up(a, { company: v })} placeholder="Entreprise" />
+            <Cell value={a.company} onChange={(v) => up(a, { company: v })} placeholder="Entreprise" list="tk-companies" />
           </div>
         )
       case 'kind':
@@ -807,7 +807,7 @@ function Drawer({ id, onClose }: { id: string; onClose: () => void }) {
               {kind.label} · ajoutée {timeAgo(a.createdAt)}
             </div>
             <input className="title-input tk-h1" value={a.title} placeholder="Intitulé du poste, du stage ou de la mission" onChange={(e) => up({ title: e.target.value })} />
-            <input className="title-input tk-h2" value={a.company} placeholder="Entreprise" onChange={(e) => up({ company: e.target.value })} />
+            <input className="title-input tk-h2" list="tk-companies" value={a.company} placeholder="Entreprise" onChange={(e) => up({ company: e.target.value })} />
           </div>
           <button className="btn btn-soft btn-sm tk-close" title="Fermer la fiche (Échap)" onClick={onClose}>
             <ArrowRight size={14} /> Fermer la fiche
@@ -895,12 +895,23 @@ function Drawer({ id, onClose }: { id: string; onClose: () => void }) {
 
           <Section title={`Détails ${kind.label.toLowerCase()}`}>
             <div className="grid-2">
-              {kind.fields.map((f) => (
-                <label key={f.key} className="field">
-                  <span>{f.label}</span>
-                  <input className="input" type={f.type ?? 'text'} value={a.details[f.key] ?? ''} placeholder={f.ph} onChange={(e) => up({ details: { ...a.details, [f.key]: e.target.value } })} />
-                </label>
-              ))}
+              {kind.fields.map((f) =>
+                f.key === 'school' ? (
+                  <label key={f.key} className="field">
+                    <span>{f.label}</span>
+                    <div className="tk-school">
+                      <CompanyLogo company={a.details.school ?? ''} website={a.details.school ? findSchool(a.details.school)?.domain : undefined} />
+                      <input className="input" list="tk-schools" value={a.details.school ?? ''} placeholder={f.ph} onChange={(e) => up({ details: { ...a.details, school: e.target.value } })} />
+                    </div>
+                    {a.details.school && findSchool(a.details.school) && <small className="muted tk-known">Reconnue : {findSchool(a.details.school)!.name}</small>}
+                  </label>
+                ) : (
+                  <label key={f.key} className="field">
+                    <span>{f.label}</span>
+                    <input className="input" type={f.type ?? 'text'} value={a.details[f.key] ?? ''} placeholder={f.ph} onChange={(e) => up({ details: { ...a.details, [f.key]: e.target.value } })} />
+                  </label>
+                )
+              )}
             </div>
           </Section>
 
@@ -1138,6 +1149,8 @@ export default function Tracker({ id }: { id?: string }) {
   const [q, setQ] = useState('')
   const [hideClosed, setHideClosed] = useState(false)
   const openId = id && apps.some((a) => a.id === id) ? id : undefined
+  const companyNames = useMemo(() => [...new Set(knownNames('entreprise'))].sort((x, y) => x.localeCompare(y, 'fr')), [])
+  const schoolNames = useMemo(() => [...new Set(knownNames('ecole'))].sort((x, y) => x.localeCompare(y, 'fr')), [])
 
   const choose = (v: View) => {
     setView(v)
@@ -1171,6 +1184,16 @@ export default function Tracker({ id }: { id?: string }) {
     <div className="page tk-page">
       <datalist id="tk-contracts">
         {CONTRACTS.map((c) => (
+          <option key={c} value={c} />
+        ))}
+      </datalist>
+      <datalist id="tk-companies">
+        {companyNames.map((c) => (
+          <option key={c} value={c} />
+        ))}
+      </datalist>
+      <datalist id="tk-schools">
+        {schoolNames.map((c) => (
           <option key={c} value={c} />
         ))}
       </datalist>

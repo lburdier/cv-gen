@@ -32,7 +32,7 @@ export const KINDS: { id: AppKind; label: string; contract: string; fields: { ke
       { key: 'duration', label: 'Durée', ph: '6 mois' },
       { key: 'start', label: 'Début', ph: '', type: 'date' },
       { key: 'stipend', label: 'Gratification', ph: '4,35 € / h' },
-      { key: 'school', label: 'École / convention', ph: 'Convention signée ?' }
+      { key: 'school', label: 'École', ph: 'Votre école (convention de stage)' }
     ]
   },
   {
