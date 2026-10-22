@@ -1,4 +1,5 @@
 import { Fragment, useContext, type CSSProperties } from 'react'
+import { SkillIcon, groupIcon } from './skillIcons'
 import { atsSections, contactParts, coursesText, displayResume, formatMonth, formatRange, sectionHasContent, sectionTitles, stripProtocol } from '../../../shared/format'
 import type { Resume, SectionKey } from '../../../shared/types'
 import { CanvasContext } from './canvasContext'
@@ -173,6 +174,7 @@ function CvAts({ resume: r }: { resume: Resume }) {
               {(g.items.length ? g.items : canvas ? [''] : []).map((s, j) => (
                 <Fragment key={j}>
                   {j > 0 && <span className="dot">{pills ? '/' : '·'}</span>}
+                  <SkillIcon src={groupIcon(g, s)} />
                   <T p={`skills.${i}.items.${j}`} v={s} ph="Compétence" />
                 </Fragment>
               ))}

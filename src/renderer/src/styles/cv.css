@@ -1158,3 +1158,27 @@
   font-weight: 600;
   margin-bottom: 1.6em;
 }
+
+/* Icônes de logiciels devant une compétence (tous les modèles) : décoratives, le nom reste en texte. */
+.sk-ico {
+  display: inline-block;
+  width: 1.15em;
+  height: 1.15em;
+  margin-right: 0.32em;
+  vertical-align: -0.22em;
+  object-fit: contain;
+  border-radius: 0.24em;
+  flex: none;
+}
+.cm-cols li.has-ico {
+  list-style: none;
+  margin-left: -14px;
+}
+.sk-named {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+}
+.sk-named .sk-ico {
+  vertical-align: 0;
+}
