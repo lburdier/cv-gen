@@ -1,5 +1,5 @@
 import { Fragment, useContext, type CSSProperties, type ReactNode } from 'react'
-import { SkillIcon, groupIcon } from './skillIcons'
+import { SkillIcon, groupIcon, iconScale, scaleStyle } from './skillIcons'
 import { Link2, Mail, MapPin, Phone, Sparkle } from 'lucide-react'
 import { eduDetails, sectionTitles, stripProtocol, visibleSections } from '../../../shared/format'
 import { Pitch } from './Pitch'
@@ -141,7 +141,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
     const mode = g.display ?? 'list'
     if (mode === 'tiles')
       return (
-        <div className="vz-tiles">
+        <div className="vz-tiles" style={scaleStyle(iconScale(g))}>
           {g.items.map((s) => {
             const custom = g.icons?.[s]
             const icon = resolveIcon(s, custom, (g.iconStyle as IconDesign) ?? 'app', g.autoIcons !== false)
@@ -167,7 +167,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
         <div className="vz-chips">
           {g.items.map((s) => (
             <span className="vz-chip" key={s}>
-              <SkillIcon src={groupIcon(g, s)} />
+              <SkillIcon src={groupIcon(g, s)} scale={iconScale(g)} />
               {s}
             </span>
           ))}
@@ -178,7 +178,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
         {g.items.map((s, i) => (
           <Fragment key={s}>
             {i > 0 && <span className="dot"> / </span>}
-            <SkillIcon src={groupIcon(g, s)} />
+            <SkillIcon src={groupIcon(g, s)} scale={iconScale(g)} />
             {s}
           </Fragment>
         ))}
@@ -290,7 +290,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
     <div className="vz-chips">
       {items.map((x) => (
         <span className="vz-chip" key={x}>
-          {g && <SkillIcon src={groupIcon(g, x)} />}
+          {g && <SkillIcon src={groupIcon(g, x)} scale={iconScale(g)} />}
           {x}
         </span>
       ))}
@@ -911,7 +911,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
                       <ul className={g.items.length > 5 ? 'two' : ''}>
                         {g.items.map((x) => (
                           <li key={x}>
-                            <SkillIcon src={groupIcon(g, x)} />
+                            <SkillIcon src={groupIcon(g, x)} scale={iconScale(g)} />
                             {x}
                           </li>
                         ))}
@@ -1069,7 +1069,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
                         <ul className="pop-dots">
                           {g.items.map((x) => (
                             <li key={x}>
-                              <SkillIcon src={groupIcon(g, x)} />
+                              <SkillIcon src={groupIcon(g, x)} scale={iconScale(g)} />
                               {x}
                             </li>
                           ))}
@@ -1079,7 +1079,7 @@ export function CvVisual({ resume: r }: { resume: Resume }) {
                           {g.items.map((x, j) => (
                             <Fragment key={x + j}>
                               {j > 0 && ' - '}
-                              <SkillIcon src={groupIcon(g, x)} />
+                              <SkillIcon src={groupIcon(g, x)} scale={iconScale(g)} />
                               {x}
                             </Fragment>
                           ))}

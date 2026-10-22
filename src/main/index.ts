@@ -1,6 +1,6 @@
 import { app, BrowserWindow, dialog, ipcMain, nativeTheme, shell } from 'electron'
 import { basename, join } from 'path'
-import type { FollowUpRequest, KeyProvider, AppData, DesignSpec, ChatTurn, CoverLetter, ExportFormat, Lang, LetterOptions, Offer, Resume, Settings } from '../shared/types'
+import type { FollowUpRequest, KeyProvider, TableExport, AppData, DesignSpec, ChatTurn, CoverLetter, ExportFormat, Lang, LetterOptions, Offer, Resume, Settings } from '../shared/types'
 import * as ai from './ai'
 import { exportLetter, exportResume, getPrintJob, markReady } from './export'
 import { listFreeModels } from './openrouter'
@@ -10,6 +10,8 @@ import { importCv } from './importCv'
 import { cancelDownload, downloadModel, localState, removeModel } from './localLlm'
 import { cancelLogin, login, loginState, logout } from './anthropicLogin'
 import { initUpdater } from './updater'
+import { exportTable } from './tableExport'
+import { getLogo } from './favicon'
 import { bridgeStatus, extensionDir, startBridge, stopBridge, takePending } from './bridge'
 import { readFileSync, statSync } from 'fs'
 import { dataDir, getSettings, listBackups, loadData, logError, readBackup, saveData, setApiKey, setSettings } from './storage'
@@ -142,6 +144,7 @@ function registerIpc() {
   ipcMain.on('titlebar:theme', (_e, dark: boolean) => main?.setTitleBarOverlay(overlay(dark)))
 
   handle('export:resume', (r: Resume, f: ExportFormat) => exportResume(main!, r, f, loadRoute))
+  handle('export:table', (t: TableExport, f: 'xlsx' | 'csv') => exportTable(main!, t, f))
   handle('export:letter', (l: CoverLetter, r: Resume | undefined, f: 'docx' | 'txt' | 'pdf') => exportLetter(main!, l, r, f, loadRoute))
   handle('print:job', (token: string) => getPrintJob(token))
   ipcMain.on('print:ready', (_e, token: string) => markReady(token))
@@ -182,6 +185,7 @@ function registerIpc() {
     if (statSync(file).size > 25 * 1024 * 1024) throw new Error('Fichier trop lourd (25 Mo maximum).')
     return { name: basename(file), bytes: new Uint8Array(readFileSync(file)) }
   })
+  handle('logo:get', (domain: string) => getLogo(domain))
   handle('bridge:status', () => bridgeStatus())
   handle('bridge:pending', () => takePending())
   handle('bridge:folder', async () => {

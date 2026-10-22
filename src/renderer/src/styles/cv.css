@@ -1162,8 +1162,9 @@
 /* Icônes de logiciels devant une compétence (tous les modèles) : décoratives, le nom reste en texte. */
 .sk-ico {
   display: inline-block;
-  width: 1.15em;
-  height: 1.15em;
+  /* --ico-scale : taille choisie dans l'éditeur (Compétences › Icônes des logiciels). */
+  width: calc(1.15em * var(--ico-scale, 1));
+  height: calc(1.15em * var(--ico-scale, 1));
   margin-right: 0.32em;
   vertical-align: -0.22em;
   object-fit: contain;
@@ -1181,4 +1182,9 @@
 }
 .sk-named .sk-ico {
   vertical-align: 0;
+}
+
+/* Tuiles d'outils et monogrammes : même échelle, en gardant la taille de base de chaque modèle. */
+.vz-tiles .vz-mono {
+  zoom: var(--ico-scale, 1);
 }

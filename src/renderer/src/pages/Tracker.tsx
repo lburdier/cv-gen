@@ -1,8 +1,10 @@
-import { BarChart3, CalendarClock, Columns3, Copy, ExternalLink, FileText, Mail, MailCheck, Plus, Search, Settings2, Sparkles, Table2, Trash2, UserPlus, Wand2, X } from 'lucide-react'
+import { ArrowDown, Download, Sheet, ArrowRight, ArrowUp, ArrowUpRight, BarChart3, BriefcaseBusiness, CalendarClock, Check, ChevronDown, Columns3, Copy, ExternalLink, FileText, Mail, MailCheck, Plus, Search, Settings2, Sparkles, Table2, Trash2, UserPlus, Wand2, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { AppKind, AppStatus, Application, FollowUpRequest } from '../../../shared/types'
-import { AutoTextarea, Empty, ScorePill, timeAgo } from '../components/ui'
-import { Select } from '../components/Select'
+import { AutoTextarea, Dropdown, Empty, ScorePill, timeAgo } from '../components/ui'
+import { getTemplate } from '../templates/registry'
+import { CompanyLogo } from '../components/CompanyLogo'
+import { findCompany } from '../../../shared/companies'
 import { analyze, localAnalyze, matchKeywords } from '../lib/ats'
 import { guidedFollowUp, splitSubject } from '../lib/followUpDraft'
 import {
@@ -14,6 +16,7 @@ import {
   addDays,
   addNote,
   agenda,
+  daysBetween,
   followUpState,
   kindLabel,
   markFollowedUp,
@@ -33,8 +36,8 @@ type View = 'kanban' | 'table' | 'stats'
 type ColKey = 'priority' | 'title' | 'company' | 'kind' | 'status' | 'contract' | 'location' | 'source' | 'appliedAt' | 'followUpAt' | 'interviewAt' | 'contact' | 'notes' | 'score'
 
 const COLS: { key: ColKey; label: string; fixed?: boolean }[] = [
-  { key: 'priority', label: 'Priorité' },
   { key: 'title', label: 'Poste', fixed: true },
+  { key: 'priority', label: 'Priorité' },
   { key: 'company', label: 'Entreprise' },
   { key: 'kind', label: 'Type' },
   { key: 'status', label: 'Statut' },
@@ -152,7 +155,10 @@ function Kanban({ apps, open }: { apps: Application[]; open: (id: string) => voi
                       <Priority p={a.priority} />
                     </div>
                     <strong>{a.title || 'Sans intitulé'}</strong>
-                    <span className="tk-card-sub">{[a.company, a.location].filter(Boolean).join(' · ') || ' '}</span>
+                    <span className="tk-card-sub">
+                      {a.company && <CompanyLogo company={a.company} website={a.website} emails={a.contacts.map((c) => c.email)} size="sm" />}
+                      <span>{[a.company, a.location].filter(Boolean).join(' · ') || ' '}</span>
+                    </span>
                     <div className="tk-card-foot">
                       <FollowBadge a={a} />
                       {m != null && <ScorePill score={m} label="match" />}
@@ -171,16 +177,124 @@ function Kanban({ apps, open }: { apps: Application[]; open: (id: string) => voi
 
 // ---------- Tableau ----------
 
-function Cell({ value, onChange, type = 'text', placeholder, list }: { value: string; onChange: (v: string) => void; type?: string; placeholder?: string; list?: string }) {
-  return <input className="tk-cell" type={type} value={value} placeholder={placeholder} list={list} onChange={(e) => onChange(e.target.value)} onClick={(e) => e.stopPropagation()} />
+/** Écart en jours lisible : « aujourd’hui », « dans 3 j », « il y a 2 j ». */
+function relDays(iso: string) {
+  const d = daysBetween(today(), iso.slice(0, 10))
+  return d === 0 ? 'aujourd’hui' : d > 0 ? `dans ${d} j` : `il y a ${-d} j`
 }
 
-function TableView({ apps, open }: { apps: Application[]; open: (id: string) => void }) {
+/**
+ * Pastille cliquable qui ouvre une petite liste de choix (statut, type, priorité).
+ * Menu positionné sur l'écran (et non dans le tableau qui défile) : jamais coupé, ouvert vers le haut en bas de page.
+ */
+function PillMenu<T extends string>({ value, options, onPick, render, label }: { value: T; options: { id: T; label: string }[]; onPick: (v: T) => void; render: (v: T) => ReactNode; label: string }) {
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null)
+  const btn = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    if (!pos) return
+    const away = (e: Event) => {
+      const t = e.target as HTMLElement | null
+      if (!t?.closest?.('.tk-pop') && !btn.current?.contains(t)) setPos(null)
+    }
+    const key = (e: KeyboardEvent) => e.key === 'Escape' && setPos(null)
+    const scroll = () => setPos(null)
+    window.addEventListener('mousedown', away)
+    window.addEventListener('keydown', key)
+    window.addEventListener('scroll', scroll, true)
+    window.addEventListener('resize', scroll)
+    return () => {
+      window.removeEventListener('mousedown', away)
+      window.removeEventListener('keydown', key)
+      window.removeEventListener('scroll', scroll, true)
+      window.removeEventListener('resize', scroll)
+    }
+  }, [pos])
+  const toggle = () => {
+    if (pos || !btn.current) return setPos(null)
+    const r = btn.current.getBoundingClientRect()
+    const h = options.length * 42 + 14
+    const up = r.bottom + 6 + h > window.innerHeight - 8
+    setPos({ left: Math.min(r.left, window.innerWidth - 220), top: up ? Math.max(8, r.top - 6 - h) : r.bottom + 6 })
+  }
+  return (
+    <>
+      <button ref={btn} className="tk-pill-btn" onClick={toggle} aria-label={label} title={label} aria-expanded={Boolean(pos)}>
+        {render(value)}
+        <ChevronDown size={12} />
+      </button>
+      {pos && (
+        <div className="menu tk-doc-menu tk-pill-menu tk-pop" style={{ position: 'fixed', top: pos.top, left: pos.left }} role="menu">
+          {options.map((o) => (
+            <button
+              key={o.id}
+              role="menuitem"
+              className={o.id === value ? 'on' : ''}
+              onClick={() => {
+                onPick(o.id)
+                setPos(null)
+              }}
+            >
+              {o.id === value ? <Check size={14} /> : <span style={{ width: 14 }} />}
+              {render(o.id)}
+            </button>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
+
+const StatusTag = ({ s }: { s: AppStatus }) => (
+  <span className={`tk-st st-${s}`}>
+    <i />
+    {statusLabel(s)}
+  </span>
+)
+const PriorityTag = ({ p }: { p: 1 | 2 | 3 }) => (
+  <span className="tk-prio-tag">
+    <Priority p={p} />
+    {PRIORITY_LABEL[p]}
+  </span>
+)
+
+/** Date affichée en clair (« 14 oct. ») ; un clic ouvre le sélecteur de date. */
+function DateCell({ value, onChange, time = false, state, rel = false }: { value?: string; onChange: (v: string) => void; time?: boolean; state?: string | null; rel?: boolean }) {
+  const [edit, setEdit] = useState(false)
+  if (edit)
+    return (
+      <input
+        className="tk-cell"
+        type={time ? 'datetime-local' : 'date'}
+        autoFocus
+        value={value ?? ''}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={() => setEdit(false)}
+        onKeyDown={(e) => (e.key === 'Enter' || e.key === 'Escape') && setEdit(false)}
+      />
+    )
+  return (
+    <button className={`tk-datebtn ${state ?? ''} ${value ? '' : 'empty'}`} onClick={() => setEdit(true)} title="Modifier la date">
+      {value ? (
+        <>
+          <span>{shortDate(value)}</span>
+          {rel && <small>{relDays(value)}</small>}
+        </>
+      ) : (
+        <span>Ajouter</span>
+      )}
+    </button>
+  )
+}
+
+function Cell({ value, onChange, type = 'text', placeholder, list }: { value: string; onChange: (v: string) => void; type?: string; placeholder?: string; list?: string }) {
+  return <input className="tk-cell" type={type} value={value} placeholder={placeholder} list={list} title={value} onChange={(e) => onChange(e.target.value)} onClick={(e) => e.stopPropagation()} />
+}
+
+function TableView({ apps, open, onCreate }: { apps: Application[]; open: (id: string) => void; onCreate?: () => void }) {
   const save = useStore((s) => s.saveApplication)
   const match = useMatch()
   const [cols, setCols] = useState<ColKey[]>(() => readPref('cvgen.tracker.cols', COLS.map((c) => c.key)))
   const [sort, setSort] = useState<{ key: ColKey; dir: 1 | -1 }>(() => readPref('cvgen.tracker.sort', { key: 'appliedAt', dir: -1 }))
-  const [colMenu, setColMenu] = useState(false)
   const up = (a: Application, patch: Partial<Application>) => save({ ...a, ...patch })
   const shown = COLS.filter((c) => c.fixed || cols.includes(c.key))
 
@@ -222,41 +336,25 @@ function TableView({ apps, open }: { apps: Application[]; open: (id: string) => 
   const render = (a: Application, k: ColKey): ReactNode => {
     switch (k) {
       case 'priority':
-        return (
-          <Select value={String(a.priority)} onChange={(e) => up(a, { priority: Number(e.target.value) as 1 | 2 | 3 })} aria-label="Priorité">
-            <option value="3">Haute</option>
-            <option value="2">Normale</option>
-            <option value="1">Basse</option>
-          </Select>
-        )
+        return <PillMenu label="Priorité" value={String(a.priority) as '1' | '2' | '3'} options={(['3', '2', '1'] as const).map((p) => ({ id: p, label: PRIORITY_LABEL[Number(p) as 1 | 2 | 3] }))} onPick={(v) => up(a, { priority: Number(v) as 1 | 2 | 3 })} render={(v) => <PriorityTag p={Number(v) as 1 | 2 | 3} />} />
       case 'title':
         return (
           <button className="tk-title-link" onClick={() => open(a.id)} title="Ouvrir la fiche">
-            {a.title || 'Sans intitulé'}
+            <span>{a.title || 'Sans intitulé'}</span>
+            <ArrowUpRight size={13} />
           </button>
         )
       case 'company':
-        return <Cell value={a.company} onChange={(v) => up(a, { company: v })} placeholder="Entreprise" />
+        return (
+          <div className="tk-company">
+            <CompanyLogo company={a.company} website={a.website} emails={a.contacts.map((c) => c.email)} />
+            <Cell value={a.company} onChange={(v) => up(a, { company: v })} placeholder="Entreprise" />
+          </div>
+        )
       case 'kind':
-        return (
-          <Select value={a.kind} onChange={(e) => up(a, { kind: e.target.value as AppKind })} aria-label="Type">
-            {KINDS.map((k) => (
-              <option key={k.id} value={k.id}>
-                {k.label}
-              </option>
-            ))}
-          </Select>
-        )
+        return <PillMenu label="Type" value={a.kind} options={KINDS.map((x) => ({ id: x.id, label: x.label }))} onPick={(v) => up(a, { kind: v })} render={(v) => <span className="tag">{kindLabel(v)}</span>} />
       case 'status':
-        return (
-          <Select value={a.status} onChange={(e) => save(withStatus(a, e.target.value as AppStatus))} aria-label="Statut">
-            {STATUSES.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.label}
-              </option>
-            ))}
-          </Select>
-        )
+        return <PillMenu label="Statut" value={a.status} options={STATUSES.map((x) => ({ id: x.id, label: x.label }))} onPick={(v) => save(withStatus(a, v))} render={(v) => <StatusTag s={v} />} />
       case 'contract':
         return <Cell value={a.contract} onChange={(v) => up(a, { contract: v })} list="tk-contracts" placeholder="Contrat" />
       case 'location':
@@ -264,28 +362,37 @@ function TableView({ apps, open }: { apps: Application[]; open: (id: string) => 
       case 'source':
         return <Cell value={a.source} onChange={(v) => up(a, { source: v })} list="tk-sources" placeholder="Source" />
       case 'appliedAt':
-        return <Cell type="date" value={a.appliedAt ?? ''} onChange={(v) => up(a, { appliedAt: v || undefined, ...(v && !a.followUpAt && a.status !== 'todo' ? { followUpAt: addDays(v, FOLLOW_UP_DAYS) } : {}) })} />
+        return <DateCell value={a.appliedAt} onChange={(v) => up(a, { appliedAt: v || undefined, ...(v && !a.followUpAt && a.status !== 'todo' ? { followUpAt: addDays(v, FOLLOW_UP_DAYS) } : {}) })} />
       case 'followUpAt':
-        return (
-          <div className={`tk-date ${followUpState(a) ?? ''}`}>
-            <Cell type="date" value={a.followUpAt ?? ''} onChange={(v) => up(a, { followUpAt: v || undefined })} />
-          </div>
-        )
+        return <DateCell value={a.followUpAt} state={followUpState(a)} rel={Boolean(followUpState(a))} onChange={(v) => up(a, { followUpAt: v || undefined })} />
       case 'interviewAt':
-        return <Cell type="datetime-local" value={a.interviewAt ?? ''} onChange={(v) => up(a, { interviewAt: v || undefined })} />
+        return <DateCell value={a.interviewAt} time rel={Boolean(a.interviewAt && a.interviewAt.slice(0, 10) >= today())} onChange={(v) => up(a, { interviewAt: v || undefined })} />
       case 'contact': {
         const c = a.contacts[0]
-        return (
-          <button className="tk-title-link sub" onClick={() => open(a.id)} title={c?.email || 'Ajouter un contact'}>
-            {c ? c.name || c.email : '+ Contact'}
+        return c ? (
+          <button className="tk-contact-btn" onClick={() => open(a.id)} title={[c.role, c.email, c.phone].filter(Boolean).join(' · ') || 'Ouvrir la fiche'}>
+            <i>
+              {(c.name || c.email || '?')
+                .split(/\s+/)
+                .map((w) => w[0])
+                .join('')
+                .slice(0, 2)
+                .toUpperCase()}
+            </i>
+            <span>{c.name || c.email}</span>
+            {a.contacts.length > 1 && <small>+{a.contacts.length - 1}</small>}
+          </button>
+        ) : (
+          <button className="tk-datebtn empty" onClick={() => open(a.id)}>
+            <span>Ajouter</span>
           </button>
         )
       }
       case 'notes':
-        return <Cell value={a.notes.split('\n')[0]} onChange={(v) => up(a, { notes: [v, ...a.notes.split('\n').slice(1)].join('\n') })} placeholder="Notes" />
+        return <Cell value={a.notes.split('\n')[0]} onChange={(v) => up(a, { notes: [v, ...a.notes.split('\n').slice(1)].join('\n') })} placeholder="Ajouter une note" />
       case 'score': {
         const m = match(a)
-        return m == null ? <span className="muted">-</span> : <ScorePill score={m} label="" />
+        return m == null ? <span className="tk-none">·</span> : <ScorePill score={m} label="" />
       }
     }
   }
@@ -293,13 +400,19 @@ function TableView({ apps, open }: { apps: Application[]; open: (id: string) => 
   return (
     <div className="tk-table-wrap card">
       <div className="tk-table-tools">
-        <span className="mono-label">{apps.length} candidatures · cliquez un intitulé pour la fiche complète</span>
-        <div style={{ position: 'relative' }}>
-          <button className="btn btn-soft btn-sm" onClick={() => setColMenu(!colMenu)}>
-            <Settings2 size={14} /> Colonnes
-          </button>
-          {colMenu && (
-            <div className="tk-colmenu" onMouseLeave={() => setColMenu(false)}>
+        <span className="mono-label">
+          {apps.length} candidature{apps.length > 1 ? 's' : ''} · cliquez une case pour la modifier
+        </span>
+        <Dropdown
+          align="right"
+          trigger={(toggle) => (
+            <button className="btn btn-soft btn-sm" onClick={toggle}>
+              <Settings2 size={14} /> Colonnes
+            </button>
+          )}
+        >
+          {() => (
+            <div className="tk-colmenu">
               {COLS.filter((c) => !c.fixed).map((c) => (
                 <label key={c.key} className="check">
                   <input type="checkbox" checked={cols.includes(c.key)} onChange={() => toggleCol(c.key)} /> {c.label}
@@ -307,16 +420,18 @@ function TableView({ apps, open }: { apps: Application[]; open: (id: string) => 
               ))}
             </div>
           )}
-        </div>
+        </Dropdown>
       </div>
       <div className="tk-table-scroll">
         <table className="tk-table">
           <thead>
             <tr>
               {shown.map((c) => (
-                <th key={c.key} className={`c-${c.key}`} onClick={() => toggleSort(c.key)}>
-                  {c.label}
-                  {sort.key === c.key ? (sort.dir === 1 ? ' ↑' : ' ↓') : ''}
+                <th key={c.key} className={`c-${c.key} ${sort.key === c.key ? 'sorted' : ''}`} onClick={() => toggleSort(c.key)} title="Trier">
+                  <span>
+                    {c.label}
+                    {sort.key === c.key && (sort.dir === 1 ? <ArrowUp size={12} /> : <ArrowDown size={12} />)}
+                  </span>
                 </th>
               ))}
             </tr>
@@ -334,6 +449,11 @@ function TableView({ apps, open }: { apps: Application[]; open: (id: string) => 
           </tbody>
         </table>
       </div>
+      {onCreate && (
+        <button className="tk-addrow" onClick={onCreate}>
+          <Plus size={14} /> Ajouter une candidature
+        </button>
+      )}
     </div>
   )
 }
@@ -560,6 +680,85 @@ function FollowUpComposer({ a, up }: { a: Application; up: (patch: Partial<Appli
 
 // ---------- Fiche ----------
 
+/** Document lié à une candidature : carte avec état, infos, action principale et menu « Changer ». */
+function DocCard(p: {
+  icon: ReactNode
+  label: string
+  title?: string
+  empty: string
+  meta: string
+  scores?: ReactNode
+  options: { id: string; label: string; hint?: string }[]
+  value?: string
+  onPick: (id: string | undefined) => void
+  open?: { label: string; run: () => void }
+  cta?: { label: string; run: () => void }
+}) {
+  const linked = Boolean(p.title !== undefined && p.value)
+  return (
+    <div className={`tk-doc ${linked ? 'on' : ''}`}>
+      <div className="tk-doc-ico">{p.icon}</div>
+      <div className="tk-doc-main">
+        <span className="tk-doc-label">{p.label}</span>
+        <strong className={linked ? '' : 'muted'}>{linked ? p.title || 'Sans titre' : p.empty}</strong>
+        <small>{p.meta}</small>
+        {p.scores && <div className="tk-doc-scores">{p.scores}</div>}
+      </div>
+      <div className="tk-doc-actions">
+        {p.open && (
+          <button className="btn btn-ink btn-sm" onClick={p.open.run}>
+            {p.open.label} <ArrowUpRight size={14} />
+          </button>
+        )}
+        {!p.open && p.cta && (
+          <button className="btn btn-outline btn-sm" onClick={p.cta.run}>
+            <Plus size={14} /> {p.cta.label}
+          </button>
+        )}
+        <Dropdown
+          align="right"
+          trigger={(toggle) => (
+            <button className={linked || p.cta ? 'icon-btn sm tk-doc-pick' : 'btn btn-outline btn-sm'} onClick={toggle} title={linked ? 'Changer' : 'Choisir'} disabled={!p.options.length && !linked}>
+              {linked || p.cta ? <ChevronDown size={15} /> : <>Choisir <ChevronDown size={14} /></>}
+            </button>
+          )}
+        >
+          {(close) => (
+            <div className="tk-doc-menu">
+              {p.options.length === 0 && <p className="muted" style={{ margin: 6, fontSize: 12.5 }}>Rien à lier pour l’instant.</p>}
+              {p.options.map((o) => (
+                <button
+                  key={o.id}
+                  className={o.id === p.value ? 'on' : ''}
+                  onClick={() => {
+                    p.onPick(o.id)
+                    close()
+                  }}
+                >
+                  {o.id === p.value ? <Check size={14} /> : <span style={{ width: 14 }} />}
+                  <span className="tk-doc-opt">{o.label}</span>
+                  {o.hint && <small>{o.hint}</small>}
+                </button>
+              ))}
+              {linked && (
+                <button
+                  className="tk-doc-unlink"
+                  onClick={() => {
+                    p.onPick(undefined)
+                    close()
+                  }}
+                >
+                  <X size={14} /> Retirer le lien
+                </button>
+              )}
+            </div>
+          )}
+        </Dropdown>
+      </div>
+    </div>
+  )
+}
+
 function Section({ title, children, aside }: { title: string; children: ReactNode; aside?: ReactNode }) {
   return (
     <section className="tk-sec">
@@ -585,6 +784,7 @@ function Drawer({ id, onClose }: { id: string; onClose: () => void }) {
   if (!a) return null
   const up = (patch: Partial<Application>) => s.saveApplication({ ...a, ...patch })
   const kind = KINDS.find((k) => k.id === a.kind)!
+  const known = a.company ? findCompany(a.company) : undefined
   const resume = s.data.resumes.find((r) => r.id === a.resumeId)
   const offer = s.data.offers.find((o) => o.id === a.offerId)
   const letters = [...s.data.letters].sort((x, y) => Number(y.offerId === a.offerId) - Number(x.offerId === a.offerId))
@@ -601,6 +801,7 @@ function Drawer({ id, onClose }: { id: string; onClose: () => void }) {
     <div className="overlay tk-overlay" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <aside className="tk-drawer" ref={ref} role="dialog" aria-modal="true" aria-label="Fiche de candidature">
         <div className="tk-drawer-head">
+          <CompanyLogo company={a.company} website={a.website} emails={a.contacts.map((c) => c.email)} size="lg" />
           <div style={{ flex: 1, minWidth: 0 }}>
             <div className="mono-label">
               {kind.label} · ajoutée {timeAgo(a.createdAt)}
@@ -608,11 +809,8 @@ function Drawer({ id, onClose }: { id: string; onClose: () => void }) {
             <input className="title-input tk-h1" value={a.title} placeholder="Intitulé du poste, du stage ou de la mission" onChange={(e) => up({ title: e.target.value })} />
             <input className="title-input tk-h2" value={a.company} placeholder="Entreprise" onChange={(e) => up({ company: e.target.value })} />
           </div>
-          <button className="icon-btn" title="Supprimer" onClick={remove}>
-            <Trash2 size={16} />
-          </button>
-          <button className="icon-btn" title="Fermer (Échap)" onClick={onClose}>
-            <X size={18} />
+          <button className="btn btn-soft btn-sm tk-close" title="Fermer la fiche (Échap)" onClick={onClose}>
+            <ArrowRight size={14} /> Fermer la fiche
           </button>
         </div>
 
@@ -654,6 +852,11 @@ function Drawer({ id, onClose }: { id: string; onClose: () => void }) {
             <label className="field">
               <span>Source</span>
               <input className="input" list="tk-sources" value={a.source} placeholder="LinkedIn, site de l’entreprise…" onChange={(e) => up({ source: e.target.value })} />
+            </label>
+            <label className="field">
+              <span>Site de l’entreprise</span>
+              <input className="input" value={a.website ?? ''} placeholder={known ? known.domain : 'ubisoft.com'} onChange={(e) => up({ website: e.target.value || undefined })} />
+              {known && !a.website && <small className="muted tk-known">Reconnue : {known.name} · logo de {known.domain}</small>}
             </label>
             <label className="field">
               <span>Lien de l’annonce</span>
@@ -703,67 +906,49 @@ function Drawer({ id, onClose }: { id: string; onClose: () => void }) {
 
           <Section title="Documents">
             <div className="tk-docs">
-              <div className="tk-doc">
-                <span className="label">Offre</span>
-                <Select value={a.offerId ?? ''} onChange={(e) => up({ offerId: e.target.value || undefined })}>
-                  <option value="">Aucune</option>
-                  {s.data.offers.map((o) => (
-                    <option key={o.id} value={o.id}>
-                      {o.title}
-                      {o.company ? ` · ${o.company}` : ''}
-                    </option>
-                  ))}
-                </Select>
-                {offer && (
-                  <button className="btn btn-ghost btn-sm" onClick={() => s.go({ name: 'offers', id: offer.id })}>
-                    Ouvrir
-                  </button>
-                )}
-              </div>
-              <div className="tk-doc">
-                <span className="label">CV envoyé</span>
-                <Select value={a.resumeId ?? ''} onChange={(e) => up({ resumeId: e.target.value || undefined })}>
-                  <option value="">Aucun</option>
-                  {s.data.resumes.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.title}
-                    </option>
-                  ))}
-                </Select>
-                {resume && (
-                  <button className="btn btn-ghost btn-sm" onClick={() => s.go({ name: 'editor', id: resume.id })}>
-                    Ouvrir
-                  </button>
-                )}
-              </div>
-              <div className="tk-doc">
-                <span className="label">Lettre</span>
-                <Select value={a.letterId ?? ''} onChange={(e) => up({ letterId: e.target.value || undefined })}>
-                  <option value="">Aucune</option>
-                  {letters.map((l) => (
-                    <option key={l.id} value={l.id}>
-                      {l.title}
-                    </option>
-                  ))}
-                </Select>
-                {letter ? (
-                  <button className="btn btn-ghost btn-sm" onClick={() => s.go({ name: 'letters', id: letter.id })}>
-                    Ouvrir
-                  </button>
-                ) : (
-                  resume && (
-                    <button className="btn btn-ghost btn-sm" onClick={() => s.go({ name: 'letters', id: `new:${resume.id}:${a.offerId ?? ''}` })}>
-                      Rédiger
-                    </button>
+              <DocCard
+                icon={<BriefcaseBusiness size={17} />}
+                label="Offre"
+                title={offer?.title}
+                empty="Aucune offre liée"
+                meta={offer ? [offer.company, offer.location, `${(offer.analysis ?? localAnalyze(offer.text)).keywords.length} mots-clés`].filter(Boolean).join(' · ') : 'Liez l’annonce pour mesurer la correspondance de votre CV.'}
+                options={s.data.offers.map((o) => ({ id: o.id, label: o.title || 'Offre sans titre', hint: o.company }))}
+                value={a.offerId}
+                onPick={(id) => up({ offerId: id })}
+                open={offer ? { label: 'Ouvrir', run: () => s.go({ name: 'offers', id: offer.id }) } : undefined}
+                cta={!offer ? { label: 'Analyser une offre', run: () => s.go({ name: 'offers', id: 'new' }) } : undefined}
+              />
+              <DocCard
+                icon={<FileText size={17} />}
+                label="CV envoyé"
+                title={resume?.title}
+                empty="Aucun CV lié"
+                meta={resume ? [getTemplate(resume.templateId).name, `modifié ${timeAgo(resume.updatedAt)}`].join(' · ') : 'Choisissez la version du CV envoyée pour cette candidature.'}
+                scores={
+                  (ats != null || cover != null) && (
+                    <>
+                      {ats != null && <ScorePill score={ats} />}
+                      {cover != null && <ScorePill score={cover} label="match" />}
+                    </>
                   )
-                )}
-              </div>
-              {(ats != null || cover != null) && (
-                <div className="row" style={{ gap: 8 }}>
-                  {ats != null && <ScorePill score={ats} />}
-                  {cover != null && <ScorePill score={cover} label="match" />}
-                </div>
-              )}
+                }
+                options={s.data.resumes.map((r) => ({ id: r.id, label: r.title, hint: getTemplate(r.templateId).name }))}
+                value={a.resumeId}
+                onPick={(id) => up({ resumeId: id })}
+                open={resume ? { label: 'Ouvrir', run: () => s.go({ name: 'editor', id: resume.id }) } : undefined}
+              />
+              <DocCard
+                icon={<Mail size={17} />}
+                label="Lettre de motivation"
+                title={letter?.title}
+                empty="Aucune lettre liée"
+                meta={letter ? `modifiée ${timeAgo(letter.updatedAt)} · ${letter.body.split(/\s+/).filter(Boolean).length} mots` : resume ? 'Rédigez-la à partir du CV et de l’offre liés.' : 'Liez d’abord un CV pour rédiger la lettre.'}
+                options={letters.map((l) => ({ id: l.id, label: l.title, hint: l.offerId && l.offerId === a.offerId ? 'cette offre' : undefined }))}
+                value={a.letterId}
+                onPick={(id) => up({ letterId: id })}
+                open={letter ? { label: 'Ouvrir', run: () => s.go({ name: 'letters', id: letter.id }) } : undefined}
+                cta={!letter && resume ? { label: 'Rédiger la lettre', run: () => s.go({ name: 'letters', id: `new:${resume.id}:${a.offerId ?? ''}` }) } : undefined}
+              />
             </div>
           </Section>
 
@@ -833,8 +1018,113 @@ function Drawer({ id, onClose }: { id: string; onClose: () => void }) {
             </ol>
           </Section>
         </div>
+
+        <div className="tk-drawer-foot">
+          <span className="mono-label">enregistré automatiquement</span>
+          <div style={{ flex: 1 }} />
+          <button className="btn btn-ghost btn-sm tk-delete" onClick={remove}>
+            <Trash2 size={14} /> Supprimer
+          </button>
+          <button className="btn btn-ink btn-sm" onClick={onClose}>
+            Fermer
+          </button>
+        </div>
       </aside>
     </div>
+  )
+}
+
+// ---------- Export Excel / CSV ----------
+
+/** Date AAAA-MM-JJ(THH:MM) → JJ/MM/AAAA (HH:MM), format attendu par Excel en français. */
+function frDate(iso?: string) {
+  if (!iso) return ''
+  const [d, t] = iso.split('T')
+  const [y, m, j] = d.split('-')
+  return `${j}/${m}/${y}${t ? ` ${t.slice(0, 5)}` : ''}`
+}
+
+const EXPORT_HEADERS = ['Poste', 'Entreprise', 'Site de l’entreprise', 'Type', 'Statut', 'Priorité', 'Contrat', 'Localisation', 'Source', 'Date de candidature', 'Relance prévue', 'Entretien', 'Contact', 'Rôle du contact', 'E-mail du contact', 'Téléphone du contact', 'Lien de l’annonce', 'Match (%)', 'Détails', 'Motivation', 'Notes perso', 'Ajoutée le']
+
+function exportRows(apps: Application[], match: (a: Application) => number | undefined): string[][] {
+  return apps.map((a) => {
+    const c = a.contacts[0]
+    const kind = KINDS.find((k) => k.id === a.kind)
+    const details = (kind?.fields ?? [])
+      .map((f) => (a.details[f.key] ? `${f.label} : ${f.type === 'date' ? frDate(a.details[f.key]) : a.details[f.key]}` : ''))
+      .filter(Boolean)
+      .join(' · ')
+    const m = match(a)
+    return [
+      a.title,
+      a.company,
+      a.website ?? '',
+      kindLabel(a.kind),
+      statusLabel(a.status),
+      PRIORITY_LABEL[a.priority],
+      a.contract,
+      a.location,
+      a.source,
+      frDate(a.appliedAt),
+      frDate(a.followUpAt),
+      frDate(a.interviewAt),
+      a.contacts.map((x) => x.name).filter(Boolean).join(', '),
+      c?.role ?? '',
+      c?.email ?? '',
+      c?.phone ?? '',
+      a.url,
+      m == null ? '' : String(m),
+      details,
+      a.motivation ?? '',
+      a.notes,
+      frDate(new Date(a.createdAt).toISOString().slice(0, 10))
+    ]
+  })
+}
+
+function ExportMenu({ apps }: { apps: Application[] }) {
+  const s = useStore()
+  const match = useMatch()
+  const run = async (format: 'xlsx' | 'csv') => {
+    const res = await s.run(format === 'xlsx' ? 'Export Excel…' : 'Export CSV…', () =>
+      window.cvgen.exportTable({ fileName: `Suivi-candidatures-${today()}`, sheet: 'Candidatures', headers: EXPORT_HEADERS, rows: exportRows(apps, match) }, format)
+    )
+    if (!res || res.canceled) return
+    if (res.ok) s.toast({ kind: 'success', title: `${apps.length} candidature${apps.length > 1 ? 's' : ''} exportée${apps.length > 1 ? 's' : ''}`, detail: res.path })
+    else s.toast({ kind: 'error', title: 'Export impossible', detail: res.error })
+  }
+  return (
+    <Dropdown
+      align="right"
+      trigger={(toggle) => (
+        <button className="btn btn-soft" onClick={toggle} disabled={!apps.length} title={apps.length ? 'Exporter les candidatures affichées' : 'Aucune candidature à exporter'}>
+          <Download size={15} /> Exporter
+        </button>
+      )}
+    >
+      {(close) => (
+        <div className="tk-doc-menu tk-export-menu">
+          <button
+            onClick={() => {
+              close()
+              void run('xlsx')
+            }}
+          >
+            <Sheet size={15} /> Excel (.xlsx)
+            <small>{apps.length} lignes</small>
+          </button>
+          <button
+            onClick={() => {
+              close()
+              void run('csv')
+            }}
+          >
+            <FileText size={15} /> CSV
+            <small>séparateur « ; »</small>
+          </button>
+        </div>
+      )}
+    </Dropdown>
   )
 }
 
@@ -894,6 +1184,7 @@ export default function Tracker({ id }: { id?: string }) {
           Suivi des candidatures <span className="count">{apps.length} suivies</span>
         </h1>
         <div className="actions">
+          <ExportMenu apps={filtered} />
           <button className="btn btn-accent" onClick={create}>
             <Plus size={16} /> Nouvelle candidature
           </button>
@@ -955,7 +1246,7 @@ export default function Tracker({ id }: { id?: string }) {
       ) : view === 'kanban' ? (
         <Kanban apps={filtered} open={open} />
       ) : view === 'table' ? (
-        <TableView apps={filtered} open={open} />
+        <TableView apps={filtered} open={open} onCreate={create} />
       ) : (
         <StatsView apps={filtered} />
       )}

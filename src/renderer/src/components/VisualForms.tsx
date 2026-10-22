@@ -7,6 +7,7 @@ import { useState, type DragEvent } from 'react'
 import { chooseImage } from '../lib/image'
 import { uid } from '../lib/sample'
 import { isVisual } from '../templates/registry'
+import { iconScale } from '../templates/skillIcons'
 import { Field, SectionTitle, move } from './EditorForms'
 
 type Up = (fn: (r: Resume) => void) => void
@@ -96,6 +97,7 @@ export function IconEditor({ r, groupIndex, up }: { r: Resume; groupIndex: numbe
   const [bank, setBank] = useState<{ mode: 'add' | 'pick'; item?: string } | null>(null)
   const design = (g.iconStyle as IconDesign) ?? 'app'
   const auto = g.autoIcons !== false
+  const size = iconScale(g)
   const setGroup = (fn: (x: Resume['skills'][number]) => void) => up((x) => fn(x.skills[groupIndex]))
   const setIcon = (item: string, value: string | null) =>
     setGroup((x) => {
@@ -119,6 +121,30 @@ export function IconEditor({ r, groupIndex, up }: { r: Resume; groupIndex: numbe
           <label className="check" title="Associe automatiquement l’icône d’un logiciel connu à son nom">
             <input type="checkbox" checked={auto} onChange={(e) => setGroup((x) => void (x.autoIcons = e.target.checked))} /> Icônes automatiques
           </label>
+        </div>
+        <div className="icon-size" title="Taille des icônes dans le CV, sur tous les modèles">
+          <span className="label">Taille</span>
+          <input
+            type="range"
+            min={60}
+            max={200}
+            step={10}
+            value={Math.round(size * 100)}
+            aria-label="Taille des icônes"
+            onChange={(e) => {
+              const v = Number(e.target.value) / 100
+              setGroup((x) => {
+                if (v === 1) delete x.iconSize
+                else x.iconSize = v
+              })
+            }}
+          />
+          <span className="mono icon-size-val">{Math.round(size * 100)} %</span>
+          {size !== 1 && (
+            <button className="btn btn-ghost btn-sm" onClick={() => setGroup((x) => void delete x.iconSize)}>
+              Taille du modèle
+            </button>
+          )}
         </div>
       </div>
       {g.items.length > 0 && (

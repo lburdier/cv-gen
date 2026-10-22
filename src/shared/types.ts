@@ -73,6 +73,8 @@ export interface SkillGroup {
   autoIcons?: boolean
   /** Icônes de logiciels devant chaque élément, sur tous les modèles (décoratives : le nom reste en texte). */
   showIcons?: boolean
+  /** Taille des icônes (1 = taille du modèle ; de 0,6 à 2). */
+  iconSize?: number
 }
 
 export interface LinkItem {
@@ -263,6 +265,8 @@ export interface Application {
   contract: string
   source: string
   url: string
+  /** Site de l'entreprise : sa favicon sert de logo dans le suivi. */
+  website?: string
   /** 1 basse, 2 normale, 3 haute. */
   priority: 1 | 2 | 3
   /** Dates AAAA-MM-JJ ; entretien en AAAA-MM-JJTHH:MM. */
@@ -283,6 +287,14 @@ export interface Application {
   events: AppEvent[]
   createdAt: number
   updatedAt: number
+}
+
+/** Tableau à exporter en Excel ou CSV (suivi des candidatures). */
+export interface TableExport {
+  fileName: string
+  sheet: string
+  headers: string[]
+  rows: string[][]
 }
 
 /** Message de relance à rédiger (e-mail ou message LinkedIn). */
@@ -610,6 +622,7 @@ export interface CvGenApi {
   testApiKey(): Promise<{ ok: boolean; error?: string }>
   setTitleBarTheme(dark: boolean): void
   exportResume(resume: Resume, format: ExportFormat): Promise<ExportResult>
+  exportTable(table: TableExport, format: 'xlsx' | 'csv'): Promise<ExportResult>
   exportLetter(letter: CoverLetter, resume: Resume | undefined, format: 'docx' | 'txt' | 'pdf'): Promise<ExportResult>
   getPrintJob(token: string): Promise<{ kind: 'resume'; resume: Resume } | { kind: 'letter'; letter: CoverLetter; resume?: Resume } | null>
   printReady(token: string): void
@@ -620,6 +633,8 @@ export interface CvGenApi {
     pick(): Promise<{ name: string; bytes: Uint8Array } | null>
     import(name: string, bytes: Uint8Array, mode?: 'auto' | 'local'): Promise<CvImport>
   }
+  /** Logos d'entreprise (favicon du site, en cache local). */
+  logos: { get(domain: string): Promise<string | null> }
   /** Pont avec l'extension navigateur (offres LinkedIn). */
   bridge: {
     status(): Promise<BridgeStatus>
