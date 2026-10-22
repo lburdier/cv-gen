@@ -16,9 +16,14 @@ function bare(item: string) {
     .toLowerCase()
 }
 
+/** Icônes actives : case cochée, ou présentation « Tuiles d'outils » sur un modèle visuel. */
+export function iconsOn(g: SkillGroup, visual = false) {
+  return Boolean(g.showIcons) || (visual && g.display === 'tiles')
+}
+
 /** Icône d'un élément d'un groupe dont les icônes sont activées. */
-export function groupIcon(g: SkillGroup, item: string): string | undefined {
-  if (!g.showIcons || !item.trim()) return undefined
+export function groupIcon(g: SkillGroup, item: string, visual = false): string | undefined {
+  if (!iconsOn(g, visual) || !item.trim()) return undefined
   const design = (g.iconStyle as IconDesign) ?? 'app'
   const auto = g.autoIcons !== false
   const custom = g.icons?.[item]
@@ -27,12 +32,12 @@ export function groupIcon(g: SkillGroup, item: string): string | undefined {
 }
 
 /** Recherche par nom, pour les modèles qui mélangent les groupes (Inspirations). */
-export function iconLookup(r: Resume): (name: string) => string | undefined {
+export function iconLookup(r: Resume, visual = false): (name: string) => string | undefined {
   const map = new Map<string, string>()
   for (const g of r.skills) {
-    if (!g.showIcons) continue
+    if (!iconsOn(g, visual)) continue
     for (const item of g.items) {
-      const icon = groupIcon(g, item)
+      const icon = groupIcon(g, item, visual)
       if (!icon) continue
       for (const k of [item.toLowerCase(), bare(item)]) if (!map.has(k)) map.set(k, icon)
     }

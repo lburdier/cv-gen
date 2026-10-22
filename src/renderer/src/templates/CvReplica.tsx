@@ -249,7 +249,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
   const bulletsOf = (list: string[]) => list.map((x) => x.trim()).filter(Boolean)
   const toolIcon = (name: string) => (toolGroup ? resolveIcon(name, toolGroup.icons?.[name], 'app', toolGroup.autoIcons !== false) : undefined)
   // Icônes de logiciels activées dans l'éditeur (réglage commun à tous les modèles).
-  const ico = iconLookup(r)
+  const ico = iconLookup(r, true)
   const nm = (name: string) => {
     const src = ico(name)
     // Icône et nom dans un même bloc : les pastilles en grille ne les séparent pas.

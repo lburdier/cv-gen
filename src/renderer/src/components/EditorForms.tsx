@@ -5,8 +5,6 @@ import type { BulletVariants, Offer, Resume, SectionKey } from '../../../shared/
 import { useStore } from '../store'
 import { uid } from '../lib/sample'
 import { isVisual } from '../templates/registry'
-import { usesDesignEngine } from '../templates/designCatalog'
-import { isReplica } from '../templates/CvReplica'
 import { AutoTextarea, Modal, TagsInput } from './ui'
 import { Select } from './Select'
 import { IconEditor, VisualFields } from './VisualForms'
@@ -427,8 +425,6 @@ export function EducationForm({ r, up }: { r: Resume; up: Up }) {
 
 export function SkillsForm({ r, up }: { r: Resume; up: Up }) {
   const visual = isVisual(r.templateId)
-  // Modèles visuels « portfolio » (Vitrine, Studio…) : la présentation en tuiles affiche toujours les icônes.
-  const tileModel = visual && !usesDesignEngine(r.templateId) && !isReplica(r.templateId)
   // Groupe « Savoir-être » (ou « Soft skills ») : créé au premier clic sur un exemple.
   const SOFT_NAME = r.lang === 'en' ? 'Soft skills' : 'Savoir-être'
   const isSoft = (name: string) => /^(savoir[- ]?[êe]tre|soft skills?|qualit[ée]s)/i.test(name.trim())
@@ -503,10 +499,11 @@ export function SkillsForm({ r, up }: { r: Resume; up: Up }) {
             </div>
           )}
           {(() => {
-            const tiles = tileModel && (g.display ?? 'list') === 'tiles'
+            // Sur un modèle visuel, « Tuiles d'outils » affiche toujours les icônes.
+            const tiles = visual && (g.display ?? 'list') === 'tiles'
             return (
               <>
-                <label className="check" style={{ alignSelf: 'flex-start' }} title={tiles ? 'Toujours affichées en tuiles d’outils' : 'Petite icône devant chaque logiciel, sur tous les modèles'}>
+                <label className="check" style={{ alignSelf: 'flex-start' }} title={tiles ? 'Toujours affichées avec « Tuiles d’outils »' : 'Petite icône devant chaque logiciel, sur tous les modèles'}>
                   <input type="checkbox" checked={tiles || Boolean(g.showIcons)} disabled={tiles} onChange={(e) => up((x) => void (x.skills[i].showIcons = e.target.checked))} /> Icônes des logiciels
                 </label>
                 {!visual && g.showIcons && <span className="muted" style={{ fontSize: 12 }}>Décoratives : le nom reste en texte, les ATS le lisent normalement.</span>}

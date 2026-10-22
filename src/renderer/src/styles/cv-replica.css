@@ -4277,3 +4277,36 @@
   margin: auto;
   object-fit: contain;
 }
+
+/* Icône + nom d'une compétence : les règles « span » des modèles (pastilles, barres) ne s'y appliquent pas. */
+.rp .sk-named {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  font: inherit !important;
+  color: inherit !important;
+  text-align: inherit !important;
+}
+.rp .sk-named::before,
+.rp .sk-named::after {
+  content: none !important;
+}
+.rp .sk-ico {
+  display: inline-block !important;
+  width: 1.15em !important;
+  height: 1.15em !important;
+  margin: 0 0.32em 0 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  object-fit: contain !important;
+  flex: none !important;
+}
