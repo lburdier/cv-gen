@@ -1,10 +1,11 @@
-import { useContext, type CSSProperties, type ReactNode } from 'react'
+import { Fragment, useContext, type CSSProperties, type ReactNode } from 'react'
 import { BookOpen, Camera, Coffee, Dumbbell, Film, Gamepad2, Globe, Mail, MapPin, Music, Palette, Phone, Plane, Sparkle, User, BarChart3, GraduationCap, Wrench, Send } from 'lucide-react'
 import { eduDetails, sectionTitles, stripProtocol, visibleSections } from '../../../shared/format'
 import { Pitch } from './Pitch'
 import type { Resume, SectionKey } from '../../../shared/types'
 import { EditableContext, usePlaceholders } from './previewContext'
 import { resolveIcon } from '../lib/iconBank'
+import { SkillIcon, iconLookup } from './skillIcons'
 import { FONTS } from './registry'
 
 /**
@@ -247,6 +248,25 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
   const when = (e: { start: string; end: string; current?: boolean }) => years(e.start, e.end, Boolean(e.current), r.lang)
   const bulletsOf = (list: string[]) => list.map((x) => x.trim()).filter(Boolean)
   const toolIcon = (name: string) => (toolGroup ? resolveIcon(name, toolGroup.icons?.[name], 'app', toolGroup.autoIcons !== false) : undefined)
+  // Icônes de logiciels activées dans l'éditeur (réglage commun à tous les modèles).
+  const ico = iconLookup(r)
+  const nm = (name: string) => {
+    const src = ico(name)
+    // Icône et nom dans un même bloc : les pastilles en grille ne les séparent pas.
+    return src ? (
+      <span className="sk-named">
+        <SkillIcon src={src} />
+        {name}
+      </span>
+    ) : (
+      name
+    )
+  }
+  /** Monogramme des tuiles, remplacé par l'icône du logiciel quand elle est activée. */
+  const tile = (name: string) => {
+    const src = ico(name)
+    return src ? <img className="rp-tile-ico" src={src} alt="" /> : mono(name)
+  }
 
   const S = (key: string, label: string) => E(key, label)
   const tabOf: Record<string, string> = {
@@ -369,7 +389,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                 <div className="rp-arche-pills">
                   {leveled.slice(0, 10).map((s, i) => (
                     <span key={s.name + i} className={i % 4 === 0 || i % 4 === 3 ? 'warm' : 'cool'}>
-                      {s.name}
+                      {nm(s.name)}
                     </span>
                   ))}
                 </div>
@@ -420,7 +440,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                   <h3>{t.skills}</h3>
                   {leveled.slice(0, 9).map((s, i) => (
                     <p className="rp-chev-skill" key={s.name + i}>
-                      {s.name}
+                      {nm(s.name)}
                       {s.word ? ` - ${s.word}` : ''}
                     </p>
                   ))}
@@ -522,7 +542,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                 <h2>{t.skills}</h2>
                 <ol>
                   {leveled.slice(0, 7).map((s, i) => (
-                    <li key={s.name + i}>{s.name}</li>
+                    <li key={s.name + i}>{nm(s.name)}</li>
                   ))}
                 </ol>
               </section>
@@ -656,7 +676,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                   <div className="rp-mono-pills">
                     {leveled.slice(0, 8).map((s, i) => (
                       <span key={s.name + i} className={i % 4 === 0 || i % 4 === 3 ? 'on' : ''}>
-                        {s.name}
+                        {nm(s.name)}
                       </span>
                     ))}
                   </div>
@@ -760,17 +780,17 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
             <div className="rp-grid-row rp-grid-skills" {...sec('skills')}>
               <div className="rp-grid-cell">
                 <h2>{t.skills}</h2>
-                <ul>{softSkills.slice(0, half || 6).map((s) => <li key={s}>{s}</li>)}</ul>
+                <ul>{softSkills.slice(0, half || 6).map((s) => <li key={s}>{nm(s)}</li>)}</ul>
               </div>
               <div className="rp-grid-cell">
-                <ul className="pad">{softSkills.slice(half || 6, 12).map((s) => <li key={s}>{s}</li>)}</ul>
+                <ul className="pad">{softSkills.slice(half || 6, 12).map((s) => <li key={s}>{nm(s)}</li>)}</ul>
               </div>
               <div className="rp-grid-cell">
                 <h2>{toolGroup?.name || L.software}</h2>
-                <ul>{tools.slice(0, toolHalf).map((s) => <li key={s}>{s}</li>)}</ul>
+                <ul>{tools.slice(0, toolHalf).map((s) => <li key={s}>{nm(s)}</li>)}</ul>
               </div>
               <div className="rp-grid-cell">
-                <ul className="pad">{tools.slice(toolHalf, 12).map((s) => <li key={s}>{s}</li>)}</ul>
+                <ul className="pad">{tools.slice(toolHalf, 12).map((s) => <li key={s}>{nm(s)}</li>)}</ul>
               </div>
             </div>
           )}
@@ -892,7 +912,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                   <div className="rp-grad-donuts">
                     {leveled.slice(0, 6).map((s, i) => (
                       <div key={s.name + i} className="rp-grad-donut">
-                        <span>{s.name}</span>
+                        <span>{nm(s.name)}</span>
                         {s.word && <small>{s.word}</small>}
                       </div>
                     ))}
@@ -972,7 +992,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                   </h2>
                   {leveled.slice(0, 7).map((s, i) => (
                     <div className="rp-med-bar" key={s.name + i}>
-                      <span>{s.name}</span>
+                      <span>{nm(s.name)}</span>
                       {s.word && <small>{s.word}</small>}
                     </div>
                   ))}
@@ -1052,7 +1072,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                 <h2 className="rp-dune-pill">{t.skills}</h2>
                 {leveled.slice(0, 6).map((s, i) => (
                   <div className="rp-dune-bar" key={s.name + i}>
-                    <span>{s.name}</span>
+                    <span>{nm(s.name)}</span>
                     {s.word && <small>{s.word}</small>}
                   </div>
                 ))}
@@ -1150,7 +1170,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                   <h2>{t.skills}</h2>
                   {leveled.slice(0, 5).map((s, i) => (
                     <div className="rp-ang-bar" key={s.name + i}>
-                      <span>{s.name}</span>
+                      <span>{nm(s.name)}</span>
                       {s.word && <small>{s.word}</small>}
                     </div>
                   ))}
@@ -1257,8 +1277,8 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                   {leveled.slice(0, 6).map((s, i) => (
                     <div key={s.name + i}>
                       <p>
-                        <b>{mono(s.name)}</b>
-                        <span>{s.name}</span>
+                        <b>{tile(s.name)}</b>
+                        <span>{nm(s.name)}</span>
                       </p>
                       {s.word && <small>{s.word}</small>}
                     </div>
@@ -1301,7 +1321,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                 <h2>{t.skills}</h2>
                 <ul>
                   {leveled.slice(0, 6).map((s, i) => (
-                    <li key={s.name + i}>{s.name}</li>
+                    <li key={s.name + i}>{nm(s.name)}</li>
                   ))}
                 </ul>
               </section>
@@ -1442,7 +1462,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                   <div key={c}>
                     {col.map((s, i) => (
                       <p key={s.name + i}>
-                        <span>{s.name}</span>
+                        <span>{nm(s.name)}</span>
                         {s.word && <b>{s.word}</b>}
                       </p>
                     ))}
@@ -1497,7 +1517,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
             <h2>{t.skills}</h2>
             <div className="tiles">
               {tools.slice(0, 6).map((s) => {
-                const icon = toolIcon(s)
+                const icon = toolIcon(s) ?? ico(s)
                 return <span key={s}>{icon ? <img src={icon} alt="" /> : mono(s)}</span>
               })}
             </div>
@@ -1641,7 +1661,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
               <div className="icons">
                 {(otherSkills.length ? otherSkills : skills).slice(0, 4).map((s) => (
                   <span key={s}>
-                    <i>{mono(s)}</i>
+                    <i>{tile(s)}</i>
                     <small>{s}</small>
                   </span>
                 ))}
@@ -1652,7 +1672,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
               </h2>
               <div className="soft">
                 {tools.slice(0, 8).map((s) => (
-                  <span key={s}>{mono(s)}</span>
+                  <span key={s}>{tile(s)}</span>
                 ))}
               </div>
               {langs.length > 0 && (
@@ -1739,7 +1759,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                 <div className="rp-scr-tools">
                   {tools.slice(0, 9).map((s, i) => (
                     <span key={s} style={{ '--c': ['#FF61F6', '#F7B500', '#31A8FF', '#FF9A00', '#9999FF', '#FF3366', '#22D3EE', '#A3E635', '#F472B6'][i % 9] } as CSSProperties}>
-                      {mono(s)}
+                      {tile(s)}
                     </span>
                   ))}
                 </div>
@@ -1834,7 +1854,15 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                 {groups.slice(0, 4).map((g) => (
                   <div className="rp-trib-sk" key={g.id}>
                     <b>{g.name || t.skills}</b>
-                    <p>{g.items.join(', ')}</p>
+                    <p>
+                      {g.items.map((x, j) => (
+                        <Fragment key={x + j}>
+                          {j > 0 && ', '}
+                          <SkillIcon src={ico(x)} />
+                          {x}
+                        </Fragment>
+                      ))}
+                    </p>
                   </div>
                 ))}
               </div>

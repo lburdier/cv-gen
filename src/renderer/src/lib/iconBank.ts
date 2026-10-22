@@ -299,7 +299,42 @@ export function iconSvg(s: SoftwareIcon, design: IconDesign = 'app'): string {
   }
   // Logo officiel en couleur (Devicon) : posé sur un fond clair, ou en silhouette blanche (Monochrome).
   if (logo?.k === 'c') return colorLogoSvg(s, logo, design, sig)
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">${defs}${shape}<text x="64" y="64" dy=".35em" text-anchor="middle" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-weight="700" font-size="${size}" letter-spacing="-1" fill="${color}">${esc(s.code)}</text></svg>`
+  const letters = lettersImage(s.code, size, color)
+  const mark = letters
+    ? `<image href="${letters}" x="0" y="0" width="128" height="128"/>`
+    : `<text x="64" y="64" dy=".35em" text-anchor="middle" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-weight="700" font-size="${size}" letter-spacing="-1" fill="${color}">${esc(s.code)}</text>`
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">${defs}${shape}${mark}</svg>`
+}
+
+/**
+ * Lettres d'une icône générée (« Ps », « Pl »…) dessinées en image : en texte SVG, elles passeraient
+ * dans le texte du PDF et un ATS lirait « Pl » à côté de « Plasticity ». Rendu 4× pour l'impression.
+ */
+const lettersCache = new Map<string, string>()
+function lettersImage(code: string, size: number, color: string): string | undefined {
+  const key = `${code}|${size}|${color}`
+  const hit = lettersCache.get(key)
+  if (hit) return hit
+  if (typeof document === 'undefined') return undefined
+  const font = `700 ${size * 4}px "Inter Variable", Inter, "Segoe UI", Arial, sans-serif`
+  try {
+    const c = document.createElement('canvas')
+    c.width = c.height = 512
+    const ctx = c.getContext('2d')
+    if (!ctx) return undefined
+    ctx.font = font
+    ctx.letterSpacing = '-4px'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'alphabetic'
+    ctx.fillStyle = color
+    ctx.fillText(code, 256, 256 + 0.35 * size * 4)
+    const url = c.toDataURL('image/png')
+    // Police pas encore chargée : rendu de secours, non mémorisé.
+    if (document.fonts?.check(font, code)) lettersCache.set(key, url)
+    return url
+  } catch {
+    return undefined
+  }
 }
 
 function colorLogoSvg(s: SoftwareIcon, logo: { vb: string; b: string }, design: IconDesign, sig: string): string {

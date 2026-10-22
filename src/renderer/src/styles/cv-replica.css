@@ -4266,3 +4266,14 @@
   letter-spacing: 0.08em;
   line-height: 1.35;
 }
+
+/* Tuiles à monogramme (Dossier, Écran, Nocturne) : l'icône du logiciel prend la place des initiales. */
+.rp-tile-ico {
+  display: block;
+  width: 72%;
+  height: 72%;
+  max-width: 34px;
+  max-height: 34px;
+  margin: auto;
+  object-fit: contain;
+}

@@ -71,6 +71,8 @@ export interface SkillGroup {
   iconStyle?: string
   /** Icônes de la banque attribuées automatiquement d'après le nom du logiciel (vrai par défaut). */
   autoIcons?: boolean
+  /** Icônes de logiciels devant chaque élément, sur tous les modèles (décoratives : le nom reste en texte). */
+  showIcons?: boolean
 }
 
 export interface LinkItem {

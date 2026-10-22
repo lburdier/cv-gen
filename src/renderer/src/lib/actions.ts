@@ -118,7 +118,8 @@ export const actions = {
     const s = useStore.getState()
     const r = s.data.resumes.find((x) => x.id === id)
     if (!r) return
-    const doc = atsVersion ? { ...r, templateId: 'atelier', font: 'inter' } : r
+    // La version ATS est la plus sobre possible : ni images, ni icônes de logiciels.
+    const doc = atsVersion ? { ...r, templateId: 'atelier', font: 'inter', skills: r.skills.map((g) => ({ ...g, showIcons: false })) } : r
     const res = await s.run(`Export ${format.toUpperCase()} en cours…`, () => window.cvgen.exportResume(doc, format))
     if (!res || res.canceled) return
     if (res.ok) {
