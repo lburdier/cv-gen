@@ -1701,18 +1701,15 @@
   text-align: center;
 }
 .cl-ring .ring {
-  position: relative;
-  width: 46px;
-  height: 46px;
+  /* Niveau CECRL écrit dans un anneau plein (pas de jauge de progression). */
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: conic-gradient(var(--cv-accent) calc(var(--p) * 1%), var(--cv-accent-2, #2a2a2a) 0);
-}
-.cl-ring .ring::after {
-  content: '';
-  position: absolute;
-  inset: 8px;
-  border-radius: 50%;
-  background: var(--v-page);
+  border: 2.5px solid var(--cv-accent);
+  font: 700 10.5pt var(--v-mono);
+  color: var(--v-ink, #121212);
 }
 .cl-ring strong {
   font-size: 8pt;

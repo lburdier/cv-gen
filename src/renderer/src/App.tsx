@@ -4,6 +4,7 @@ import { TourHost } from './components/Tour'
 import { UpdateNotifier } from './components/Updates'
 import { CvDropZone } from './components/CvDropZone'
 import { actions } from './lib/actions'
+import { receiveOffers } from './lib/offerImport'
 import { Assistant } from './components/Assistant'
 import { CommandPalette } from './components/CommandPalette'
 import { CrashScreen, ErrorBoundary } from './components/ErrorBoundary'
@@ -46,6 +47,14 @@ export default function App() {
   useEffect(() => {
     useStore.getState().init()
   }, [])
+
+  // Offres envoyées par l'extension navigateur : celles arrivées pendant le démarrage, puis en direct.
+  useEffect(() => {
+    if (!loaded || !window.cvgen?.bridge) return
+    const off = window.cvgen.bridge.onOffers(receiveOffers)
+    void window.cvgen.bridge.pending().then((list) => list.forEach(receiveOffers))
+    return () => off()
+  }, [loaded])
 
   // Thème : préférence explicite ou thème système.
   useEffect(() => {
@@ -104,7 +113,7 @@ export default function App() {
     ) : r.name === 'editor' ? (
       <Editor key={r.id} id={r.id} />
     ) : r.name === 'offers' ? (
-      <Offers id={r.id} />
+      <Offers id={r.id} tailor={r.tailor} />
     ) : r.name === 'letters' ? (
       <Letters key={r.id ?? 'list'} id={r.id} />
     ) : (

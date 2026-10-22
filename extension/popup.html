@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>CV GEN · Offres</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <div class="brand"><span class="dot"></span>CV GEN <em>offres</em></div>
+      <span id="status" class="pill">…</span>
+    </header>
+
+    <section id="here" hidden>
+      <div class="label">Cette page</div>
+      <p id="hereTitle" class="title"></p>
+      <div class="row">
+        <button id="hereImport">Importer</button>
+        <button id="hereApply" class="main">Appliquer dans CV GEN</button>
+      </div>
+      <button id="visibleImport" class="ghost" hidden></button>
+      <p id="hereMsg" class="msg"></p>
+    </section>
+
+    <section>
+      <div class="label">Trouver des offres sur LinkedIn</div>
+      <form id="search">
+        <input id="kw" placeholder="Poste, compétence (ex. Artiste 3D)" autocomplete="off" />
+        <input id="loc" placeholder="Ville ou pays (ex. Lyon)" autocomplete="off" />
+        <div class="grid">
+          <select id="date" title="Date de publication">
+            <option value="">Toutes dates</option>
+            <option value="r86400">24 h</option>
+            <option value="r604800">7 jours</option>
+            <option value="r2592000">30 jours</option>
+          </select>
+          <select id="remote" title="Lieu de travail">
+            <option value="">Sur site ou non</option>
+            <option value="1">Sur site</option>
+            <option value="3">Hybride</option>
+            <option value="2">Télétravail</option>
+          </select>
+          <select id="type" title="Type de contrat">
+            <option value="">Tous contrats</option>
+            <option value="F">Temps plein</option>
+            <option value="C">CDD / contrat</option>
+            <option value="I">Stage</option>
+            <option value="T">Temporaire</option>
+            <option value="P">Temps partiel</option>
+          </select>
+          <select id="level" title="Niveau">
+            <option value="">Tous niveaux</option>
+            <option value="1">Stage</option>
+            <option value="2">Débutant</option>
+            <option value="3">Junior</option>
+            <option value="4">Confirmé</option>
+            <option value="5">Manager</option>
+          </select>
+        </div>
+        <div class="row">
+          <button type="submit" class="main">Rechercher</button>
+          <button type="button" id="openLi" class="ghost">Ouvrir sur LinkedIn</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="results" hidden>
+      <div class="row between">
+        <div class="label"><span id="count"></span></div>
+        <label class="check"><input type="checkbox" id="all" /> Tout</label>
+      </div>
+      <ul id="list"></ul>
+      <div class="row">
+        <button id="more" class="ghost">Plus de résultats</button>
+        <button id="importSel" class="main" disabled>Importer la sélection</button>
+      </div>
+      <p id="resMsg" class="msg"></p>
+    </section>
+
+    <footer id="queued" hidden></footer>
+    <script src="linkedin.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

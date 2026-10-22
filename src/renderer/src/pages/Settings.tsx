@@ -1,5 +1,6 @@
 import { Check, FolderOpen, History, Info, KeyRound, Loader2, RefreshCw, ShieldCheck } from 'lucide-react'
 import { ToursSettings } from '../components/ToursSettings'
+import { ExtensionSettings } from '../components/ExtensionSettings'
 import { LocalModels } from '../components/LocalModels'
 import { AnthropicAccount } from '../components/AnthropicAccount'
 import { UpdatesSettings } from '../components/Updates'
@@ -314,6 +315,14 @@ export default function SettingsPage() {
           <p className="desc">Copies horodatées créées au lancement (les 15 plus récentes). Restaurer est annulable.</p>
         </div>
         <Backups />
+      </div>
+
+      <div className="settings-grid" id="extension">
+        <div>
+          <h3>Extension LinkedIn</h3>
+          <p className="desc">Trouvez des offres sur LinkedIn et importez-les ici en un clic, avec le texte complet de l’annonce.</p>
+        </div>
+        <ExtensionSettings />
       </div>
 
       <div className="settings-grid" data-tour="updates">

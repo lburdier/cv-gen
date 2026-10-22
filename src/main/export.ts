@@ -11,7 +11,7 @@ import {
   TabStopType,
   TextRun
 } from 'docx'
-import { sectionTitles, atsSections, contactParts, formatMonth, formatRange, fullName, resumeToText, stripProtocol } from '../shared/format'
+import { sectionTitles, atsSections, contactParts, displayResume, formatMonth, formatRange, fullName, documentFileName, resumeToText, stripProtocol } from '../shared/format'
 import { placeDate } from '../shared/letter'
 import type { CoverLetter, ExportFormat, ExportResult, Resume } from '../shared/types'
 
@@ -69,7 +69,7 @@ export async function exportResume(
   format: ExportFormat,
   loadUrl: (win: BrowserWindow, hash: string) => Promise<void>
 ): Promise<ExportResult> {
-  const base = safeName(`CV_${fullName(resume) || resume.title}`)
+  const base = safeName(documentFileName(resume.basics.firstName, resume.basics.lastName, 'CV', resume.title))
   const filters = {
     pdf: [{ name: 'PDF', extensions: ['pdf'] }],
     docx: [{ name: 'Document Word', extensions: ['docx'] }],
@@ -79,8 +79,8 @@ export async function exportResume(
   if (canceled || !filePath) return { ok: false, canceled: true }
   try {
     if (format === 'pdf') writeFileSync(filePath, await renderPdf({ kind: 'resume', resume }, loadUrl))
-    else if (format === 'docx') writeFileSync(filePath, await resumeToDocx(resume))
-    else writeFileSync(filePath, '﻿' + resumeToText(resume), 'utf8')
+    else if (format === 'docx') writeFileSync(filePath, await resumeToDocx(displayResume(resume)))
+    else writeFileSync(filePath, '﻿' + resumeToText(displayResume(resume)), 'utf8')
     return { ok: true, path: filePath }
   } catch (e) {
     return { ok: false, error: (e as Error).message }
@@ -94,7 +94,7 @@ export async function exportLetter(
   format: 'docx' | 'txt' | 'pdf',
   loadUrl: (win: BrowserWindow, hash: string) => Promise<void>
 ): Promise<ExportResult> {
-  const base = safeName(`Lettre_${letter.title}`)
+  const base = safeName(documentFileName(resume?.basics.firstName ?? '', resume?.basics.lastName ?? '', 'Lettre', letter.title))
   const { canceled, filePath } = await dialog.showSaveDialog(parent, {
     defaultPath: `${base}.${format}`,
     filters: [{ name: format.toUpperCase(), extensions: [format] }]

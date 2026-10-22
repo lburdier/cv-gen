@@ -1,6 +1,7 @@
 import { useContext, type CSSProperties, type ReactNode } from 'react'
 import { BookOpen, Camera, Coffee, Dumbbell, Film, Gamepad2, Globe, Mail, MapPin, Music, Palette, Phone, Plane, Sparkle, User, BarChart3, GraduationCap, Wrench, Send } from 'lucide-react'
-import { sectionTitles, stripProtocol, visibleSections } from '../../../shared/format'
+import { eduDetails, sectionTitles, stripProtocol, visibleSections } from '../../../shared/format'
+import { Pitch } from './Pitch'
 import type { Resume, SectionKey } from '../../../shared/types'
 import { EditableContext, usePlaceholders } from './previewContext'
 import { resolveIcon } from '../lib/iconBank'
@@ -60,17 +61,6 @@ function skillLevel(item: string, index: number) {
     return { name, value, explicit: false, word: word.charAt(0).toUpperCase() + word.slice(1) }
   }
   return { name: item, value: Math.max(52, 92 - index * 8), explicit: false, word: '' }
-}
-
-function levelPercent(level: string) {
-  const l = level.toLowerCase()
-  if (/natif|maternelle|native|bilingue|bilingual|c2/.test(l)) return 100
-  if (/c1|courant|fluent|avancé|advanced|professionnel/.test(l)) return 85
-  if (/b2/.test(l)) return 70
-  if (/b1|intermédiaire|intermediate|bon niveau/.test(l)) return 55
-  if (/a2|notions|basic|élémentaire|scolaire/.test(l)) return 35
-  if (/a1|débutant|beginner/.test(l)) return 20
-  return 60
 }
 
 function interestIcon(label: string) {
@@ -320,6 +310,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                 </span>
               </h1>
               <p className="rp-arche-role">{headline}</p>
+              <Pitch r={r} className="rp-pitch" />
             </header>
             <div className="rp-arche-line" aria-hidden />
             {summary && (
@@ -364,7 +355,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                       {e.school} {when(e)}
                     </strong>
                     <em>{e.degree}</em>
-                    {e.details.trim() && <em>{e.details.trim()}</em>}
+                    {eduDetails(e, r.lang) && <em>{eduDetails(e, r.lang)}</em>}
                   </div>
                 ))}
               </section>
@@ -400,6 +391,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
             <div>
               <h1 style={fitLine(40, 440, 0.55, fullName)}>{fullName}</h1>
               <p>{headline}</p>
+              <Pitch r={r} className="rp-pitch" />
             </div>
           </header>
           <div className="rp-chev-body">
@@ -551,6 +543,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                 <span>{b.lastName}</span>
               </h1>
               <p>{headline}</p>
+              <Pitch r={r} className="rp-pitch" />
             </header>
             {exps.length > 0 && (
               <section {...sec('experience')}>
@@ -623,6 +616,8 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
               <span className="rp-mono-block b3" aria-hidden />
               <h1 style={fit(128, 318, 0.46, b.firstName)}>{b.firstName}</h1>
               <p className="rp-mono-script" style={fit(60, 318, 0.5, b.lastName)}>{b.lastName}</p>
+              <p className="rp-mono-role">{headline}</p>
+              <Pitch r={r} className="rp-pitch" />
               {summary && (
                 <section {...sec('summary')}>
                   <h2>{t.summary}</h2>
@@ -642,10 +637,10 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                       <p className="up">{e.school}</p>
                       <p className="dot up">{e.degree}</p>
                       <p className="paren">( {when(e)} )</p>
-                      {e.details.trim() && (
+                      {eduDetails(e, r.lang) && (
                         <>
                           <span className="rp-mono-arrow" aria-hidden />
-                          <p className="rp-just">{e.details.trim()}</p>
+                          <p className="rp-just">{eduDetails(e, r.lang)}</p>
                         </>
                       )}
                     </div>
@@ -725,6 +720,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                 <span>{b.lastName}</span>
               </h1>
               <p className="role">{headline}</p>
+              <Pitch r={r} className="rp-pitch" />
               {contacts.slice(0, 6).map(([k, v]) => (
                 <p key={k + v}>{v}</p>
               ))}
@@ -752,9 +748,9 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
               <div className="rp-grid-cell">
                 <h3>{e.degree}</h3>
                 <h4>{e.school}</h4>
-                {e.details.trim() && (
+                {eduDetails(e, r.lang) && (
                   <ul>
-                    <li>{e.details.trim()}</li>
+                    <li>{eduDetails(e, r.lang)}</li>
                   </ul>
                 )}
               </div>
@@ -865,6 +861,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                 </span>
               </h1>
               <p>{headline}</p>
+              <Pitch r={r} className="rp-pitch" />
               {summary && (
                 <div {...sec('summary')}>
                   <h4>
@@ -896,9 +893,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                     {leveled.slice(0, 6).map((s, i) => (
                       <div key={s.name + i} className="rp-grad-donut">
                         <span>{s.name}</span>
-                        <div className="ring" style={{ '--p': s.value } as CSSProperties}>
-                          {s.explicit ? `${s.value}%` : ''}
-                        </div>
+                        {s.word && <small>{s.word}</small>}
                       </div>
                     ))}
                   </div>
@@ -937,6 +932,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
           <header className="rp-med-head" {...E('tab:identity', 'Modifier l’identité')}>
             <h1 style={fitLine(44, 700, 0.74, fullName)}>{fullName}</h1>
             <p>{headline}</p>
+            <Pitch r={r} className="rp-pitch" />
           </header>
           <div className="rp-med-band">
             <ul {...E('tab:identity', 'Modifier les coordonnées')}>
@@ -977,8 +973,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                   {leveled.slice(0, 7).map((s, i) => (
                     <div className="rp-med-bar" key={s.name + i}>
                       <span>{s.name}</span>
-                      {s.explicit && <small>{s.value}%</small>}
-                      <i style={{ '--p': `${s.value}%` } as CSSProperties} />
+                      {s.word && <small>{s.word}</small>}
                     </div>
                   ))}
                 </section>
@@ -990,7 +985,6 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                     <div className="rp-med-bar" key={l.id}>
                       <span>{l.name}</span>
                       <small>{l.level}</small>
-                      <i style={{ '--p': `${levelPercent(l.level)}%` } as CSSProperties} />
                     </div>
                   ))}
                 </section>
@@ -1003,7 +997,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                     <GraduationCap size={28} strokeWidth={2.2} />
                     {t.education}
                   </h2>
-                  {timeline(edus.map((e) => ({ id: e.id, label: e.degree.split(/[,(]/)[0], title: e.school, when: when(e), text: e.details || e.location })))}
+                  {timeline(edus.map((e) => ({ id: e.id, label: e.degree.split(/[,(]/)[0], title: e.school, when: when(e), text: eduDetails(e, r.lang) || e.location })))}
                 </section>
               )}
               {exps.length > 0 && (
@@ -1038,6 +1032,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                 <span>{b.lastName}</span>
               </h1>
               <p>{headline}</p>
+              <Pitch r={r} className="rp-pitch" />
             </header>
             {contactList('rp-dune-contact', 13, 3)}
             {edus.length > 0 && (
@@ -1047,7 +1042,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                   <div className="rp-dune-edu" key={e.id}>
                     <strong>{e.end.slice(0, 4) || e.start.slice(0, 4)}</strong>
                     <strong>{e.school}</strong>
-                    <p>{[e.degree, e.details].filter((x) => x.trim()).join(', ')}</p>
+                    <p>{[e.degree, eduDetails(e, r.lang)].filter((x) => x.trim()).join(', ')}</p>
                   </div>
                 ))}
               </section>
@@ -1058,7 +1053,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                 {leveled.slice(0, 6).map((s, i) => (
                   <div className="rp-dune-bar" key={s.name + i}>
                     <span>{s.name}</span>
-                    <i style={{ '--p': `${s.value}%` } as CSSProperties} />
+                    {s.word && <small>{s.word}</small>}
                   </div>
                 ))}
               </section>
@@ -1117,6 +1112,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
               <span>{b.lastName}</span>
             </h1>
             <p className="role">{headline}</p>
+            <Pitch r={r} className="rp-pitch" />
             {summary && (
               <p className="sum" {...sec('summary')}>
                 {summary}
@@ -1155,10 +1151,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                   {leveled.slice(0, 5).map((s, i) => (
                     <div className="rp-ang-bar" key={s.name + i}>
                       <span>{s.name}</span>
-                      <div>
-                        <i style={{ '--p': `${s.value}%` } as CSSProperties} />
-                        {s.explicit && <small>{s.value}%</small>}
-                      </div>
+                      {s.word && <small>{s.word}</small>}
                     </div>
                   ))}
                 </section>
@@ -1215,6 +1208,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                 <span>{b.lastName}</span>
               </h1>
               <p>{headline}</p>
+              <Pitch r={r} className="rp-pitch" />
               <div className="rp-noc-social">
                 {b.linkedin && <LinkedinIcon size={12} />}
                 {b.github && <GithubIcon size={12} />}
@@ -1253,7 +1247,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
             {edus.length > 0 && (
               <section {...sec('education')}>
                 <h2>{t.education}</h2>
-                {rows(edus.map((e) => ({ id: e.id, a: e.school, b: when(e), c: e.degree, text: e.details || e.location })))}
+                {rows(edus.map((e) => ({ id: e.id, a: e.school, b: when(e), c: e.degree, text: eduDetails(e, r.lang) || e.location })))}
               </section>
             )}
             {skills.length > 0 && (
@@ -1266,11 +1260,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                         <b>{mono(s.name)}</b>
                         <span>{s.name}</span>
                       </p>
-                      <div className="seg">
-                        {[0, 1, 2, 3, 4].map((k) => (
-                          <i key={k} className={k < Math.round(s.value / 20) ? 'on' : ''} />
-                        ))}
-                      </div>
+                      {s.word && <small>{s.word}</small>}
                     </div>
                   ))}
                 </div>
@@ -1298,6 +1288,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
             <header {...E('tab:identity', 'Modifier l’identité')}>
               <h1 style={fit(30, 222, 0.66, b.firstName, b.lastName)}>{fullName}</h1>
               <p>{headline}</p>
+              <Pitch r={r} className="rp-pitch" />
             </header>
             {contactList('rp-pastel-contact', 11, 3)}
             {summary && (
@@ -1324,7 +1315,6 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                       <strong>{l.name}</strong>
                       <small>{l.level}</small>
                     </div>
-                    <i style={{ '--p': `${levelPercent(l.level)}%` } as CSSProperties} />
                   </div>
                 ))}
               </section>
@@ -1357,7 +1347,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                     <b>{e.end.slice(0, 4) || e.start.slice(0, 4)}</b>
                     <div>
                       <strong>{[e.degree, e.school].filter(Boolean).join(' / ')}</strong>
-                      {(e.details || e.location) && <p>{e.details || e.location}</p>}
+                      {(eduDetails(e, r.lang) || e.location) && <p>{eduDetails(e, r.lang) || e.location}</p>}
                     </div>
                   </div>
                 ))}
@@ -1393,6 +1383,8 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
               <span>{b.firstName}</span>
               <span>{b.lastName}</span>
             </h1>
+            <p className="rp-cartel-role">{headline}</p>
+            <Pitch r={r} className="rp-pitch" />
             <div className="rp-cartel-contact" {...E('tab:identity', 'Modifier les coordonnées')}>
               <h3>{L.contact}</h3>
               {contacts.slice(0, 4).map(([k, v]) => (
@@ -1436,7 +1428,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                       {e.school}
                       {e.location ? `, ${e.location}` : ''} · {when(e)}
                     </small>
-                    {e.details.trim() && <p>{e.details.trim()}</p>}
+                    {eduDetails(e, r.lang) && <p>{eduDetails(e, r.lang)}</p>}
                   </div>
                 ))}
               </div>
@@ -1451,11 +1443,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                     {col.map((s, i) => (
                       <p key={s.name + i}>
                         <span>{s.name}</span>
-                        <b>
-                          {[0, 1, 2, 3, 4].map((k) => (
-                            <i key={k} className={k < Math.round(s.value / 20) ? 'on' : ''} />
-                          ))}
-                        </b>
+                        {s.word && <b>{s.word}</b>}
                       </p>
                     ))}
                   </div>
@@ -1491,6 +1479,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
             <div className="rp-col-id">
               <h1 style={fit(22, 210, 0.5, b.firstName, b.lastName)}>{fullName}</h1>
               <p className="role">{b.headline.split(/\s+[·|&]\s+|,\s*/).slice(0, 3).join(' · ')}</p>
+              <Pitch r={r} className="rp-pitch" />
               <span className="rp-col-badge">{exps.length > 2 ? 'senior' : 'junior'}</span>
               <div className="rp-col-box">
                 {contacts.slice(0, 3).map(([k, v]) => (
@@ -1556,8 +1545,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
       const rowsInfo = (
         [
           [t.languages, langs[0] ? `${langs[0].name}` : ''],
-          [r.lang === 'en' ? 'City' : 'Ville', b.location],
-          [r.lang === 'en' ? 'Mobility' : 'Mobilité', b.mobility ?? '']
+          [r.lang === 'en' ? 'City' : 'Ville', b.location]
         ] as [string, string][]
       ).filter(([, v]) => v)
       body = (
@@ -1607,6 +1595,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
             <div className="rp-bag-warn">
               <b>{r.lang === 'en' ? 'APPROVED' : 'APPROUVÉ'}</b>
               <p>{headline}</p>
+              <Pitch r={r} className="rp-pitch" />
             </div>
             <div className="rp-bag-strip" aria-hidden>
               {Array.from({ length: 3 }, (_, i) => (
@@ -1714,6 +1703,8 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
               <span>{b.firstName}</span>
               <span>{b.lastName}</span>
             </h1>
+            <p className="rp-scr-role">{headline}</p>
+            <Pitch r={r} className="rp-pitch" />
             {contactList('rp-scr-contact', 13, 3)}
           </header>
           <div className="rp-scr-photo">
@@ -1776,6 +1767,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
               <span>{headline}</span>
             </p>
             <i className="rail" aria-hidden />
+            <Pitch r={r} className="rp-pitch" />
           </header>
           <aside className="rp-trib-side">
             <div className="rp-trib-photo">
@@ -1793,7 +1785,6 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                 {langs.map((l) => (
                   <div className="rp-trib-lv" key={l.id}>
                     <b>{l.name}</b>
-                    <i style={{ '--p': `${levelPercent(l.level)}%` } as CSSProperties} />
                     <small>{l.level}</small>
                   </div>
                 ))}
@@ -1830,7 +1821,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                   <div className="rp-trib-item" key={e.id}>
                     <em>{e.degree}</em>
                     <strong>{[e.school, e.location, when(e)].filter(Boolean).join(', ')}</strong>
-                    {e.details.trim() && <p>{e.details.trim()}</p>}
+                    {eduDetails(e, r.lang) && <p>{eduDetails(e, r.lang)}</p>}
                   </div>
                 ))}
               </section>
@@ -1843,7 +1834,6 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                 {groups.slice(0, 4).map((g) => (
                   <div className="rp-trib-sk" key={g.id}>
                     <b>{g.name || t.skills}</b>
-                    <i style={{ '--p': `${skillLevel(g.items[0] ?? '', 0).value}%` } as CSSProperties} />
                     <p>{g.items.join(', ')}</p>
                   </div>
                 ))}

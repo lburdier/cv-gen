@@ -10,6 +10,7 @@ import { importCv } from './importCv'
 import { cancelDownload, downloadModel, localState, removeModel } from './localLlm'
 import { cancelLogin, login, loginState, logout } from './anthropicLogin'
 import { initUpdater } from './updater'
+import { bridgeStatus, extensionDir, startBridge, stopBridge, takePending } from './bridge'
 import { readFileSync, statSync } from 'fs'
 import { dataDir, getSettings, listBackups, loadData, logError, readBackup, saveData, setApiKey, setSettings } from './storage'
 
@@ -180,6 +181,11 @@ function registerIpc() {
     if (statSync(file).size > 25 * 1024 * 1024) throw new Error('Fichier trop lourd (25 Mo maximum).')
     return { name: basename(file), bytes: new Uint8Array(readFileSync(file)) }
   })
+  handle('bridge:status', () => bridgeStatus())
+  handle('bridge:pending', () => takePending())
+  handle('bridge:folder', async () => {
+    await shell.openPath(extensionDir())
+  })
   handle('cv:import', (name: string, bytes: Uint8Array, mode?: 'auto' | 'local') => importCv(name, bytes, mode))
 }
 
@@ -212,10 +218,14 @@ app.whenReady().then(() => {
   registerIpc()
   initUpdater()
   createWindow()
+  void startBridge(() => main)
+  // Lien cvgen:// : l'extension peut ouvrir l'app quand elle est fermée (version installée seulement).
+  if (app.isPackaged && !HEADLESS) app.setAsDefaultProtocolClient('cvgen')
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
+app.on('will-quit', () => stopBridge())
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })

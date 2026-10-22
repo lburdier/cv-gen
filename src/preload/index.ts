@@ -51,6 +51,16 @@ const api: CvGenApi = {
     }
   },
   cv: { pick: call('cv:pick'), import: call('cv:import') },
+  bridge: {
+    status: call('bridge:status'),
+    pending: call('bridge:pending'),
+    openExtensionFolder: call('bridge:folder'),
+    onOffers: (cb) => {
+      const h = (_e: unknown, d: Parameters<typeof cb>[0]) => cb(d)
+      ipcRenderer.on('bridge:offers', h)
+      return () => ipcRenderer.removeListener('bridge:offers', h)
+    }
+  },
   updates: {
     status: call('update:status'),
     check: call('update:check'),

@@ -1,5 +1,6 @@
 import { Fragment, useContext, type CSSProperties, type ReactNode } from 'react'
-import { formatMonth, sectionTitles, formatRange, stripProtocol, visibleSections } from '../../../shared/format'
+import { Pitch } from './Pitch'
+import { coursesText, formatMonth, sectionTitles, formatRange, stripProtocol, visibleSections } from '../../../shared/format'
 import type { DesignSpec, Resume, SectionKey } from '../../../shared/types'
 import { contrast, onColor } from './color'
 import { designOf } from './designCatalog'
@@ -200,7 +201,7 @@ export function CvCustom({ resume: r }: { resume: Resume }) {
   const fullName = `${b.firstName} ${b.lastName}`.trim()
 
   const contactFields = (['phone', 'email', 'location', 'website', 'linkedin', 'github'] as const).filter((k) => r.basics[k] || (canvas && (k === 'email' || k === 'phone')))
-  const extraContacts = [r.basics.mobility ?? '', ...(r.links ?? []).map((l) => stripProtocol(l.url))].filter(Boolean)
+  const extraContacts = [...(r.links ?? []).map((l) => stripProtocol(l.url))].filter(Boolean)
   const hasContacts = contactFields.length > 0 || extraContacts.length > 0
 
   const photo =
@@ -319,6 +320,7 @@ export function CvCustom({ resume: r }: { resume: Resume }) {
                     <T p={`education.${i}.details`} v={canvas ? e.details : e.details.trim()} ph="Mention, spécialité (facultatif)" multi />
                   </p>
                 )}
+                {coursesText(e, r.lang) && <p className="cm-detail cm-courses">{coursesText(e, r.lang)}</p>}
               </div>
             ))}
           </div>
@@ -491,6 +493,7 @@ export function CvCustom({ resume: r }: { resume: Resume }) {
             <T p="basics.headline" v={r.basics.headline} show={b.headline} ph="Titre du poste visé" />
           </p>
         )}
+        <Pitch r={r} className="cm-pitch" />
         {!hasSide && d.header !== 'split' && contactList('inline')}
       </div>
       {!hasSide && d.header === 'split' && contactList('stack')}

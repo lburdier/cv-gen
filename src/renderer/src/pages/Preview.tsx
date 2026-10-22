@@ -2,6 +2,8 @@ import { useEffect } from 'react'
 import { presetAs, sampleResume, type PreviewGender } from '../lib/sample'
 import { getTemplate } from '../templates/registry'
 import { Cv } from '../templates/Cv'
+import { measureReadability, type ScanReport } from '../lib/readability'
+import { pitchParts } from '../../../shared/format'
 
 /**
  * Rendu d'un modèle avec le CV d'exemple, utilisé par scripts/gen-previews.cjs.
@@ -21,6 +23,9 @@ export default function PreviewPage({ templateId }: { templateId: string }) {
   const resume = preset
     ? { ...presetAs(preset, (q.get('g') as PreviewGender) || 'all'), templateId: t.id, accent: t.accent, ...(t.accent2 ? { accent2: t.accent2 } : {}), font: t.font }
     : sampleResume(templateId)
+  // Mesure « Lecture 6 s » (scripts/gen-scores.cjs) : lue sur le rendu réel du modèle.
+  ;(window as unknown as { cvScan?: () => ScanReport }).cvScan = () =>
+    measureReadability(document.querySelector('.cv') as HTMLElement, { roles: resume.experiences.map((e) => e.role), pitch: pitchParts(resume).length > 0 })
   return (
     <div className="preview-root">
       <div className="paper" style={{ boxShadow: 'none', borderRadius: 0 }}>

@@ -31,6 +31,8 @@ Application Windows pour créer des CV lisibles par les ATS et les adapter à ch
 - **Score ATS local** (hors ligne) : format, contenu (verbes d'action, résultats chiffrés, longueur…) et couverture des mots-clés de l'offre, plus une « Vue ATS » du texte extrait.
 - **Presets complets** : 17 CV d'exemple réalistes par métier (tech, business, création, santé, droit et finance, étudiant), chacun avec son modèle, créables en un clic depuis la page Modèles ou la palette (Ctrl K).
 - **Import de CV existants (PDF, Word, texte), sans IA** : lecture locale du PDF (colonnes, puces en retrait, lignes coupées), découpage en rubriques, expériences, formations, compétences et langues. Glisser-déposer sur l'accueil ou « Mes CV ». Avec une clé IA, l'IA structure le CV et la lecture locale complète ses oublis.
+- **Extension LinkedIn (Chrome, Edge)** : recherche d'offres LinkedIn depuis l'extension (poste, lieu, date, télétravail, contrat, niveau) et import en lot, bouton « CV GEN » sur chaque annonce et chaque carte de résultats, import de l'annonce d'un autre site (données JobPosting ou texte sélectionné). « Appliquer » ouvre l'offre dans CV GEN et adapte le CV le plus proche. L'extension parle uniquement à l'app, en local (127.0.0.1) ; si l'app est fermée, les offres attendent son ouverture.
+- **Exports nommés proprement** : `Prenom-Nom-CV-2026.pdf`, `Prenom-Nom-Lettre-2026.pdf` (sans accents ni espaces, comme l'attendent les recruteurs).
 - **Lettres de motivation** : angle (poste, entreprise, reconversion, alternance, spontanée), longueur, motivation saisie par la personne, expériences à mettre en avant ; brouillon guidé sans IA ou rédaction par l'IA ; en-tête complet (destinataire, lieu et date, objet), vérification (longueur, mots-clés, formules creuses) et retouches en un clic.
 - **IA hors ligne** : un petit modèle (Qwen3 0.6B, 397 Mo, téléchargé à la demande) tourne sur l'ordinateur avec llama.cpp. Gratuit, sans clé ni limite ; il répond dans l'assistant, aide à rédiger les lettres (reformulation fidèle du brouillon guidé, contrôlée paragraphe par paragraphe) et prend le relais quand le fournisseur en ligne échoue.
 - **IA (Claude ou OpenRouter gratuit)** : analyse d'offre, adaptation du CV avec revue avant/après, réécriture de puces, rédaction du profil, assistant conversationnel avec choix du modèle. Réponses en flux et repli automatique sur un autre modèle gratuit. Consigne stricte : ne jamais inventer d'expérience.
@@ -61,8 +63,9 @@ La clé API se saisit dans **Paramètres** : Claude (Anthropic) ou OpenRouter (m
 ## Structure
 
 ```
-src/main       processus principal : fenêtre, IPC, IA (ai.ts), exports PDF/DOCX (export.ts), stockage
+src/main       processus principal : fenêtre, IPC, pont local de l'extension (bridge.ts), IA (ai.ts), exports PDF/DOCX (export.ts), stockage
 src/preload    pont sécurisé window.cvgen
 src/shared     types et mise en forme communs (intitulés, dates, texte brut)
+extension      extension navigateur « CV GEN · Offres » (Manifest V3, LinkedIn)
 src/renderer   interface React : pages, composants, modèles de CV, analyse ATS (lib/ats.ts)
 ```
