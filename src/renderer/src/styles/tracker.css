@@ -1,0 +1,608 @@
+/* ==========================================================================
+   Suivi des candidatures : kanban, tableau éditable, statistiques, fiche
+   ========================================================================== */
+.tk-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.tk-toolbar .seg button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tk-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text-3);
+}
+.tk-search input {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  width: 170px;
+}
+.tk-agenda {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.tk-todo {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 12.5px;
+  text-align: left;
+  max-width: 100%;
+}
+.tk-todo b {
+  color: var(--text);
+  font-weight: 620;
+  white-space: nowrap;
+}
+.tk-todo span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tk-todo small {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+.tk-todo.late {
+  border-color: var(--danger);
+}
+.tk-todo.late b {
+  color: var(--danger);
+}
+.tk-todo.today {
+  border-color: var(--ink);
+}
+.tk-todo:hover {
+  border-color: var(--line-strong);
+  background: var(--surface-2);
+}
+
+/* Kanban */
+.tk-board {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(210px, 1fr));
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.tk-col {
+  background: var(--bg-sunk);
+  border-radius: var(--radius);
+  padding: 10px;
+  min-height: 320px;
+  border: 1px dashed transparent;
+  transition:
+    border-color 0.12s,
+    background 0.12s;
+}
+.tk-col.over {
+  border-color: var(--ink);
+  background: var(--bg-hover);
+}
+.tk-col header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 6px 10px;
+  font-weight: 620;
+  font-size: 13.5px;
+}
+.tk-col header b {
+  font: 500 11px var(--mono);
+  color: var(--text-3);
+}
+.tk-col-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tk-col-empty {
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
+  font-size: 12px;
+  text-align: center;
+  padding: 18px 8px;
+}
+.tk-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 11px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: grab;
+  box-shadow: var(--shadow-sm);
+}
+.tk-card:hover {
+  border-color: var(--line-strong);
+}
+.tk-card:active {
+  cursor: grabbing;
+}
+.tk-card strong {
+  font-size: 13.5px;
+  font-weight: 620;
+  line-height: 1.3;
+}
+.tk-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.tk-card-top .tag {
+  font-size: 11px;
+  padding: 1px 8px;
+}
+.tk-card-sub {
+  font-size: 12px;
+  color: var(--text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tk-card-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-top: 4px;
+}
+.tk-card-foot:empty {
+  display: none;
+}
+.tk-prio {
+  display: inline-flex;
+  gap: 2px;
+}
+.tk-prio i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+.tk-prio i.on {
+  background: var(--ink);
+}
+.tk-badge {
+  font-size: 11px;
+  font-weight: 560;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--bg-hover);
+  color: var(--text-2);
+}
+.tk-badge.late {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.tk-badge.today {
+  background: var(--ink);
+  color: var(--ink-text);
+}
+.tk-badge.interview {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+/* Tableau éditable */
+.tk-table-wrap {
+  overflow: visible;
+}
+.tk-table-tools {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.tk-colmenu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  padding: 10px 14px;
+  display: grid;
+  gap: 6px;
+  min-width: 190px;
+}
+.tk-table-scroll {
+  overflow: auto;
+  max-height: calc(100vh - 290px);
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+.tk-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.tk-table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--surface-2);
+  text-align: left;
+  font: 500 10.5px var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+  padding: 9px 8px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+.tk-table td {
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+.tk-table tr:hover td {
+  background: var(--surface-2);
+}
+.tk-table tr.st-rejected td {
+  opacity: 0.55;
+}
+.tk-table .c-title {
+  min-width: 200px;
+}
+.tk-table .c-notes {
+  min-width: 220px;
+}
+.tk-table .c-company,
+.tk-table .c-location,
+.tk-table .c-source,
+.tk-table .c-contact {
+  min-width: 130px;
+}
+.tk-table td.c-priority,
+.tk-table td.c-kind,
+.tk-table td.c-status {
+  min-width: 120px;
+}
+.tk-cell {
+  width: 100%;
+  min-width: 90px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  padding: 5px 7px;
+}
+.tk-cell:hover {
+  border-color: var(--line);
+}
+.tk-cell:focus {
+  outline: 0;
+  border-color: var(--ink);
+  background: var(--surface);
+}
+.tk-cell::placeholder {
+  color: var(--text-3);
+}
+.tk-date.late .tk-cell,
+input.tk-date.late {
+  color: var(--danger);
+  font-weight: 600;
+}
+.tk-date.today .tk-cell,
+input.tk-date.today {
+  font-weight: 650;
+}
+.tk-title-link {
+  border: 0;
+  background: none;
+  padding: 5px 7px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text);
+  text-align: left;
+  border-radius: 8px;
+}
+.tk-title-link:hover {
+  text-decoration: underline;
+}
+.tk-title-link.sub {
+  font-weight: 450;
+  color: var(--text-2);
+}
+
+/* Statistiques */
+.tk-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+.tk-kpi {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.tk-kpi strong {
+  font: 450 34px var(--display);
+  letter-spacing: -0.03em;
+}
+.tk-kpi small {
+  color: var(--text-3);
+  font-size: 12px;
+}
+.tk-bars {
+  display: grid;
+  gap: 10px;
+}
+.tk-bar {
+  display: grid;
+  grid-template-columns: 90px 1fr 32px;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+.tk-bar i {
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--ink);
+  min-width: 2px;
+}
+.tk-bar i.st-rejected {
+  background: var(--line-strong);
+}
+.tk-bar i.st-offer {
+  background: var(--success);
+}
+.tk-bar b {
+  font: 500 12px var(--mono);
+  text-align: right;
+}
+
+/* Fiche */
+.tk-overlay {
+  justify-content: flex-end;
+  align-items: stretch;
+  padding: 0;
+}
+.tk-drawer {
+  width: min(640px, 100%);
+  height: 100%;
+  background: var(--bg);
+  border-left: 1px solid var(--line);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  animation: tk-in 0.18s ease;
+}
+@keyframes tk-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+}
+.tk-drawer-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 20px 22px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.tk-h1 {
+  font-size: 22px !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.02em;
+  width: 100%;
+  margin-left: -6px;
+}
+.tk-h2 {
+  font-size: 14.5px !important;
+  color: var(--text-2);
+  width: 100%;
+  margin-left: -6px;
+}
+.tk-drawer-body {
+  overflow-y: auto;
+  padding: 16px 22px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.tk-steps {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  background: var(--bg-hover);
+  padding: 4px;
+  border-radius: 999px;
+}
+.tk-step {
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  height: 30px;
+  font-size: 12px;
+  font-weight: 560;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.tk-step.on {
+  background: var(--ink);
+  color: var(--ink-text);
+}
+.tk-step.on.st-offer {
+  background: var(--success);
+  color: #fff;
+}
+.tk-step.on.st-rejected {
+  background: var(--text-3);
+}
+.tk-sec {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tk-sec-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.tk-sec h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 640;
+}
+.tk-dates {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.tk-docs {
+  display: grid;
+  gap: 8px;
+}
+.tk-doc {
+  display: grid;
+  grid-template-columns: 90px 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+.tk-contact {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.3fr 1fr auto;
+  gap: 6px;
+  align-items: center;
+}
+.tk-compose {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tk-reco {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-2);
+  background: var(--bg-sunk);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+.tk-reco b {
+  color: var(--text);
+}
+.tk-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 14px;
+  border-left: 1px solid var(--line-strong);
+  display: grid;
+  gap: 8px;
+}
+.tk-timeline li {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+.tk-timeline li::before {
+  content: '';
+  position: absolute;
+  left: -18px;
+  top: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+.tk-timeline li.ev-status::before {
+  background: var(--ink);
+}
+.tk-timeline li.ev-followup::before {
+  background: var(--success);
+}
+.tk-timeline small {
+  font: 11px var(--mono);
+  color: var(--text-3);
+  white-space: nowrap;
+}
+.tk-foot {
+  font-size: 12px;
+  margin-top: 18px;
+}
+
+/* Accueil : candidatures à suivre */
+.home-track {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 2fr;
+  gap: 18px;
+  align-items: start;
+}
+.home-track-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.home-track-kpis div {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.home-track-kpis div + div {
+  border-left: 1px solid var(--line);
+}
+.home-track-kpis strong {
+  font: 450 28px var(--display);
+  letter-spacing: -0.03em;
+}
+.home-track-kpis span {
+  font-size: 12px;
+  color: var(--text-3);
+}
+.home-track-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+@media (max-width: 1100px) {
+  .home-track {
+    grid-template-columns: 1fr;
+  }
+  .tk-dates {
+    grid-template-columns: 1fr 1fr;
+  }
+}

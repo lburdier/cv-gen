@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, ExternalLink, FileText, Mail, Plus, Puzzle, RefreshCw, Sparkles, Target, Trash2 } from 'lucide-react'
+import { BriefcaseBusiness, ExternalLink, ListChecks, FileText, Mail, Plus, Puzzle, RefreshCw, Sparkles, Target, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import type { Offer, OfferKeyword } from '../../../shared/types'
 import { TailorModal } from '../components/TailorModal'
@@ -8,6 +8,7 @@ import { SAMPLE_OFFER, uid } from '../lib/sample'
 import { actions } from '../lib/actions'
 import { useStore } from '../store'
 import { sourceLabel } from '../lib/offerImport'
+import { fromOffer, statusLabel } from '../lib/tracker'
 import { extensionFocus } from '../components/ExtensionSettings'
 
 const CAT: Record<OfferKeyword['category'], string> = {
@@ -134,6 +135,26 @@ function OfferDetail({ offer, autoTailor }: { offer: Offer; autoTailor?: boolean
             onChange={(e) => s.saveOffer({ ...offer, company: e.target.value })}
           />
         </div>
+        {(() => {
+          const tracked = (s.data.applications ?? []).find((x) => x.offerId === offer.id)
+          return tracked ? (
+            <button className="btn btn-soft btn-sm" onClick={() => s.go({ name: 'tracker', id: tracked.id })} title="Ouvrir la fiche de suivi">
+              <ListChecks size={14} /> Suivi : {statusLabel(tracked.status)}
+            </button>
+          ) : (
+            <button
+              className="btn btn-outline btn-sm"
+              onClick={() => {
+                const app = fromOffer(offer, rows[0]?.r.id)
+                s.saveApplication(app)
+                s.go({ name: 'tracker', id: app.id })
+              }}
+              title="Ajouter au tableau de suivi des candidatures"
+            >
+              <ListChecks size={14} /> Suivre la candidature
+            </button>
+          )
+        })()}
         {offer.url && (
           <button className="btn btn-soft btn-sm" onClick={() => window.cvgen.openExternal(offer.url!)} title={offer.url}>
             <ExternalLink size={14} /> Annonce

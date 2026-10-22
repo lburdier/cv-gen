@@ -42,6 +42,7 @@ export function CommandPalette() {
       { id: 'g-cv', group: 'aller à', label: 'Mes CV', icon: <FileText size={17} />, run: () => go({ name: 'resumes' }) },
       { id: 'g-tpl', group: 'aller à', label: 'Modèles', icon: <SwatchBook size={17} />, run: () => go({ name: 'templates' }) },
       { id: 'g-off', group: 'aller à', label: 'Offres & matching', icon: <BriefcaseBusiness size={17} />, run: () => go({ name: 'offers' }) },
+      { id: 'g-trk', group: 'aller à', label: 'Suivi des candidatures', icon: <BriefcaseBusiness size={17} />, run: () => go({ name: 'tracker' }) },
       { id: 'g-let', group: 'aller à', label: 'Lettres de motivation', icon: <Mail size={17} />, run: () => go({ name: 'letters' }) },
       { id: 'g-set', group: 'aller à', label: 'Paramètres', icon: <Settings size={17} />, run: () => go({ name: 'settings' }) }
     ]

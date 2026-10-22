@@ -78,6 +78,7 @@ const api: CvGenApi = {
     writeSummary: call('ai:writeSummary'),
     coverLetter: call('ai:coverLetter'),
     reviseLetter: call('ai:reviseLetter'),
+    followUp: call('ai:followUp'),
     analyzeCvImage: call('ai:analyzeCvImage'),
     chat: call('ai:chat'),
     onPartial: (cb) => {

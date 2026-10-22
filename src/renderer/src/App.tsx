@@ -16,6 +16,7 @@ import { useStore } from './store'
 const Editor = lazy(() => import('./pages/Editor'))
 const Letters = lazy(() => import('./pages/Letters'))
 const Offers = lazy(() => import('./pages/Offers'))
+const Tracker = lazy(() => import('./pages/Tracker'))
 const Resumes = lazy(() => import('./pages/Resumes'))
 const SettingsPage = lazy(() => import('./pages/Settings'))
 const Templates = lazy(() => import('./pages/Templates'))
@@ -114,6 +115,8 @@ export default function App() {
       <Editor key={r.id} id={r.id} />
     ) : r.name === 'offers' ? (
       <Offers id={r.id} tailor={r.tailor} />
+    ) : r.name === 'tracker' ? (
+      <Tracker id={r.id} />
     ) : r.name === 'letters' ? (
       <Letters key={r.id ?? 'list'} id={r.id} />
     ) : (

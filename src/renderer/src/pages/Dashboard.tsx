@@ -6,6 +6,7 @@ import { Empty, timeAgo } from '../components/ui'
 import { analyze, scoreColor } from '../lib/ats'
 import { actions } from '../lib/actions'
 import { useStore } from '../store'
+import { agenda, shortDate, trackerStats } from '../lib/tracker'
 import { getTemplate } from '../templates/registry'
 
 const ASK_CHIPS = ['Améliorer mon profil', 'Explique mon score ATS', 'Mots-clés manquants', 'Idées de réalisations', 'Préparer l’entretien']
@@ -262,6 +263,60 @@ export default function Dashboard() {
           )}
         </div>
       </section>
+
+      {/* ---------- Suivi : relances et entretiens ---------- */}
+      {(s.data.applications ?? []).length > 0 && (
+        <section className="home-section">
+          <div className="home-section-head">
+            <h2 className="home-h2">
+              Candidatures <em>à suivre</em>
+            </h2>
+            <button className="btn btn-ghost btn-sm" onClick={() => s.go({ name: 'tracker' })}>
+              Tableau de suivi <ArrowRight size={14} />
+            </button>
+          </div>
+          {(() => {
+            const items = agenda(s.data.applications ?? [])
+            const st = trackerStats(s.data.applications ?? [])
+            return (
+              <div className="home-track">
+                <div className="home-track-kpis">
+                  <div>
+                    <strong>{st.sent}</strong>
+                    <span>envoyées</span>
+                  </div>
+                  <div>
+                    <strong>{st.responseRate} %</strong>
+                    <span>de réponses</span>
+                  </div>
+                  <div>
+                    <strong>{st.interviews}</strong>
+                    <span>entretiens</span>
+                  </div>
+                </div>
+                <div className="home-track-list">
+                  {items.length === 0 ? (
+                    <p className="muted" style={{ margin: 0 }}>
+                      Aucune relance ni entretien dans les prochains jours.
+                    </p>
+                  ) : (
+                    items.slice(0, 5).map((x) => (
+                      <button key={x.app.id + x.kind} className={`tk-todo ${x.state}`} onClick={() => s.go({ name: 'tracker', id: x.app.id })}>
+                        <b>{x.kind === 'interview' ? 'Entretien' : x.state === 'late' ? 'Relance en retard' : x.state === 'today' ? 'Relancer aujourd’hui' : 'Relance'}</b>
+                        <span>
+                          {x.app.title || 'Sans intitulé'}
+                          {x.app.company ? ` · ${x.app.company}` : ''}
+                        </span>
+                        <small>{shortDate(x.date)}</small>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+            )
+          })()}
+        </section>
+      )}
 
       {/* ---------- Assistant ---------- */}
       <section className="home-section">

@@ -2335,8 +2335,8 @@ ul.clean li {
   position: relative;
 }
 
-/* Navigation : on compacte d'abord la recherche, puis les libellés. */
-@media (max-width: 1360px) {
+/* Navigation (8 onglets avec Suivi) : on compacte d’abord la recherche, puis les libellés. */
+@media (max-width: 1480px) {
   .search-trigger .lbl,
   .tab .cnt {
     display: none;
@@ -2346,7 +2346,7 @@ ul.clean li {
     gap: 0;
   }
 }
-@media (max-width: 1200px) {
+@media (max-width: 1320px) {
   .tab b {
     display: none;
   }
@@ -2357,7 +2357,7 @@ ul.clean li {
     display: none;
   }
 }
-@media (max-width: 1040px) {
+@media (max-width: 1140px) {
   .brand .brand-text {
     display: none;
   }

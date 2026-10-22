@@ -7,6 +7,7 @@ import * as z from 'zod/v4'
 import { noDash, noDashDeep, resumeToText } from '../shared/format'
 import { DEFAULT_DESIGN, normalizeDesign } from '../shared/design'
 import type {
+  FollowUpRequest,
   BulletVariants,
   CvImageAnalysis,
   DesignSpec,
@@ -417,6 +418,60 @@ ${HONESTY}
 ${LETTER_RULES}
 Renvoie uniquement la lettre retouchée, complète. Langue : ${lang === 'en' ? 'anglais' : 'français'}.`,
     messages: [{ role: 'user', content: `Consigne : ${instruction}\n\nLettre :\n${body}\n\n${offer ? 'Offre :\n' + offer.text + '\n\n' : ''}CV (seule source de faits) :\n${resumeToText(resume)}` }]
+  })
+}
+
+// ---------- Relances de candidature ----------
+
+const STEP_RULES: Record<FollowUpRequest['step'], string> = {
+  relance:
+    'Première relance, 6 à 7 jours après l’envoi de la candidature : rappelle la candidature (poste, date), redis en une ou deux phrases pourquoi ce poste ou ce stage compte pour la personne, cite un ou deux atouts concrets du CV liés à l’offre, propose un court échange. Aucun reproche sur l’absence de réponse.',
+  relance2:
+    'Seconde et dernière relance, environ deux semaines après l’envoi : très courte, cordiale, réaffirme l’intérêt et la disponibilité, laisse une porte ouverte même en cas de réponse négative.',
+  'apres-entretien':
+    'Message de remerciement après un entretien, le lendemain : remercie pour l’échange, reprend un point précis du poste ou de l’équipe qui renforce la motivation, rappelle en une phrase l’apport concret, se tient disponible pour la suite.'
+}
+
+const KIND_WORD: Record<FollowUpRequest['kind'], string> = { emploi: 'poste', stage: 'stage', alternance: 'alternance', mission: 'mission' }
+
+export async function followUp(req: FollowUpRequest, resume?: Resume): Promise<string> {
+  const en = req.lang === 'en'
+  const mail = req.channel === 'email'
+  const draft = req.draft?.trim()
+  return text({
+    localScope: 'Le modèle local est trop petit pour rédiger une relance fiable : utilisez le « Brouillon guidé » (sans IA), ou choisissez Claude ou OpenRouter dans Paramètres.',
+    effort: 'low',
+    timeoutMs: 45_000,
+    maxTokens: 3000,
+    system: `${
+      draft
+        ? `Tu corriges ${mail ? 'un e-mail' : 'un message LinkedIn'} de relance écrit par la personne elle-même. Garde sa voix, ses idées et sa structure : corrige l'orthographe, la grammaire et la ponctuation, allège les tournures lourdes, retire les formules creuses. N'ajoute ni idée ni fait nouveau, ne rallonge pas.`
+        : `Tu rédiges ${mail ? 'un e-mail' : 'un message LinkedIn'} de relance pour une candidature (${KIND_WORD[req.kind]}). C'est un premier jet que la personne va réécrire avec ses mots.`
+    }
+${STEP_RULES[req.step]}
+${mail ? 'Longueur : 90 à 150 mots. Commence par une ligne « Objet : … » (court, avec l’intitulé du poste), une ligne vide, puis la formule d’appel, le message, une formule de politesse simple et le prénom et le nom.' : 'Longueur : 500 caractères au maximum, sans objet, ton direct et cordial, formule d’appel avec le prénom du contact s’il est connu, signature avec le prénom.'}
+La motivation ne vient QUE du texte « Motivation » fourni par la personne ; s'il est vide, appuie-toi uniquement sur l’offre et le CV, sans inventer de raison personnelle.
+${HONESTY}
+${LETTER_RULES.split('\n').filter((l) => !l.startsWith('- Texte brut')).join('\n')}
+- Texte brut, sans Markdown. Pas de « je me permets de vous relancer ».
+Langue : ${en ? 'anglais' : 'français'}.`,
+    messages: [
+      {
+        role: 'user',
+        content: [
+          draft ? `Message à corriger :\n${draft}` : '',
+          `Poste : ${req.title || '(non précisé)'}${req.company ? ` chez ${req.company}` : ''}`,
+          req.contactName ? `Contact : ${req.contactName}` : 'Contact : inconnu (formule neutre)',
+          req.appliedAt ? `Candidature envoyée le ${req.appliedAt}` : '',
+          req.interviewAt ? `Entretien : ${req.interviewAt.replace('T', ' à ')}` : '',
+          `Motivation (mots de la personne) :\n${req.motivation.trim() || '(non renseignée)'}`,
+          req.offerText ? `Offre :\n${req.offerText.slice(0, 6000)}` : '',
+          resume ? `CV (seule source de faits) :\n${resumeToText(resume)}` : ''
+        ]
+          .filter(Boolean)
+          .join('\n\n')
+      }
+    ]
   })
 }
 

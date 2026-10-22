@@ -13,6 +13,7 @@ export type TourId =
   | 'ats-scan'
   | 'profile'
   | 'offers'
+  | 'tracker'
   | 'letters'
   | 'settings'
 
@@ -196,6 +197,18 @@ export const TOURS: Tour[] = [
       { sel: '.panel', text: 'Nouvelle offre', title: 'Ajouter une offre', body: 'Intitulé, entreprise et texte de l’annonce. L’analyse fonctionne sans IA ; avec une clé, elle est plus fine.', optional: true },
       { sel: '.panel', text: 'Mots-clés', title: 'Les mots-clés', body: 'Classés par importance. En vert ceux présents dans votre CV, en rouge ceux qui manquent.', optional: true },
       { sel: '.match-grid', title: 'Correspondance', body: 'Le score de chaque CV face à cette offre, et le bouton pour adapter le meilleur CV avec l’IA.', optional: true }
+    ]
+  },
+  {
+    id: 'tracker',
+    name: 'Suivi des candidatures',
+    summary: 'Suivre ses candidatures, relancer au bon moment',
+    steps: [
+      { title: 'Le suivi des candidatures', body: 'Chaque offre, stage ou mission a sa carte : étape, dates, documents envoyés, contacts et relances.' },
+      { sel: '.tk-toolbar .chips', title: 'Par type de recherche', body: 'Emploi, stage, alternance ou mission : chaque type a ses propres champs (durée, gratification, rythme, TJM…).' },
+      { sel: '.tk-toolbar .seg', title: 'Trois vues', body: 'Kanban pour glisser les cartes d’une étape à l’autre, tableau éditable avec vos colonnes, statistiques de réponse.' },
+      { sel: '.tk-agenda', title: 'À faire', body: 'Les relances dues (6 à 7 jours après l’envoi) et les entretiens de la semaine.', optional: true },
+      { sel: '.tk-board, .tk-table-wrap', title: 'Vos candidatures', body: 'Cliquez une carte ou un intitulé pour ouvrir la fiche complète, avec la rédaction de la relance.', optional: true }
     ]
   },
   {
