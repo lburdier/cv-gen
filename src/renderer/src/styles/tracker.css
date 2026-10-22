@@ -211,97 +211,123 @@
   color: var(--success);
 }
 
-/* Tableau éditable */
+/* Tableau éditable : lignes aérées, pastilles cliquables, dates en clair, colonne Poste figée */
 .tk-table-wrap {
   overflow: visible;
+  border-radius: var(--radius-lg);
 }
 .tk-table-tools {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--line);
 }
 .tk-colmenu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 6px);
-  z-index: 20;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow);
-  padding: 10px 14px;
+  padding: 6px 8px;
   display: grid;
-  gap: 6px;
-  min-width: 190px;
+  gap: 4px;
+  min-width: 200px;
+}
+.tk-colmenu .check {
+  padding: 4px 4px;
 }
 .tk-table-scroll {
   overflow: auto;
-  max-height: calc(100vh - 290px);
-  border-radius: 0 0 var(--radius) var(--radius);
+  max-height: calc(100vh - 300px);
 }
 .tk-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 13px;
 }
 .tk-table th {
   position: sticky;
   top: 0;
   z-index: 2;
-  background: var(--surface-2);
+  background: var(--surface);
   text-align: left;
-  font: 500 10.5px var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font: 500 11.5px var(--font);
   color: var(--text-3);
-  padding: 9px 8px;
+  padding: 10px 10px;
   border-bottom: 1px solid var(--line);
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
 }
+.tk-table th span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.tk-table th:hover,
+.tk-table th.sorted {
+  color: var(--text);
+}
 .tk-table td {
-  padding: 4px 6px;
+  height: 52px;
+  padding: 0 6px;
   border-bottom: 1px solid var(--line);
   vertical-align: middle;
+  background: var(--surface);
+  white-space: nowrap;
+}
+.tk-table tbody tr:last-child td {
+  border-bottom: 0;
 }
 .tk-table tr:hover td {
   background: var(--surface-2);
 }
-.tk-table tr.st-rejected td {
-  opacity: 0.55;
+.tk-table tr.st-rejected td > * {
+  opacity: 0.5;
 }
+/* Colonne Poste figée pendant le défilement horizontal */
 .tk-table .c-title {
-  min-width: 200px;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 230px;
+  max-width: 300px;
+  padding-left: 12px;
+  box-shadow: 1px 0 0 var(--line);
+}
+.tk-table th.c-title {
+  z-index: 3;
 }
 .tk-table .c-notes {
-  min-width: 220px;
+  min-width: 240px;
 }
-.tk-table .c-company,
+.tk-table .c-company {
+  min-width: 190px;
+}
 .tk-table .c-location,
 .tk-table .c-source,
-.tk-table .c-contact {
+.tk-table .c-contract {
   min-width: 130px;
 }
-.tk-table td.c-priority,
-.tk-table td.c-kind,
-.tk-table td.c-status {
-  min-width: 120px;
+.tk-table .c-contact {
+  min-width: 160px;
+}
+.tk-table .c-appliedAt,
+.tk-table .c-followUpAt,
+.tk-table .c-interviewAt {
+  min-width: 118px;
 }
 .tk-cell {
   width: 100%;
-  min-width: 90px;
+  min-width: 80px;
+  height: 34px;
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: 10px;
   background: transparent;
   color: var(--text);
   font: inherit;
-  padding: 5px 7px;
+  padding: 0 9px;
+  text-overflow: ellipsis;
 }
 .tk-cell:hover {
-  border-color: var(--line);
+  background: var(--bg-sunk);
 }
 .tk-cell:focus {
   outline: 0;
@@ -310,32 +336,253 @@
 }
 .tk-cell::placeholder {
   color: var(--text-3);
+  opacity: 0;
 }
-.tk-date.late .tk-cell,
-input.tk-date.late {
-  color: var(--danger);
-  font-weight: 600;
-}
-.tk-date.today .tk-cell,
-input.tk-date.today {
-  font-weight: 650;
+tr:hover .tk-cell::placeholder,
+.tk-cell:focus::placeholder {
+  opacity: 1;
 }
 .tk-title-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
   border: 0;
   background: none;
-  padding: 5px 7px;
+  padding: 6px 4px;
   font: inherit;
-  font-weight: 600;
+  font-size: 13.5px;
+  font-weight: 620;
   color: var(--text);
   text-align: left;
   border-radius: 8px;
 }
-.tk-title-link:hover {
-  text-decoration: underline;
+.tk-title-link span {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.tk-title-link.sub {
-  font-weight: 450;
+.tk-title-link svg {
+  flex: none;
+  color: var(--text-3);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+tr:hover .tk-title-link svg {
+  opacity: 1;
+}
+.tk-title-link:hover span {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+/* Pastilles cliquables (statut, type, priorité) */
+.tk-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: none;
+  padding: 4px 4px 4px 2px;
+  border-radius: 999px;
+  color: var(--text-3);
+}
+.tk-pill-btn > svg {
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+tr:hover .tk-pill-btn > svg,
+.tk-pill-btn:focus-visible > svg {
+  opacity: 1;
+}
+.tk-pill-menu {
+  min-width: 190px;
+}
+.tk-st {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 560;
+  background: var(--bg-hover);
+  color: var(--text);
+}
+.tk-st i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text);
+}
+.tk-st.st-todo i {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--text-3);
+}
+.tk-st.st-followup i {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px var(--text);
+}
+.tk-st.st-interview,
+.tk-st.st-offer {
+  background: var(--success-soft);
+  color: var(--success);
+}
+.tk-st.st-interview i,
+.tk-st.st-offer i {
+  background: var(--success);
+}
+.tk-st.st-rejected {
+  color: var(--text-3);
+}
+.tk-st.st-rejected i {
+  background: var(--text-3);
+}
+.tk-prio-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
   color: var(--text-2);
+}
+/* Dates */
+.tk-datebtn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  border: 0;
+  background: none;
+  padding: 5px 8px;
+  border-radius: 10px;
+  font: inherit;
+  color: var(--text);
+  text-align: left;
+  line-height: 1.2;
+}
+.tk-datebtn:hover {
+  background: var(--bg-sunk);
+}
+.tk-datebtn small {
+  font-size: 11px;
+  color: var(--text-3);
+}
+.tk-datebtn.empty span {
+  color: var(--text-3);
+  opacity: 0;
+}
+tr:hover .tk-datebtn.empty span {
+  opacity: 1;
+}
+.tk-datebtn.late span,
+.tk-datebtn.late small {
+  color: var(--danger);
+  font-weight: 600;
+}
+.tk-datebtn.today span {
+  font-weight: 650;
+}
+.tk-datebtn.today small {
+  color: var(--text);
+}
+/* Contact */
+.tk-contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  border: 0;
+  background: none;
+  padding: 4px 8px 4px 4px;
+  border-radius: 999px;
+  font: inherit;
+  color: var(--text);
+}
+.tk-contact-btn:hover {
+  background: var(--bg-sunk);
+}
+.tk-contact-btn i {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font: 600 10px var(--font);
+  font-style: normal;
+  background: var(--ink);
+  color: var(--ink-text);
+}
+.tk-contact-btn span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tk-contact-btn small {
+  color: var(--text-3);
+  font-size: 11px;
+}
+.tk-none {
+  color: var(--text-3);
+  padding: 0 10px;
+}
+.tk-addrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: none;
+  padding: 12px 16px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text-3);
+  text-align: left;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+.tk-addrow:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+/* Logo d'entreprise (favicon) */
+.tk-company {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.co-logo {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  font: 650 10px var(--font);
+  color: var(--text-2);
+}
+.co-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 2px;
+}
+.co-logo.mono {
+  background: var(--bg-hover);
+  border-color: transparent;
+}
+.co-logo.lg {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  font-size: 15px;
+}
+.co-logo.sm {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  font-size: 8.5px;
 }
 
 /* Statistiques */
@@ -390,7 +637,9 @@ input.tk-date.today {
 }
 
 /* Fiche */
+/* La fiche commence sous la barre du haut : les boutons de la fenêtre Windows restent visibles. */
 .tk-overlay {
+  top: var(--topbar-h);
   justify-content: flex-end;
   align-items: stretch;
   padding: 0;
@@ -491,13 +740,110 @@ input.tk-date.today {
 }
 .tk-docs {
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
+/* Document lié : carte arrondie ; vide = contour pointillé et appel à l'action. */
 .tk-doc {
   display: grid;
-  grid-template-columns: 90px 1fr auto;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 8px;
+  gap: 14px;
+  padding: 12px 12px 12px 14px;
+  border-radius: var(--radius);
+  border: 1px dashed var(--line-strong);
+  background: transparent;
+  transition:
+    border-color 0.12s,
+    background 0.12s;
+}
+.tk-doc.on {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+.tk-doc:hover {
+  border-color: var(--line-strong);
+}
+.tk-doc-ico {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--bg-sunk);
+  color: var(--text-3);
+}
+.tk-doc.on .tk-doc-ico {
+  background: var(--ink);
+  color: var(--ink-text);
+}
+.tk-doc-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.tk-doc-label {
+  font: 500 10px var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+}
+.tk-doc-main strong {
+  font-size: 14px;
+  font-weight: 620;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tk-doc-main strong.muted {
+  font-weight: 500;
+  color: var(--text-3);
+}
+.tk-doc-main small {
+  font-size: 12px;
+  color: var(--text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tk-doc-scores {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+.tk-doc-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tk-doc-actions .btn {
+  white-space: nowrap;
+}
+.tk-doc-pick {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.tk-doc-menu {
+  max-height: 280px;
+  overflow-y: auto;
+  min-width: 260px;
+  max-width: 340px;
+}
+.tk-doc-menu button.on {
+  font-weight: 600;
+}
+.tk-doc-opt {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.tk-doc-menu .tk-doc-unlink {
+  border-top: 1px solid var(--line);
+  border-radius: 0 0 9px 9px;
+  margin-top: 4px;
+  color: var(--text-2);
 }
 .tk-contact {
   display: grid;
@@ -605,4 +951,52 @@ input.tk-date.today {
   .tk-dates {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+.tk-close {
+  flex: none;
+  margin-top: 2px;
+}
+.tk-drawer-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+}
+.tk-delete:hover:not(:disabled) {
+  color: var(--danger);
+}
+.tk-card-sub {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tk-card-sub > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tk-drawer-head {
+  align-items: center;
+}
+.tk-drawer-head .co-logo.lg {
+  align-self: center;
+}
+.tk-known {
+  font-size: 11.5px;
+}
+input.tk-date.late {
+  color: var(--danger);
+  font-weight: 600;
+}
+input.tk-date.today {
+  font-weight: 650;
+}
+/* Export Excel / CSV */
+.tk-export-menu {
+  min-width: 250px;
+}
+.tk-export-menu small {
+  white-space: nowrap;
 }

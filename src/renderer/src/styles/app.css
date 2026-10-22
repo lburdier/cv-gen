@@ -5279,3 +5279,21 @@ ul.clean li {
   align-self: center;
   color: var(--text);
 }
+
+/* Taille des icônes de logiciels (éditeur › Compétences) */
+.icon-size {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.icon-size input[type='range'] {
+  flex: 1;
+  min-width: 140px;
+  accent-color: var(--ink);
+}
+.icon-size-val {
+  font-size: 12px;
+  color: var(--text-2);
+  min-width: 44px;
+}

@@ -5,7 +5,7 @@ import { Pitch } from './Pitch'
 import type { Resume, SectionKey } from '../../../shared/types'
 import { EditableContext, usePlaceholders } from './previewContext'
 import { resolveIcon } from '../lib/iconBank'
-import { SkillIcon, iconLookup } from './skillIcons'
+import { SkillIcon, iconLookup, iconScaleLookup, scaleStyle } from './skillIcons'
 import { FONTS } from './registry'
 
 /**
@@ -250,12 +250,13 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
   const toolIcon = (name: string) => (toolGroup ? resolveIcon(name, toolGroup.icons?.[name], 'app', toolGroup.autoIcons !== false) : undefined)
   // Icônes de logiciels activées dans l'éditeur (réglage commun à tous les modèles).
   const ico = iconLookup(r, true)
+  const icoScale = iconScaleLookup(r)
   const nm = (name: string) => {
     const src = ico(name)
     // Icône et nom dans un même bloc : les pastilles en grille ne les séparent pas.
     return src ? (
       <span className="sk-named">
-        <SkillIcon src={src} />
+        <SkillIcon src={src} scale={icoScale(name)} />
         {name}
       </span>
     ) : (
@@ -265,7 +266,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
   /** Monogramme des tuiles, remplacé par l'icône du logiciel quand elle est activée. */
   const tile = (name: string) => {
     const src = ico(name)
-    return src ? <img className="rp-tile-ico" src={src} alt="" /> : mono(name)
+    return src ? <img className="rp-tile-ico" src={src} alt="" style={scaleStyle(icoScale(name))} /> : mono(name)
   }
 
   const S = (key: string, label: string) => E(key, label)
@@ -1518,7 +1519,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
             <div className="tiles">
               {tools.slice(0, 6).map((s) => {
                 const icon = toolIcon(s) ?? ico(s)
-                return <span key={s}>{icon ? <img src={icon} alt="" /> : mono(s)}</span>
+                return <span key={s}>{icon ? <img src={icon} alt="" style={scaleStyle(icoScale(s))} /> : mono(s)}</span>
               })}
             </div>
             <span className="rp-col-stamp" aria-hidden>
@@ -1758,7 +1759,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                 </h2>
                 <div className="rp-scr-tools">
                   {tools.slice(0, 9).map((s, i) => (
-                    <span key={s} style={{ '--c': ['#FF61F6', '#F7B500', '#31A8FF', '#FF9A00', '#9999FF', '#FF3366', '#22D3EE', '#A3E635', '#F472B6'][i % 9] } as CSSProperties}>
+                    <span key={s} style={{ '--c': ['#FF61F6', '#F7B500', '#31A8FF', '#FF9A00', '#9999FF', '#FF3366', '#22D3EE', '#A3E635', '#F472B6'][i % 9], ...(ico(s) ? scaleStyle(icoScale(s)) : {}) } as CSSProperties}>
                       {tile(s)}
                     </span>
                   ))}
@@ -1858,7 +1859,7 @@ export function CvReplica({ resume: r }: { resume: Resume }) {
                       {g.items.map((x, j) => (
                         <Fragment key={x + j}>
                           {j > 0 && ', '}
-                          <SkillIcon src={ico(x)} />
+                          <SkillIcon src={ico(x)} scale={icoScale(x)} />
                           {x}
                         </Fragment>
                       ))}

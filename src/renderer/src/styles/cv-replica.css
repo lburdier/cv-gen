@@ -4268,6 +4268,10 @@
 }
 
 /* Tuiles à monogramme (Dossier, Écran, Nocturne) : l'icône du logiciel prend la place des initiales. */
+.rp-tile-ico,
+.rp-col-skills .tiles img {
+  zoom: var(--ico-scale, 1);
+}
 .rp-tile-ico {
   display: block;
   width: 72%;
@@ -4302,11 +4306,19 @@
 }
 .rp .sk-ico {
   display: inline-block !important;
-  width: 1.15em !important;
-  height: 1.15em !important;
+  width: calc(1.15em * var(--ico-scale, 1)) !important;
+  height: calc(1.15em * var(--ico-scale, 1)) !important;
   margin: 0 0.32em 0 0 !important;
   padding: 0 !important;
   border: 0 !important;
   object-fit: contain !important;
   flex: none !important;
+}
+
+/* Écran : la tuile carrée grandit avec l'icône (la taille de l'icône dans la tuile reste fixe). */
+.rp-scr-tools span {
+  zoom: var(--ico-scale, 1);
+}
+.rp-scr-tools span .rp-tile-ico {
+  zoom: 1;
 }

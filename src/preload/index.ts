@@ -29,6 +29,7 @@ const api: CvGenApi = {
   setTitleBarTheme: (dark) => ipcRenderer.send('titlebar:theme', dark),
   exportResume: call('export:resume'),
   exportLetter: call('export:letter'),
+  exportTable: call('export:table'),
   getPrintJob: call('print:job'),
   printReady: (token) => ipcRenderer.send('print:ready', token),
   openDataFolder: call('shell:dataFolder'),
@@ -51,6 +52,7 @@ const api: CvGenApi = {
     }
   },
   cv: { pick: call('cv:pick'), import: call('cv:import') },
+  logos: { get: call('logo:get') },
   bridge: {
     status: call('bridge:status'),
     pending: call('bridge:pending'),
