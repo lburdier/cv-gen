@@ -1,73 +1,77 @@
+**English** · [Français](README.fr.md)
+
 # CV GEN
 
-Application Windows pour créer des CV lisibles par les ATS et les adapter à chaque offre avec Claude ou des modèles gratuits via OpenRouter.
+A Windows app to build ATS-friendly resumes and tailor them to each job offer, with Claude or free models through OpenRouter.
 
-**[⬇ Télécharger pour Windows](https://github.com/lburdier/cv-gen/releases/latest)** · **[Guide d’installation](INSTALLATION.md)**
+**[⬇ Download for Windows](https://github.com/lburdier/cv-gen/releases/latest)** · **[Installation guide (French)](INSTALLATION.md)**
 
-![Accueil de CV GEN](docs/screenshots/01-accueil.jpg)
+The app's interface is in French; resume section titles can be generated in French or English.
 
-## Aperçu
+![CV GEN home screen](docs/screenshots/01-accueil.jpg)
+
+## Overview
 
 | | |
 |---|---|
-| ![Éditeur : formulaire, aperçu en direct et score ATS](docs/screenshots/04-editeur.jpg) | ![Toile : édition directe façon Canva](docs/screenshots/05-toile.jpg) |
-| **Éditeur** : formulaire, aperçu en direct et score ATS détaillé | **Toile** : texte modifié sur place, sections déplaçables |
-| ![Studio de design : 500 modèles filtrables](docs/screenshots/03-studio.jpg) | ![Modèles d'origine, visuels et ATS](docs/screenshots/02-modeles.jpg) |
-| **Studio de design** : 500 modèles, filtres et aperçus Fille / Garçon | **Modèles d'origine** : visuels façon portfolio et ATS une colonne |
-| ![Explorateur par couleurs](docs/screenshots/06-couleurs.jpg) | ![Lettre de motivation et vérification](docs/screenshots/07-lettre.jpg) |
-| **Explorateur par couleurs** : tous les modèles recolorés en direct | **Lettres de motivation** : brouillon guidé ou IA, vérification |
+| ![Editor: form, live preview and ATS score](docs/screenshots/04-editeur.jpg) | ![Canvas: Canva-style direct editing](docs/screenshots/05-toile.jpg) |
+| **Editor**: form, live preview and detailed ATS score | **Canvas**: edit text in place, drag sections around |
+| ![Design studio: 500 filterable templates](docs/screenshots/03-studio.jpg) | ![Original, visual and ATS templates](docs/screenshots/02-modeles.jpg) |
+| **Design studio**: 500 templates, filters and female / male previews | **Original templates**: portfolio-style visuals and single-column ATS |
+| ![Colour explorer](docs/screenshots/06-couleurs.jpg) | ![Cover letter and review](docs/screenshots/07-lettre.jpg) |
+| **Colour explorer**: every template recoloured live | **Cover letters**: guided or AI draft, plus review |
 
-![Mes CV et leur score ATS](docs/screenshots/08-mes-cv.jpg)
+![My resumes and their ATS score](docs/screenshots/08-mes-cv.jpg)
 
-*Captures réalisées avec les profils d'exemple de l'app (personnes fictives, portraits Unsplash).*
+*Screenshots use the app's sample profiles (fictional people, Unsplash portraits).*
 
-## Fonctionnalités
+## Features
 
-- **DA** inspirée de bradleyziffer.com et gabrielvaldivia.com : titres immenses en Inter Display, mots d'emphase en serif italique (Crimson Pro), beaucoup d'air, liens discrets, pilules détourées, grandes cartes arrondies et tableaux à filets fins. Noir et blanc, thème clair par défaut et sombre au choix. Palette de commandes `Ctrl K`, assistant IA `Ctrl J`, nouveau CV `Ctrl N`.
-- **Studio de design : 500 modèles** (50 structures × 10 palettes) inspirés des meilleurs CV réels : colonnes latérales, bandeaux, mises en page éditoriales, CV compacts, corporate ou élégants, titres à filet, icônes de contact, noms en dégradé ou en contour, expériences en cartes. Filtres par famille, couleur, fond, mise en page, en-tête et photo ; aperçus Fille / Garçon avec photos ; chaque modèle se retouche entièrement (onglet Design ou toile), se recolore dans l’explorateur par couleurs et s’exporte aussi en version ATS.
-- **44 modèles** avec images d’aperçu : 12 visuels façon portfolio (Vitrine, Studio, Folio, Colonne, Sur mesure, Pop, Calque, Manifeste, Affiche, Magazine, Brutal…), 16 modèles ATS une colonne et la **collection Inspirations** : 16 modèles visuels à forte personnalité (Arche, Onglet, Pétale, Monochrome, Grille, Dégradé, Médaillon, Dune, Aplats, Nocturne, Pastel, Cartel, Collage, Dossier, Écran, Tribune), avec contrôle automatique des superpositions de texte et des marges. Couleurs (48 teintes, couleur secondaire), police et densité personnalisables, explorateur par couleurs.
-- **Profil** saisi une seule fois et repris par tous les modèles, **éditeur toile** façon Canva (modèles ATS et 500 modèles du studio : texte modifié sur place, sections et entrées déplaçables, palette, structure et design en direct), **CV recréé depuis une image**, **score ATS de n’importe quel PDF**, banques d’icônes de logiciels et d’images libres de droits, tutoriels intégrés.
-- **Éditeur en direct** : formulaire par sections, aperçu A4 avec repères de sauts de page, réorganisation et masquage des sections, intitulés FR/EN.
-- **Score ATS local** (hors ligne) : format, contenu (verbes d'action, résultats chiffrés, longueur…) et couverture des mots-clés de l'offre, plus une « Vue ATS » du texte extrait.
-- **Presets complets** : 17 CV d'exemple réalistes par métier (tech, business, création, santé, droit et finance, étudiant), chacun avec son modèle, créables en un clic depuis la page Modèles ou la palette (Ctrl K).
-- **Import de CV existants (PDF, Word, texte), sans IA** : lecture locale du PDF (colonnes, puces en retrait, lignes coupées), découpage en rubriques, expériences, formations, compétences et langues. Glisser-déposer sur l'accueil ou « Mes CV ». Avec une clé IA, l'IA structure le CV et la lecture locale complète ses oublis.
-- **Extension LinkedIn (Chrome, Edge)** : recherche d'offres LinkedIn depuis l'extension (poste, lieu, date, télétravail, contrat, niveau) et import en lot, bouton « CV GEN » sur chaque annonce et chaque carte de résultats, import de l'annonce d'un autre site (données JobPosting ou texte sélectionné). « Appliquer » ouvre l'offre dans CV GEN et adapte le CV le plus proche. L'extension parle uniquement à l'app, en local (127.0.0.1) ; si l'app est fermée, les offres attendent son ouverture.
-- **Icônes de logiciels sur tous les modèles** (ATS, studio, visuels, Inspirations) : case « Icônes des logiciels » par groupe de compétences, banque de 145 logiciels en 6 styles ou image personnelle, taille réglable de 60 à 200 %. Icônes décoratives : le nom reste en texte et le texte du PDF lu par les ATS ne change pas.
-- **Suivi des candidatures** : kanban par étape (À postuler, Envoyée, Relancée, Entretien, Offre, Refus) en glisser-déposer, tableau éditable aux colonnes au choix (priorité, poste, entreprise, contrat, localisation, source, dates de candidature, de relance et d'entretien, contact, notes perso, match), filtre Emploi / Stage / Alternance / Mission avec des champs propres à chaque type, statistiques (taux de réponse, entretiens, délai, par type et par source). Export Excel (.xlsx) et CSV. Logos d'entreprise automatiques (base d'environ 670 entreprises et 220 écoles connues, ou favicon du site renseigné ; logo de l'école sur les stages et alternances). Fiche complète avec CV, lettre et offre liés, contacts, historique, et relance rappelée à J+6 : message écrit par la personne (recommandé), trame guidée sans IA, ou correction et premier jet par l'IA.
-- **Exports nommés proprement** : `Prenom-Nom-CV-2026.pdf`, `Prenom-Nom-Lettre-2026.pdf` (sans accents ni espaces, comme l'attendent les recruteurs).
-- **Lettres de motivation** : angle (poste, entreprise, reconversion, alternance, spontanée), longueur, motivation saisie par la personne, expériences à mettre en avant ; brouillon guidé sans IA ou rédaction par l'IA ; en-tête complet (destinataire, lieu et date, objet), vérification (longueur, mots-clés, formules creuses) et retouches en un clic.
-- **IA hors ligne** : un petit modèle (Qwen3 0.6B, 397 Mo, téléchargé à la demande) tourne sur l'ordinateur avec llama.cpp. Gratuit, sans clé ni limite ; il répond dans l'assistant, aide à rédiger les lettres (reformulation fidèle du brouillon guidé, contrôlée paragraphe par paragraphe) et prend le relais quand le fournisseur en ligne échoue.
-- **IA (Claude ou OpenRouter gratuit)** : analyse d'offre, adaptation du CV avec revue avant/après, réécriture de puces, rédaction du profil, assistant conversationnel avec choix du modèle. Réponses en flux et repli automatique sur un autre modèle gratuit. Consigne stricte : ne jamais inventer d'expérience.
-- **Exports** : PDF balisé (tagged PDF + signets), Word natif (styles Titre 1/2), texte brut. Les modèles visuels s'exportent aussi en « PDF version ATS » (même contenu, une colonne, sans images).
+- **Art direction** inspired by bradleyziffer.com and gabrielvaldivia.com: huge Inter Display headings, italic serif emphasis (Crimson Pro), lots of white space, subtle links, outlined pills, large rounded cards and hairline tables. Black and white, light theme by default and dark theme on demand. Command palette `Ctrl K`, AI assistant `Ctrl J`, new resume `Ctrl N`.
+- **Design studio: 500 templates** (50 layouts × 10 palettes) inspired by the best real-world resumes: sidebars, banners, editorial layouts, compact, corporate or elegant resumes, ruled headings, contact icons, gradient or outlined names, experience cards. Filter by family, colour, background, layout, header and photo; female / male previews with photos. Every template is fully editable (Design tab or canvas), can be recoloured in the colour explorer and also exports as an ATS version.
+- **44 templates** with preview images: 12 portfolio-style visuals (Vitrine, Studio, Folio, Colonne, Sur mesure, Pop, Calque, Manifeste, Affiche, Magazine, Brutal…), 16 single-column ATS templates and the **Inspirations collection**: 16 bold visual templates (Arche, Onglet, Pétale, Monochrome, Grille, Dégradé, Médaillon, Dune, Aplats, Nocturne, Pastel, Cartel, Collage, Dossier, Écran, Tribune), with automatic checks for overlapping text and margins. Customisable colours (48 shades, secondary colour), font and density, plus a colour explorer.
+- **Profile** entered once and reused by every template; **Canva-style canvas editor** (ATS templates and the 500 studio templates: edit text in place, drag sections and entries, live palette, layout and design); **rebuild a resume from an image**; **ATS score for any PDF**; banks of software icons and royalty-free images; built-in tutorials.
+- **Live editor**: section-by-section form, A4 preview with page-break markers, reorder and hide sections, French / English headings.
+- **Local ATS score** (offline): format, content (action verbs, quantified results, length…) and coverage of the job offer's keywords, plus an "ATS view" of the extracted text.
+- **Complete presets**: 17 realistic sample resumes by profession (tech, business, creative, health, law and finance, student), each with its template, created in one click from the Templates page or the palette (`Ctrl K`).
+- **Import existing resumes (PDF, Word, text), no AI needed**: local PDF parsing (columns, indented bullets, broken lines), split into sections, experience, education, skills and languages. Drag and drop on the home screen or "My resumes". With an AI key, the AI structures the resume and the local parser fills in anything it missed.
+- **LinkedIn extension (Chrome, Edge)**: search LinkedIn jobs from the extension (title, location, date, remote, contract, level) and import them in bulk; a "CV GEN" button on every job post and result card; import a job post from another site (JobPosting data or selected text). "Apply" opens the offer in CV GEN and tailors the closest resume. The extension only talks to the app, locally (127.0.0.1); if the app is closed, offers wait until it opens.
+- **Software icons on every template** (ATS, studio, visuals, Inspirations): a "Software icons" option per skill group, a bank of 145 tools in 6 styles or your own image, size from 60 to 200 %. Icons are decorative: the name stays as text and the PDF text read by ATS does not change.
+- **Application tracker**: drag-and-drop kanban by stage (To apply, Sent, Followed up, Interview, Offer, Rejected); editable table with the columns you choose (priority, role, company, contract, location, source, application / follow-up / interview dates, contact, personal notes, match); filter by Job / Internship / Work-study / Freelance, with fields specific to each type; statistics (response rate, interviews, delays, by type and by source). Excel (.xlsx) and CSV export. Automatic company logos (about 670 known companies and 220 schools, or the favicon of the site you enter; school logo on internships and work-study). Full record with linked resume, letter and offer, contacts, history, and a follow-up reminder at D+6: message written by you (recommended), guided template without AI, or correction and first draft by the AI.
+- **Cleanly named exports**: `Firstname-Lastname-CV-2026.pdf`, `Firstname-Lastname-Lettre-2026.pdf` (no accents or spaces, as recruiters expect).
+- **Cover letters**: angle (role, company, career change, work-study, unsolicited), length, your own motivation, experiences to highlight; guided draft without AI or written by the AI; full header (recipient, place and date, subject), review (length, keywords, empty phrases) and one-click fixes.
+- **Offline AI**: a small model (Qwen3 0.6B, 397 MB, downloaded on demand) runs on your computer with llama.cpp. Free, no key, no limits. It answers in the assistant, helps write letters (faithful rewording of the guided draft, checked paragraph by paragraph) and takes over when the online provider fails.
+- **AI (Claude or free OpenRouter models)**: job offer analysis, resume tailoring with a before / after review, bullet rewriting, profile summary, a chat assistant with model choice. Streamed answers and automatic fallback to another free model. Strict rule: never invent experience.
+- **Exports**: tagged PDF (with bookmarks), native Word (Heading 1/2 styles), plain text. Visual templates also export as an "ATS version PDF" (same content, one column, no images).
 
-## Garanties ATS
+## ATS guarantees
 
-Modèles ATS et « version ATS » des modèles visuels : une seule colonne, ordre du DOM = ordre de lecture, vrais titres et listes, aucune information dans une image ou une icône, coordonnées dans le corps du document, dates MM/AAAA, séparateurs textuels entre compétences.
+ATS templates and the "ATS version" of visual templates: a single column, DOM order = reading order, real headings and lists, no information inside images or icons, contact details in the body of the document, MM/YYYY dates, text separators between skills.
 
-## Lancer l'app depuis le code
+## Run the app from source
 
-Double-cliquez sur `lancer.bat` : il installe les dépendances au premier lancement, compile puis ouvre l'app. `lancer.bat dev` lance le mode développement avec rechargement à chaud.
+Double-click `lancer.bat`: it installs dependencies on first launch, builds, then opens the app. `lancer.bat dev` starts development mode with hot reload.
 
-## Développement
+## Development
 
 ```bash
 npm install
-npm run dev        # lance l'app avec rechargement à chaud
+npm run dev        # start the app with hot reload
 npm run typecheck
-npm run dist       # installateur NSIS + exe portable dans release/
-npm run previews   # régénère les images d'aperçu des modèles (après modification d'un modèle)
+npm run dist       # NSIS installer + portable exe in release/
+npm run previews   # regenerate template preview images (after editing a template)
 ```
 
-En cas de souci, l'app consigne les erreurs dans `cvgen-erreurs.log` (dossier de données) et crée au lancement une sauvegarde horodatée dans le dossier `sauvegardes` (les 15 plus récentes, restaurables depuis Paramètres → Sauvegardes). Les suppressions et changements de modèle sont annulables depuis la notification.
+If something goes wrong, the app logs errors to `cvgen-erreurs.log` (in the data folder) and creates a timestamped backup on every launch in the `sauvegardes` folder (the 15 most recent, restorable from Settings → Backups). Deletions and template changes can be undone from the notification.
 
-La clé API se saisit dans **Paramètres** : Claude (Anthropic) ou OpenRouter (modèles gratuits, routeur `openrouter/free` par défaut). Chaque clé est chiffrée avec DPAPI (`safeStorage`) et n'est utilisée que dans le processus principal. Les données (CV, offres, lettres) sont stockées en JSON dans `%APPDATA%/CV GEN`.
+Enter your API key in **Settings**: Claude (Anthropic) or OpenRouter (free models, `openrouter/free` router by default). Each key is encrypted with DPAPI (`safeStorage`) and only used in the main process. Data (resumes, offers, letters) is stored as JSON in `%APPDATA%/CV GEN`.
 
 ## Structure
 
 ```
-src/main       processus principal : fenêtre, IPC, pont local de l'extension (bridge.ts), IA (ai.ts), exports PDF/DOCX (export.ts), stockage
-src/preload    pont sécurisé window.cvgen
-src/shared     types et mise en forme communs (intitulés, dates, texte brut)
-extension      extension navigateur « CV GEN · Offres » (Manifest V3, LinkedIn)
-src/renderer   interface React : pages, composants, modèles de CV, analyse ATS (lib/ats.ts)
+src/main       main process: window, IPC, local extension bridge (bridge.ts), AI (ai.ts), PDF/DOCX export (export.ts), storage
+src/preload    secure window.cvgen bridge
+src/shared     shared types and formatting (headings, dates, plain text)
+extension      "CV GEN · Offres" browser extension (Manifest V3, LinkedIn)
+src/renderer   React interface: pages, components, resume templates, ATS analysis (lib/ats.ts)
 ```
